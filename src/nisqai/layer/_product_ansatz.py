@@ -12,3 +12,19 @@
 
 """Module for generating and working with product ansatzes."""
 
+from _base_ansatz import BaseAnsatz
+
+class ProductAnsatz(BaseAnsatz):
+    """Class for working with product ansatze."""
+
+    def __init__(self, num_qubits, gate_depth, angles):
+        BaseAnsatz.__init__(self, num_qubits)
+        self.gate_depth = gate_depth
+        self.init_angles = angles
+        # TODO: make classes for Parameters and GateAlphabets
+
+    def write_circuit(self, angles):
+        """Writes the product state ansatz circuit."""
+        # TODO: complete method
+        # self.circuit = 
+        pass
