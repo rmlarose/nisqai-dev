@@ -3,3 +3,6 @@
 
 # pycache
 __pycache__
+
+# pycharm bs
+.idea

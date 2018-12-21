@@ -16,6 +16,9 @@ ansatz classes.
 
 from pyquil import Program
 
+REAL_MEM_TYPE = "REAL"
+BIT_MEM_TYPE = "BIT"
+
 class BaseAnsatz():
     """Base ansatz for all ansatz classes."""
     

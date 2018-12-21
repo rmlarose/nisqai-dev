@@ -14,13 +14,9 @@
 
 from numpy import empty, pi
 
-from pyquil import gates
+from pyquil import gates, Program
 
-from _base_ansatz import BaseAnsatz
-
-
-REAL_MEM_TYPE = "REAL"
-BIT_MEM_TYPE = "BIT"
+from _base_ansatz import BaseAnsatz, REAL_MEM_TYPE
 
 
 class ProductAnsatz(BaseAnsatz):
@@ -49,3 +45,9 @@ class ProductAnsatz(BaseAnsatz):
                     gates.RX(pi / 2, q),
                     gates.RZ(self.params[q, g], q)
                 )
+
+    def clear_circuit(self):
+        self.circuit = Program()
+
+    # TODO: make sure __sum__ works as intended for ProductAnsatz classe
+    # (see note in BaseAnsatz.__sum__())

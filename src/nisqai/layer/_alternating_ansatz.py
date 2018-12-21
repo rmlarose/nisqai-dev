@@ -9,3 +9,16 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
+
+from _base_ansatz import BaseAnsatz, REAL_MEM_TYPE
+
+class AlternatingAnsatz(BaseAnsatz):
+    """Class for two-qubit alternating ansatz."""
+    
+    def __init__(self, num_qubits, structure=None):
+        super().__init__(num_qubits)
+        self.structure = structure
+
+    def write_circuit(self):
+        """Adds instructions to the circuit."""
+        pass
