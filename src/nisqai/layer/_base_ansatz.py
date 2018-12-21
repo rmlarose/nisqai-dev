@@ -48,8 +48,21 @@ class BaseAnsatz():
         # class)
         pass
 
+    def add_layer(self, gate):
+        """Adds the gate to every qubit in the circuit."""
+        for q in range(self._num_qubits):
+            self.circuit.inst(gate(q))
+
     def __str__(self):
         """Returns a circuit diagram."""
         # TODO: complete method
         # probably want to write a TextDiagramDrawer class like in Cirq
         return self.circuit.__str__()
+
+    def __add__(self, ansatz):
+        assert isinstance(ansatz, BaseAnsatz)
+        assert self._num_qubits == ansatz.num_qubits
+        new = BaseAnsatz(self._num_qubits)
+        new.circuit = self.circuit + ansatz.circuit
+        return new
+        
