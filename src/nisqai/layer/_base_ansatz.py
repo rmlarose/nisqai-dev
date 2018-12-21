@@ -60,6 +60,8 @@ class BaseAnsatz():
         return self.circuit.__str__()
 
     def __add__(self, ansatz):
+        # TODO: make sure this works with all derived ansatz types
+        # e.g., make sure ProductAnsatz__sum__ returns a ProductAnsatz, etc.
         assert isinstance(ansatz, BaseAnsatz)
         assert self._num_qubits == ansatz.num_qubits
         new = BaseAnsatz(self._num_qubits)

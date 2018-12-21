@@ -43,9 +43,8 @@ class ProductAnsatz(BaseAnsatz):
                 # make a parameter
                 self.params[q, g] = self.circuit.declare(
                     (q, g), memory_type=REAL_MEM_TYPE)
-
-        for q in range(self.num_qubits):
-            for g in range(self.gate_depth):
+                
+                # add gates into the circuit ansatz
                 self.circuit.inst(
                     gates.RX(pi / 2, q),
                     gates.RZ(self.params[q, g], q)
