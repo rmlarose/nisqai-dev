@@ -10,26 +10,16 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-"""Unit tests for BaseAnsatz class."""
+from ._program_utils import order
+from pyquil import Program, gates
 
-from pyquil import gates
+def test_order_basic():
+    """Tests an ordered program is in the nominal form."""
+    p = Program(gates.H(0))
+    p.declare("ro")
+    print(order(p))
 
-from ._base_ansatz import BaseAnsatz
-
-def test_basic():
-    b = BaseAnsatz(4)
-    assert b.num_qubits == 4
-
-def test_add():
-    a = BaseAnsatz(3)
-    b = BaseAnsatz(3)
-    
-    a.add_layer(gates.X)
-    b.add_layer(gates.Y)
-    
-    print("a + b =\n", a + b)
 
 if __name__ == "__main__":
-    test_basic()
-    test_add()
-    print("All tests for BaseAnsatz class passed.")
+    test_order_basic()
+    print("All unit tests for program_utils passed.")

@@ -62,6 +62,10 @@ class BaseAnsatz():
         # probably want to write a TextDiagramDrawer class like in Cirq
         return self.circuit.__str__()
 
+    def clear_circuit(self):
+        """Clears all instructions in the circuit ansatz."""
+        self.circuit = Program()
+
     def __add__(self, ansatz):
         # TODO: make sure this works with all derived ansatz types
         # e.g., make sure ProductAnsatz__sum__ returns a ProductAnsatz, etc.

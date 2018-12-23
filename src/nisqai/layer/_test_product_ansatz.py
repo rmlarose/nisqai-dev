@@ -10,11 +10,13 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from _product_ansatz import ProductAnsatz
+from ._product_ansatz import ProductAnsatz
 
 def test_basic():
     p = ProductAnsatz(4)
     assert p.num_qubits == 4
+
+# TODO: add more test cases!!!
 
 
 if __name__ == "__main__":

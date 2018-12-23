@@ -9,3 +9,15 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
+
+from ._entangling_ansatz import EntanglingAnsatz
+
+
+def test_basic():
+    e = EntanglingAnsatz(4)
+    assert e.num_qubits == 4
+
+
+if __name__ == "__main__":
+    test_basic()
+    print("All unit tests for EntanglingAnsatz passed.")
