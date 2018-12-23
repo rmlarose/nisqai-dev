@@ -51,20 +51,37 @@ class BaseAnsatz():
         # class)
         pass
 
+    def add_gates(self, qubit, gates):
+        """Adds a list of gates that act on a qubit.
+        
+        Args:
+            qubit [type: int]
+                Index of the qubit to be rotated.
+            
+            gates [type: list]
+                Single qubit gates to act on the qubit.
+        
+        Modifies:
+            self.circuit
+        """
+        self.circuit.inst(
+            [gate(qubit) for gate in gates]
+            )
+
     def add_layer(self, gate):
         """Adds the gate to every qubit in the circuit."""
         for q in range(self._num_qubits):
             self.circuit.inst(gate(q))
+
+    def clear_circuit(self):
+        """Clears all instructions in the circuit ansatz."""
+        self.circuit = Program()
 
     def __str__(self):
         """Returns a circuit diagram."""
         # TODO: complete method
         # probably want to write a TextDiagramDrawer class like in Cirq
         return self.circuit.__str__()
-
-    def clear_circuit(self):
-        """Clears all instructions in the circuit ansatz."""
-        self.circuit = Program()
 
     def __add__(self, ansatz):
         # TODO: make sure this works with all derived ansatz types
