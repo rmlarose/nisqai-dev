@@ -10,7 +10,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from ._product_ansatz import ProductAnsatz
+from nisqai.layer._product_ansatz import ProductAnsatz
+
 
 def test_basic():
     p = ProductAnsatz(4)
@@ -21,4 +22,4 @@ def test_basic():
 
 if __name__ == "__main__":
     test_basic()
-    print("All unit tests for ProductAnsatz passed.")
+    print("All tests for ProductAnsatz passed.")

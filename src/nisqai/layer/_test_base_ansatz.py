@@ -14,7 +14,7 @@
 
 from pyquil import gates
 
-from _base_ansatz import BaseAnsatz
+from nisqai.layer._base_ansatz import BaseAnsatz
 
 
 def test_basic():

@@ -10,7 +10,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from _alternating_ansatz import AlternatingAnsatz
+from nisqai.layer._alternating_ansatz import AlternatingAnsatz
 
 
 def test_basic():

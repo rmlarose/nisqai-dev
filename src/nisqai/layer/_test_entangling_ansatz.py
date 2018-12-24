@@ -10,7 +10,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from ._entangling_ansatz import EntanglingAnsatz
+from nisqai.layer._entangling_ansatz import EntanglingAnsatz
 
 
 def test_basic():

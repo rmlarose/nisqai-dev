@@ -10,8 +10,9 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from _program_utils import order
+from nisqai.utils._program_utils import order
 from pyquil import Program, gates
+
 
 def test_order_basic():
     """Tests an ordered program is in the nominal form."""
