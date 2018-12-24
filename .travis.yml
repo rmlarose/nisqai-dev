@@ -27,4 +27,4 @@ install:
   pip3 install -r requirements.txt
   pip3 install -e .
 
-script: pytest src/nisqai --cov src/nisqai
+script: export OMP_NUM_THREADS=1 && pytest src/nisqai --cov src/nisqai
