@@ -10,3 +10,14 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+from nisqai.encode._base_encoding import BaseEncoding
+
+
+def test_basic():
+    b = BaseEncoding(2, None)
+    assert b.num_qubits == 2
+
+
+if __name__ == "__main__":
+    test_basic()
+    print("All tests for BaseEncoding passed.")

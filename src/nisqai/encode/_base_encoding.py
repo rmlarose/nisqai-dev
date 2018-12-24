@@ -10,3 +10,13 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+from pyquil import Program
+
+from nisqai.layer._base_ansatz import BaseAnsatz
+
+class BaseEncoding():
+    """Base encoding class inherited by all other encoding classes."""
+
+    def __init__(self, num_qubits, data):
+        self.num_qubits = num_qubits
+        self.data = data
