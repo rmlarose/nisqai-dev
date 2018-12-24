@@ -10,7 +10,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from ._base_ansatz import BaseAnsatz
+from nisqai.layer._base_ansatz import BaseAnsatz
+
 
 class EntanglingAnsatz(BaseAnsatz):
     """Class for entangling ansatz from Schuld et al.,
@@ -22,3 +23,4 @@ class EntanglingAnsatz(BaseAnsatz):
 
     def write_circuit(self):
         """Writes operations into circuit."""
+        pass

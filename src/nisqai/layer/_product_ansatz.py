@@ -12,9 +12,10 @@
 
 from numpy import empty, pi
 
-from pyquil import gates, Program
+from pyquil import gates
 
-from ._base_ansatz import BaseAnsatz, REAL_MEM_TYPE
+from nisqai.layer._base_ansatz import BaseAnsatz, REAL_MEM_TYPE
+from nisqai.utils._program_utils import order
 
 
 class ProductAnsatz(BaseAnsatz):
@@ -43,6 +44,7 @@ class ProductAnsatz(BaseAnsatz):
                     gates.RX(pi / 2, q),
                     gates.RZ(self.params[q, g], q)
                 )
+        self.circuit = order(self.circuit)
 
-    # TODO: make sure __sum__ works as intended for ProductAnsatz classe
+    # TODO: make sure __sum__ works as intended for ProductAnsatz class
     # (see note in BaseAnsatz.__sum__())

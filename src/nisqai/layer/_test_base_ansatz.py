@@ -14,13 +14,17 @@
 
 from pyquil import gates
 
-from ._base_ansatz import BaseAnsatz
+from _base_ansatz import BaseAnsatz
+
 
 def test_basic():
+    """Basic test for BaseAnsatz."""
     b = BaseAnsatz(4)
     assert b.num_qubits == 4
 
+
 def test_add():
+    """Add two BaseAnsatz's and make sure the result is correct."""
     a = BaseAnsatz(3)
     b = BaseAnsatz(3)
     
@@ -28,6 +32,7 @@ def test_add():
     b.add_layer(gates.Y)
     
     print("a + b =\n", a + b)
+
 
 if __name__ == "__main__":
     test_basic()

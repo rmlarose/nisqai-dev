@@ -10,8 +10,15 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from ._alternating_ansatz import AlternatingAnsatz
+from _alternating_ansatz import AlternatingAnsatz
+
 
 def test_basic():
     a = AlternatingAnsatz(4)
     assert a.num_qubits == 4
+
+
+# run the tests
+if __name__ == "__main__":
+    test_basic()
+    print("All tests for AlternatingAnsatz passed.")

@@ -10,9 +10,10 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from _base_ansatz import BaseAnsatz, REAL_MEM_TYPE
+from nisqai.layer._base_ansatz import BaseAnsatz, REAL_MEM_TYPE
 from pyquil import gates
 from numpy import empty
+
 
 class AlternatingAnsatz(BaseAnsatz):
     """Class for two-qubit alternating ansatz."""
@@ -20,7 +21,11 @@ class AlternatingAnsatz(BaseAnsatz):
     def __init__(self, num_qubits, structure=[gates.RZ, gates.RX, gates.RZ]):
         super().__init__(num_qubits)
         self.structure = structure
+        
+        # strucutre repeats twice, so overall parameter depth is twice
         self.depth = 2 * len(structure)
+        
+        # make the parameters and write the circuit
         self._make_params()
         self.write_circuit()
 

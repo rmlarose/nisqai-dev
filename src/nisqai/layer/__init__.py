@@ -10,6 +10,6 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from ._product_ansatz import ProductAnsatz
-from ._entangling_ansatz import EntanglingAnsatz
 from ._alternating_ansatz import AlternatingAnsatz
+from ._entangling_ansatz import EntanglingAnsatz
+from ._product_ansatz import ProductAnsatz
