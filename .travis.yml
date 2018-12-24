@@ -17,6 +17,10 @@ matrix:
         packages: ['gcc-4.9', 'g++-4.9']
     env: CC=gcc-4.9 CXX=g++-4.9 PYTHON=3.6
 
+branches:
+  only:
+  - dev
+
 before_install:
   - pip3 install --upgrade pip setuptools wheel
 
