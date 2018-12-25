@@ -10,7 +10,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from numpy import amax, average
+from numpy import amax, array, average, random, float64
 from copy import deepcopy
 
 class CData():
@@ -54,12 +54,10 @@ class CData():
          on the data and keeps the desired number of features.
 
         Args:
-            features_to_keep [type: int or float]
-                if int, keeps exactly this many features.
-                if float, keeps this ratio of features.
+            features_to_keep [type: float]
+                keeps this ratio of features.
 
         Examples:
-            reduce_features(5) --> keeps top 5 features after PCA
             reduce_features(0.2) --> keeps top 20% of features after PCA
         """
         # TODO: complete method
@@ -93,5 +91,20 @@ class LabeledCData(CData):
                 function that returns a zero or one when called
                 on feature vectors
         """
-        # TODO: complete method
-        return None
+        return array([func(x) for x in self.data])
+
+
+def random_data(num_features, num_samples, labels, dtype=float64, seed=None):
+    """Returns a CData object with random data."""
+    # seed the random number generator if one is provided
+    if seed:
+        random.seed(seed)
+
+    # get some random data
+    data = random.rand(num_samples, num_features)
+
+    # if labels, return a labeled data object
+    if labels:
+        return LabeledCData(data, labels)
+
+    return CData(data)

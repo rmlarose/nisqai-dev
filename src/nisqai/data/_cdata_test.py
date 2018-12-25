@@ -10,7 +10,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from nisqai.data._cdata import CData
+from nisqai.data._cdata import CData, LabeledCData, random_data
 from numpy import array
 from numpy.random import rand
 
@@ -23,5 +23,26 @@ def test_basic_cdata():
     assert cdata.num_samples == 2
 
 
+def test_basic_labeled_cdata():
+    """Creates a LabeledCData object and makes sure the dimensions are correct."""
+    data = array([[1, 0, 0], [0, 1, 0]])
+    labels = array([1, 0])
+    lcdata = LabeledCData(data, labels)
+    assert lcdata.num_features == 3
+    assert lcdata.num_samples == 2
+
+
+def test_get_random_data_basic():
+    """Tests to see if we can get random data."""
+    cdata = random_data(num_features=2,
+                        num_samples=4,
+                        labels=None)
+    assert cdata.num_features == 2
+    assert cdata.num_samples == 4
+
+
 if __name__ == "__main__":
     test_basic_cdata()
+    test_basic_labeled_cdata()
+    test_get_random_data_basic()
+    print("All tests for CData passed.")
