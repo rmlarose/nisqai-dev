@@ -10,14 +10,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from nisqai.layer._base_ansatz import BaseAnsatz
+# TODO: write classical cost methods based on the output of the circuit and the data
+# for example, indicator cost function based on measurement results as in the one-qubit-classifier
 
-
-class AngleEncoding(BaseAnsatz):
-    """AngleEncoding class."""
-
-    def __init__(self, num_qubits, data):
-        """Initialize an AngleEncoding class."""
-        # TODO: check input types!
-        super().__init__(self, num_qubits)
-        self.data = data
+# should this class take in a "network" or "trainer" class?

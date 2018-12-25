@@ -10,14 +10,4 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from nisqai.layer._base_ansatz import BaseAnsatz
-
-
-class AngleEncoding(BaseAnsatz):
-    """AngleEncoding class."""
-
-    def __init__(self, num_qubits, data):
-        """Initialize an AngleEncoding class."""
-        # TODO: check input types!
-        super().__init__(self, num_qubits)
-        self.data = data
+# TODO: test classes/methods/functions in _quantum_costs.py!
