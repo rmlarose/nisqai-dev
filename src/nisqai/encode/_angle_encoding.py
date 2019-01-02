@@ -16,8 +16,19 @@ from nisqai.layer._base_ansatz import BaseAnsatz
 class AngleEncoding(BaseAnsatz):
     """AngleEncoding class."""
 
-    def __init__(self, num_qubits, data):
+    def __init__(self, num_qubits, data, encoding):
         """Initialize an AngleEncoding class."""
         # TODO: check input types!
         super().__init__(self, num_qubits)
         self.data = data
+        self.encoding = encoding
+
+    def encode_point(self, index):
+        """Returns a program encoding a data point.
+
+        Args:
+            index : int
+                index of the data point to encode
+        """
+        # grab the index of the data point
+        pass

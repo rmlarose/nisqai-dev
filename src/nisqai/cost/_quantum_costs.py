@@ -17,3 +17,8 @@ class HilbertSchmidtDistance(BaseAnsatz):
     """Implements the Hilbert Schmidt distance quantum circuit
     between two quantum states. See QAQC paper."""
     # TODO: complete class!
+
+
+class DipTest(BaseAnsatz):
+    """Diagonal inner product circuit ansatz."""
+    # TODO: complete class!

@@ -13,6 +13,7 @@
 from numpy import amax, array, average, random, float64
 from copy import deepcopy
 
+
 class CData():
     """Classical data class."""
 
@@ -63,6 +64,10 @@ class CData():
         # TODO: complete method
         pass
 
+    def __getitem__(self, item):
+        """Override indexing to return data elements."""
+        return self.data[item]
+
 
 class LabeledCData(CData):
     """Classical data with labels."""
@@ -93,6 +98,11 @@ class LabeledCData(CData):
         """
         return array([func(x) for x in self.data])
 
+    def __getitem__(self, item):
+        """Override indexing to return data elements."""
+        # TODO: question: should this return (data, label) pairs or just data?
+        return self.data[item], self.labels[item]
+
 
 def random_data(num_features, num_samples, labels, dtype=float64, seed=None):
     """Returns a CData object with random data."""
@@ -108,3 +118,14 @@ def random_data(num_features, num_samples, labels, dtype=float64, seed=None):
         return LabeledCData(data, labels)
 
     return CData(data)
+
+def get_iris_setosa_data():
+    """Returns a CData object with Iris-Setosa flower data."""
+    # TODO: complete function
+    # Question: Store this data in the library or download it on the fly?
+    pass
+
+def get_mnist_data():
+    """Returns a CDdata object with MNIST digits data."""
+    # TODO: complete function
+    pass
