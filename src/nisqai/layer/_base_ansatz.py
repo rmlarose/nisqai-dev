@@ -47,8 +47,6 @@ class BaseAnsatz():
         in the circuit ansatz.
         """
         # TODO: complete method
-        # TODO: make gate_alphabet an argument (probably write a gate_alphabet
-        # class)
         pass
 
     def add_gates(self, qubit, gates):

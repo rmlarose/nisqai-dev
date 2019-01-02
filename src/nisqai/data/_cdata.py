@@ -98,6 +98,12 @@ class LabeledCData(CData):
         """
         return array([func(x) for x in self.data])
 
+    def train_test_split(self, ratio, shuffle=False):
+        """Returns testing and training data."""
+        # TODO: take into account the shuffle flag
+        ind = int(ratio * self.num_samples)
+        return self.data[:ind], self.data[ind + 1:]
+
     def __getitem__(self, item):
         """Override indexing to return data elements."""
         # TODO: question: should this return (data, label) pairs or just data?
