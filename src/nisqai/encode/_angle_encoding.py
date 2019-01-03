@@ -11,24 +11,74 @@
 #   limitations under the License.
 
 from nisqai.layer._base_ansatz import BaseAnsatz
+from nisqai.data._cdata import CData
+
+from numpy import array, cos, sin, exp
+from pyquil import Program
 
 
 class AngleEncoding(BaseAnsatz):
-    """AngleEncoding class."""
+    """AngleEncoding class. Encode features into the angles of qubits via
 
-    def __init__(self, num_qubits, data, encoding):
+    |\psi> = cos(\theta/2) |0> + e^{i \phi} sin(\theta / 2) |1>.
+
+
+    With this encoding, n features require ceiling(n / 2) qubits.
+
+    Args:
+
+        num_qubits : int
+            The number of qubits in the circuit.
+
+        data : nisqai.data.CData or nisqai.data.LabeledCData
+            Data object to be encoded in the circuit.
+
+        encoder : callable
+            Function of the features...
+
+        feature_map : callable or iterable
+            Defines which features get encoded in which qubits.
+
+            The first two features are mapped to the first qubit, the next two
+            features are mapped to the second qubit, etc., unless a feature map
+            is given, in which case features are mapped to qubit as specified by
+            the feature map.
+    """
+
+    def __init__(self, data, encoder, feature_map):
         """Initialize an AngleEncoding class."""
-        # TODO: check input types!
-        super().__init__(self, num_qubits)
+        # TODO: replace with better error checking
+        assert isinstance(CData, data)
         self.data = data
-        self.encoding = encoding
 
-    def encode_point(self, index):
-        """Returns a program encoding a data point.
+        # determine the number of qubits from the input data
+        num_qubits = self._compute_num_qubits()
+        super().__init__(self, num_qubits)
+        self.encoder = encoder
+        self.feature_map = feature_map
 
-        Args:
-            index : int
-                index of the data point to encode
+    def _compute_num_qubits(self):
+        """Computes the number of qubits needed for the circuit
+        from the input data.
         """
-        # grab the index of the data point
-        pass
+        return self.data.num_features // 2 + self.data.num_features % 2
+
+    def _write_circuit(self):
+        """Writes the encoding circuit into self.circuit."""
+        # ===============================
+        # collect features for each qubit
+        # ===============================
+
+        # ==============================================================
+        # use the encoder to get angles from the features for each qubit
+        # ==============================================================
+
+        # ============================
+        # get matrices from the angles
+        # ============================
+
+        # ==================================
+        # use each matrix to write a circuit
+        # ==================================
+
+    
