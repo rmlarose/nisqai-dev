@@ -40,7 +40,7 @@ def direct(num_features):
 
     Feature[i] --> Qubit[i].
     """
-    mapping = dict((k, k) for k in range(num_features))
+    mapping = dict((k, (k,)) for k in range(num_features))
     return FeatureMap(mapping)
 
 
@@ -50,7 +50,8 @@ def nearest_neighbor(num_features, num_qubits):
     Examples:
         nearest_neighbor(4, 2) --> {0 : (0, 1), 1 : (2, 3)}
     """
-    mapping = dict((k, (k, k + 1)) for k in range(0, num_features, 2))
+    bin_size = num_features // num_qubits
+    mapping = dict((k, tuple(range(k * bin_size, (k + 1) * bin_size))) for k in range(0, num_qubits))
     return FeatureMap(mapping)
 
 
