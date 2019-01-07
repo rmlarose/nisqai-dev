@@ -11,5 +11,5 @@
 #   limitations under the License.
 
 from nisqai.encode._angle_encoding import AngleEncoding
-from nisqai.encode._feature_maps import *
-from nisqai.encode._encoders import *
+from nisqai.encode._feature_maps import direct, nearest_neighbor
+from nisqai.encode._encoders import angle_simple_linear, linear_encoder

@@ -11,6 +11,7 @@
 #   limitations under the License.
 
 from nisqai.data import *
+from nisqai.encode import *
 from nisqai.layer import *
 
 from ._version import __version__

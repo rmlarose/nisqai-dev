@@ -18,4 +18,5 @@ cdata = nisqai.data.random_data(2, 5, [1, 0, 0, 1, 0])
 # encode the data
 # ===============
 
+# get a feature map
 
