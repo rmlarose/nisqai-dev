@@ -30,8 +30,7 @@ def test_direct_simple():
 def test_nearest_neighbor_simple():
     """Performs simple tests on nearest neighbor feature map."""
     feature_map = nearest_neighbor(4, 2)
-    print(feature_map.map)
-    print(type(feature_map.map))
+
     assert isinstance(feature_map, FeatureMap)
     assert(feature_map.map[0] == (0, 1))
     assert(feature_map.map[1] == (2, 3))
@@ -52,7 +51,7 @@ def test_nearest_neighbor_data_features_to_qubits_map():
 
     # nearest neighbor feature map
     feature_map = nearest_neighbor(4, 2)
-    print(feature_map.map)
+
     # test the encoding
     qubit_features = {}
     for ind in range(len(feature_map.map)):
