@@ -4,6 +4,20 @@ NISQAI is a library for quantum artificial intelligence on near-term quantum com
 
 NISQAI is currently in development. The [examples](examples/) folder contains instructive notebooks on some of our ideas, such as our [one-qubit quantum classifier](examples/one-qubit-classifier/).
 
+# Development Instructions
+
+1. Clone the development repository `rmlarose/nisqai-dev`:
+
+```git clone https://github.com/rmlarose/nisqai-dev```
+
+1. CD into the directory with setup.py:
+
+```cd nisqai-dev```
+
+1. Install the NISQAI package:
+
+```pip install -e .```
+
 # Developers
 
 * [Ryan LaRose](https://www.ryanlarose.com/)
