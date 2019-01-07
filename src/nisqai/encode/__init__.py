@@ -10,3 +10,6 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+from nisqai.encode._angle_encoding import AngleEncoding
+from nisqai.encode._feature_maps import *
+from nisqai.encode._encoders import *

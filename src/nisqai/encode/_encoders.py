@@ -26,3 +26,4 @@ def angle_simple_linear(feature_vector):
     phi = 2 * pi * feature_vector[1]
     """
     return (pi * feature_vector[0], 2 * pi * feature_vector[0])
+

@@ -86,4 +86,3 @@ class AngleEncoding(BaseAnsatz):
         # use each matrix to write a circuit
         # ==================================
 
-    
