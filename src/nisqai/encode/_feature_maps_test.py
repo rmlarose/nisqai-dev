@@ -15,7 +15,7 @@ from nisqai.encode._feature_maps import (FeatureMap,
                                          nearest_neighbor)
 from nisqai.data._cdata import CData
 
-from numpy import array, empty
+from numpy import array
 
 
 def test_direct_simple():
@@ -39,14 +39,14 @@ def test_nearest_neighbor_simple():
 
 def test_nearest_neighbor_odd():
     """Tests the nearest neighbor feature map with an odd number of features."""
+    # TODO: implement
     pass
 
 
 def test_nearest_neighbor_data_features_to_qubits_map():
     """"""
     # example data
-    data = array([[1, 2, 3, 4],
-                  [2, 1, 3, 4]])
+    data = array([[10, 20, 30, 40]])
     cdata = CData(data)
     feature_vector = cdata.data[0]
 
@@ -56,12 +56,21 @@ def test_nearest_neighbor_data_features_to_qubits_map():
     # test the encoding
     qubit_features = {}
     for ind in range(len(feature_map.map)):
-        print(ind)
-        print([x for x in feature_map.map[ind]])
+        # temp list for all features
         features = []
         for x in feature_map.map[ind]:
             features.append(feature_vector[x])
         qubit_features[ind] = features
+
+    # TODO: will break when preprocessing is implemented in CData class
+    assert qubit_features[0] == [10, 20]
+
+
+def test_covers_all_features():
+    """Tests if a feature map includes all indices."""
+    # TODO: implement
+    pass
+
 
 if __name__ == "__main__":
     test_direct_simple()
