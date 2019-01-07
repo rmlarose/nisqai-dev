@@ -13,6 +13,7 @@
 
 class FeatureMap():
     """FeatureMap class."""
+    # TODO: is a class for this necessary?
 
     def __init__(self, mapping):
         """Initialize a FeatureMap.
@@ -61,7 +62,7 @@ def group_biggest(data, num_features, num_qubits):
 
     Examples:
     """
-
+    # TODO: implement
 
 def group_smallest(data, num_features, num_qubits):
     """Returns a FeatureMap with smallest features
@@ -69,3 +70,4 @@ def group_smallest(data, num_features, num_qubits):
 
     Examples:
     """
+    # TODO: implement

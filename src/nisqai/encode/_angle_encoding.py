@@ -68,6 +68,11 @@ class AngleEncoding(BaseAnsatz):
         # ===============================
         # collect features for each qubit
         # ===============================
+        # example: for nearest_neighbor with linear encoding
+        # qubit_features[0] = (data[0], data[1])
+        qubit_features = []
+        for ind in range(len(self.feature_map)):
+            qubit_features[ind] = (self.data[x] for x in self.feature_map[ind])
 
         # ==============================================================
         # use the encoder to get angles from the features for each qubit
