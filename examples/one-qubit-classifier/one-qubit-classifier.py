@@ -11,14 +11,14 @@ import nisqai
 # ========
 
 # returns a CData object with 2 features, five samples, and labels
-cdata = nisqai.data.random_data(4, 5, [1, 0, 0, 1, 0])
+cdata = nisqai.data.random_data(2, 5, [1, 0, 0, 1, 0])
 
 # ===============
 # encode the data
 # ===============
 
 # get a feature map
-feature_map = nisqai.nearest_neighbor(4, 2)
+feature_map = nisqai.nearest_neighbor(2, 1)
 
 # get an encoder
 encoder = nisqai.angle_simple_linear
@@ -29,4 +29,18 @@ state_prep = nisqai.AngleEncoding(cdata, encoder, feature_map)
 # write the circuit
 state_prep._write_circuit(0)
 
-print(state_prep)
+# =============
+# add an ansatz
+# =============
+
+ansatz = nisqai.ProductAnsatz(1)
+
+print(state_prep + ansatz)
+
+# ======================
+# add measurement scheme
+# ======================
+
+# ===============
+# do the training
+# ===============
