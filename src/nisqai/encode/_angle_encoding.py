@@ -48,7 +48,7 @@ class AngleEncoding(BaseAnsatz):
     def __init__(self, data, encoder, feature_map):
         """Initialize an AngleEncoding class."""
         # TODO: replace with better error checking
-        assert isinstance(CData, data)
+        assert isinstance(data, CData)
         self.data = data
 
         # determine the number of qubits from the input data
