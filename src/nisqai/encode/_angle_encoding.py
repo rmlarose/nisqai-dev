@@ -13,7 +13,7 @@
 from nisqai.layer._base_ansatz import BaseAnsatz
 from nisqai.data._cdata import CData
 
-from numpy import array, cos, sin, exp
+from numpy import array, cos, sin, exp, complex64, dot, identity, isclose
 from pyquil import Program
 
 
@@ -53,7 +53,7 @@ class AngleEncoding(BaseAnsatz):
 
         # determine the number of qubits from the input data
         num_qubits = self._compute_num_qubits()
-        super().__init__(self, num_qubits)
+        super().__init__(num_qubits)
         self.encoder = encoder
         self.feature_map = feature_map
 
@@ -63,26 +63,81 @@ class AngleEncoding(BaseAnsatz):
         """
         return self.data.num_features // 2 + self.data.num_features % 2
 
-    def _write_circuit(self):
+    # TODO: make this return a circuit and store circuits for all indices
+    # alternatively, make the angles parameters and store one circuit,
+    # instantiating the parameters
+    def _write_circuit(self, feature_vector_index):
         """Writes the encoding circuit into self.circuit."""
+        # grab the feature vector to create a circuit with
+        feature_vector = self.data.data[feature_vector_index]
+        print("feature vec =", feature_vector)
+
         # ===============================
         # collect features for each qubit
         # ===============================
         # example: for nearest_neighbor with linear encoding
-        # qubit_features[0] = (data[0], data[1])
-        qubit_features = []
-        for ind in range(len(self.feature_map)):
-            qubit_features[ind] = (self.data[x] for x in self.feature_map[ind])
+        # qubit_features[0] = [feature_vector[0], feature_vector[1]]
+        # qubit_features[1] = [feature_vector[2], feature_vector[3]]
+        # etc.
+
+        qubit_features = {}
+        for ind in range(len(self.feature_map.map)):
+            # temp list for all features
+            features = []
+            for x in self.feature_map.map[ind]:
+                features.append(feature_vector[x])
+            qubit_features[ind] = features
 
         # ==============================================================
         # use the encoder to get angles from the features for each qubit
         # ==============================================================
 
+        qubit_angles = {}
+        for (qubit_index, feature) in qubit_features.items():
+            qubit_angles[qubit_index] = self.encoder(feature)
+
         # ============================
         # get matrices from the angles
         # ============================
 
+        qubit_state_preps = {}
+        for (qubit_index, angles) in qubit_angles.items():
+            qubit_state_preps[qubit_index] = self._angles_to_matrix(angles)
+
         # ==================================
         # use each matrix to write a circuit
         # ==================================
+
+        for (qubit_index, mat) in qubit_state_preps.items():
+            # define the gate
+            name = "S" + str(qubit_index)
+            self.circuit.defgate(name, mat)
+            # write the gate into the circuit
+            self.circuit += (name, qubit_index)
+
+    # TODO: make static
+    def _angles_to_matrix(self, angles):
+        """Converts a two element feature vector to a matrix
+        preparing the feature vector from the ground state."""
+        # grab the angles
+        # TODO: check that theta and phi are within the correct range
+        # TODO: allow for just one angle (odd number of features case)
+        theta = angles[0] / 2
+        phi = angles[1]
+
+        print("theta = ", theta)
+        print("phi = ", phi)
+
+        # form the matrix
+        mat = array([[cos(theta), exp(-1j * phi) * sin(theta)],
+                     [exp(1j * phi) * sin(theta), -1 * cos(theta)]])
+        print("matrix size", mat.shape)
+
+        # TODO: better error checking
+        print("matrix product", dot(mat, mat.conj().T))
+        assert isclose(dot(mat, mat.conj().T), identity(mat.shape[0])).all()
+
+        return mat
+
+# TODO: write particular encoders for the AngleEncoding (to become DenseAngleEncoding)
 
