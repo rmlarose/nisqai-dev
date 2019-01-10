@@ -70,7 +70,6 @@ class AngleEncoding(BaseAnsatz):
         """Writes the encoding circuit into self.circuit."""
         # grab the feature vector to create a circuit with
         feature_vector = self.data.data[feature_vector_index]
-        print("feature vec =", feature_vector)
 
         # ===============================
         # collect features for each qubit
@@ -125,16 +124,11 @@ class AngleEncoding(BaseAnsatz):
         theta = angles[0] / 2
         phi = angles[1]
 
-        print("theta = ", theta)
-        print("phi = ", phi)
-
         # form the matrix
         mat = array([[cos(theta), exp(-1j * phi) * sin(theta)],
                      [exp(1j * phi) * sin(theta), -1 * cos(theta)]])
-        print("matrix size", mat.shape)
 
         # TODO: better error checking
-        print("matrix product", dot(mat, mat.conj().T))
         assert isclose(dot(mat, mat.conj().T), identity(mat.shape[0])).all()
 
         return mat

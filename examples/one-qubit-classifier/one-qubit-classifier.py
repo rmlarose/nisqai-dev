@@ -28,3 +28,5 @@ state_prep = nisqai.AngleEncoding(cdata, encoder, feature_map)
 
 # write the circuit
 state_prep._write_circuit(0)
+
+print(state_prep)
