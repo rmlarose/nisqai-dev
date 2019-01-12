@@ -11,7 +11,7 @@
 #   limitations under the License.
 
 from nisqai.layer._base_ansatz import BaseAnsatz
-from nisqai.data._cdata import CData
+from nisqai.data._cdata import CData, LabeledCData
 
 from numpy import array, cos, sin, exp, complex64, dot, identity, isclose
 from pyquil import Program
@@ -48,7 +48,7 @@ class AngleEncoding(BaseAnsatz):
     def __init__(self, data, encoder, feature_map):
         """Initialize an AngleEncoding class."""
         # TODO: replace with better error checking
-        assert isinstance(data, CData)
+        assert isinstance(data, (CData, LabeledCData))
         self.data = data
 
         # determine the number of qubits from the input data
@@ -56,6 +56,9 @@ class AngleEncoding(BaseAnsatz):
         super().__init__(num_qubits)
         self.encoder = encoder
         self.feature_map = feature_map
+
+        # list to hold circuits for each data point, initialized to none
+        self.circuits = [None for _ in range(self.data.num_features)]
 
     def _compute_num_qubits(self):
         """Computes the number of qubits needed for the circuit
@@ -70,6 +73,10 @@ class AngleEncoding(BaseAnsatz):
         """Writes the encoding circuit into self.circuit."""
         # grab the feature vector to create a circuit with
         feature_vector = self.data.data[feature_vector_index]
+
+        # program to write
+        # TODO: change this to a BaseAnsatz
+        prog = Program()
 
         # ===============================
         # collect features for each qubit
@@ -110,9 +117,12 @@ class AngleEncoding(BaseAnsatz):
         for (qubit_index, mat) in qubit_state_preps.items():
             # define the gate
             name = "S" + str(qubit_index)
-            self.circuit.defgate(name, mat)
+            prog.defgate(name, mat)
             # write the gate into the circuit
-            self.circuit += (name, qubit_index)
+            prog += (name, qubit_index)
+
+        # add the program to the circuits
+        self.circuits[feature_vector_index] = prog
 
     # TODO: make static
     def _angles_to_matrix(self, angles):
