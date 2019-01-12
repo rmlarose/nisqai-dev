@@ -72,7 +72,6 @@ class DenseAngleEncoding:
         feature_vector = self.data.data[feature_vector_index]
 
         # program to write
-        # TODO: change this to a BaseAnsatz
         prog = Program()
 
         # ===============================
@@ -118,8 +117,8 @@ class DenseAngleEncoding:
             # write the gate into the circuit
             prog += (name, qubit_index)
 
-        # add the program to the circuits
-        self.circuits[feature_vector_index] = prog
+        # write the program into the circuit of the ansatz
+        self.circuits[feature_vector_index].circuit = prog
 
 
 def angles_to_matrix(angles):
