@@ -24,8 +24,8 @@ def test_simple():
                   [3, 4]])
     cdata = CData(data)
     spreps = AngleEncoding(cdata, encoder=angle_simple_linear, feature_map=nearest_neighbor(2, 1))
-    assert spreps.circuits[0] is None
-    assert spreps.circuits[1] is None
+    assert len(spreps.circuits[0].circuit.instructions) == 0
+    assert len(spreps.circuits[1].circuit.instructions) == 0
     spreps._write_circuit(0)
     print(spreps.circuits[0])
     spreps._write_circuit(1)

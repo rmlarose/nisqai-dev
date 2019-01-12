@@ -13,11 +13,11 @@
 from nisqai.layer._base_ansatz import BaseAnsatz
 from nisqai.data._cdata import CData, LabeledCData
 
-from numpy import array, cos, sin, exp, complex64, dot, identity, isclose
+from numpy import array, cos, sin, exp, dot, identity, isclose
 from pyquil import Program
 
 
-class AngleEncoding(BaseAnsatz):
+class AngleEncoding:
     """AngleEncoding class. Encode features into the angles of qubits via
 
     |\psi> = cos(\theta/2) |0> + e^{i \phi} sin(\theta / 2) |1>.
@@ -53,12 +53,11 @@ class AngleEncoding(BaseAnsatz):
 
         # determine the number of qubits from the input data
         num_qubits = self._compute_num_qubits()
-        super().__init__(num_qubits)
         self.encoder = encoder
         self.feature_map = feature_map
 
         # list to hold circuits for each data point, initialized to none
-        self.circuits = [None for _ in range(self.data.num_features)]
+        self.circuits = [BaseAnsatz(num_qubits) for _ in range(self.data.num_features)]
 
     def _compute_num_qubits(self):
         """Computes the number of qubits needed for the circuit
