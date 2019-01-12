@@ -65,9 +65,7 @@ class DenseAngleEncoding:
         """
         return self.data.num_features // 2 + self.data.num_features % 2
 
-    # TODO: make this return a circuit and store circuits for all indices
-    # alternatively, make the angles parameters and store one circuit,
-    # instantiating the parameters
+    # TODO: make the angles parameters and store one circuit, instantiating the parameters
     def _write_circuit(self, feature_vector_index):
         """Writes the encoding circuit into self.circuit."""
         # grab the feature vector to create a circuit with
@@ -107,7 +105,7 @@ class DenseAngleEncoding:
 
         qubit_state_preps = {}
         for (qubit_index, angles) in qubit_angles.items():
-            qubit_state_preps[qubit_index] = self._angles_to_matrix(angles)
+            qubit_state_preps[qubit_index] = angles_to_matrix(angles)
 
         # ==================================
         # use each matrix to write a circuit
@@ -123,21 +121,21 @@ class DenseAngleEncoding:
         # add the program to the circuits
         self.circuits[feature_vector_index] = prog
 
-    # TODO: make static
-    def _angles_to_matrix(self, angles):
-        """Converts a two element feature vector to a matrix
-        preparing the feature vector from the ground state."""
-        # grab the angles
-        # TODO: check that theta and phi are within the correct range
-        # TODO: allow for just one angle (odd number of features case)
-        theta = angles[0] / 2
-        phi = angles[1]
 
-        # form the matrix
-        mat = array([[cos(theta), exp(-1j * phi) * sin(theta)],
-                     [exp(1j * phi) * sin(theta), -1 * cos(theta)]])
+def angles_to_matrix(angles):
+    """Converts a two element feature vector to a matrix
+    preparing the feature vector from the ground state."""
+    # grab the angles
+    # TODO: check that theta and phi are within the correct range
+    # TODO: allow for just one angle (odd number of features case)
+    theta = angles[0] / 2
+    phi = angles[1]
 
-        # TODO: better error checking
-        assert isclose(dot(mat, mat.conj().T), identity(mat.shape[0])).all()
+    # form the matrix
+    mat = array([[cos(theta), exp(-1j * phi) * sin(theta)],
+                 [exp(1j * phi) * sin(theta), -1 * cos(theta)]])
 
-        return mat
+    # TODO: better error checking
+    assert isclose(dot(mat, mat.conj().T), identity(mat.shape[0])).all()
+
+    return mat
