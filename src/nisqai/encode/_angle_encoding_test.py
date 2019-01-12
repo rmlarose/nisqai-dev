@@ -10,14 +10,31 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+from numpy import array
+
+from nisqai.data._cdata import CData
 from nisqai.encode._angle_encoding import AngleEncoding
+from nisqai.encode._encoders import angle
+from nisqai.encode._feature_maps import direct
 
 
 def test_simple():
-    """Simple test for an AngleEncoding instance."""
-    pass
+    """Creates an AngleEncoding instance and performs simple checks."""
+    data = array([[1], [2]])
+    cdata = CData(data)
+    angle_encoding = AngleEncoding(cdata, angle, direct(1))
+    assert angle_encoding.data == cdata
+
+
+def test_num_circuts():
+    """Tests the number of circuits is equal to the number of samples."""
+    data = array([[1], [2], [3], [4]])
+    cdata = CData(data)
+    angle_encoding = AngleEncoding(cdata, angle, direct(1))
+    assert len(angle_encoding.circuits) == 4
 
 
 if __name__ == "__main__":
     test_simple()
+    test_num_circuts()
     print("All tests for AngleEncoding passed.")
