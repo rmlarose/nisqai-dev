@@ -14,7 +14,7 @@
 ansatz classes.
 """
 
-from pyquil import Program
+from pyquil import Program, get_qc, list_quantum_computers
 
 REAL_MEM_TYPE = "REAL"
 BIT_MEM_TYPE = "BIT"
@@ -31,16 +31,24 @@ class BaseAnsatz():
         """Returns the number of qubits in the ansatz."""
         return self._num_qubits
 
-    def depth(self):
+    def depth(self, quantum_computer):
         """Computes the depth of the circuit ansatz.
         
         Here, the depth is the maximum number of "incompressible" operations
         over all qubits.
+        EDIT: Since it's not obvious how to efficiently implement the above,
+        let depth be the number of gates after compilation.
         """
-        # TODO: complete method
         # TODO: make gate_alphabet an argument (probably write a gate_alphabet
         # class)
-        pass
+        qc_list = list_quantum_computers()
+        assert ( quantum_computer.startswith(tuple(qc_list)) or 
+            ( quantum_computer[0:-5].isdigit() and quantum_computer[-5::] == 'q-qvm') )
+        qc = get_qc(quantum_computer)
+        p = self.circuit
+        np = qc.compiler.quil_to_native_quil(p)
+        return len(np.instructions)
+        
 
     def num_ops(self, qubits):
         """Returns the total number of operations over a subset of qubits
