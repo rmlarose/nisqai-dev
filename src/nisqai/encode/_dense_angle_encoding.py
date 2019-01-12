@@ -57,7 +57,7 @@ class DenseAngleEncoding:
         self.feature_map = feature_map
 
         # list to hold circuits for each data point, initialized to none
-        self.circuits = [BaseAnsatz(num_qubits) for _ in range(self.data.num_features)]
+        self.circuits = [BaseAnsatz(num_qubits) for _ in range(self.data.num_samples)]
 
     def _compute_num_qubits(self):
         """Computes the number of qubits needed for the circuit
@@ -141,6 +141,3 @@ class DenseAngleEncoding:
         assert isclose(dot(mat, mat.conj().T), identity(mat.shape[0])).all()
 
         return mat
-
-# TODO: write particular encoders for the AngleEncoding (to become DenseAngleEncoding)
-
