@@ -10,12 +10,18 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+from nisqai.data._cdata import CData
 from nisqai.encode._angle_encoding import AngleEncoding
+
+from numpy import array
 
 
 def test_simple():
     """Creates an AngleEncoding and performs simple checks."""
-    pass
+    data = array([[1, 2],
+                  [3, 4]])
+    #cdata = CData(data)
+    #spreps = AngleEncoding(cdata)
 
 
 if __name__ == "__main__":

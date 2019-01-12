@@ -27,3 +27,12 @@ def angle_simple_linear(feature_vector):
     """
     return (pi * feature_vector[0], 2 * pi * feature_vector[0])
 
+
+def angle(feature):
+    """Returns a scaled angle.
+
+    Args:
+        feature : float
+            feature to be encoded as an angle
+    """
+    return 2 * pi * feature

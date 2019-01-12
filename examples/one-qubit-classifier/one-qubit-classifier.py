@@ -29,13 +29,16 @@ state_prep = nisqai.AngleEncoding(cdata, encoder, feature_map)
 # write the circuit
 state_prep._write_circuit(0)
 
+# print out this circuit
+print(state_prep.circuits[0])
+
 # =============
 # add an ansatz
 # =============
 
 ansatz = nisqai.ProductAnsatz(1)
 
-print(state_prep + ansatz)
+print(ansatz)
 
 # ======================
 # add measurement scheme
