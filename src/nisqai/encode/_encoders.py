@@ -35,4 +35,9 @@ def angle(feature):
         feature : float
             feature to be encoded as an angle
     """
-    return 2 * pi * feature
+    if isinstance(feature, list):
+        assert len(feature) == 1
+        return 2 * pi * feature[0]
+    if isinstance(feature, float):
+        return 2 * pi * feature
+    raise TypeError("Invalid type for feature.")

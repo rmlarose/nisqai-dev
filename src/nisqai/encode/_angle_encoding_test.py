@@ -12,6 +12,8 @@
 
 from nisqai.data._cdata import CData
 from nisqai.encode._angle_encoding import AngleEncoding
+from nisqai.encode._encoders import angle_simple_linear
+from nisqai.encode._feature_maps import nearest_neighbor
 
 from numpy import array
 
@@ -20,8 +22,14 @@ def test_simple():
     """Creates an AngleEncoding and performs simple checks."""
     data = array([[1, 2],
                   [3, 4]])
-    #cdata = CData(data)
-    #spreps = AngleEncoding(cdata)
+    cdata = CData(data)
+    spreps = AngleEncoding(cdata, encoder=angle_simple_linear, feature_map=nearest_neighbor(2, 1))
+    assert spreps.circuits[0] is None
+    assert spreps.circuits[1] is None
+    spreps._write_circuit(0)
+    print(spreps.circuits[0])
+    spreps._write_circuit(1)
+    print(spreps.circuits[1])
 
 
 if __name__ == "__main__":
