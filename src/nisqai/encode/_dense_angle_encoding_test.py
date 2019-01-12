@@ -11,7 +11,7 @@
 #   limitations under the License.
 
 from nisqai.data._cdata import CData
-from nisqai.encode._angle_encoding import AngleEncoding
+from nisqai.encode._dense_angle_encoding import DenseAngleEncoding
 from nisqai.encode._encoders import angle_simple_linear
 from nisqai.encode._feature_maps import nearest_neighbor
 
@@ -23,7 +23,7 @@ def test_simple():
     data = array([[1, 2],
                   [3, 4]])
     cdata = CData(data)
-    spreps = AngleEncoding(cdata, encoder=angle_simple_linear, feature_map=nearest_neighbor(2, 1))
+    spreps = DenseAngleEncoding(cdata, encoder=angle_simple_linear, feature_map=nearest_neighbor(2, 1))
     assert len(spreps.circuits[0].circuit.instructions) == 0
     assert len(spreps.circuits[1].circuit.instructions) == 0
     spreps._write_circuit(0)

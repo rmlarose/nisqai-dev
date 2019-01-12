@@ -24,7 +24,7 @@ feature_map = nisqai.nearest_neighbor(2, 1)
 encoder = nisqai.angle_simple_linear
 
 # encode the data using the AngleEncoding
-state_prep = nisqai.AngleEncoding(cdata, encoder, feature_map)
+state_prep = nisqai.DenseAngleEncoding(cdata, encoder, feature_map)
 
 # write the circuit
 state_prep._write_circuit(0)

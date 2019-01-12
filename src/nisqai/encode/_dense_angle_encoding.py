@@ -17,8 +17,8 @@ from numpy import array, cos, sin, exp, dot, identity, isclose
 from pyquil import Program
 
 
-class AngleEncoding:
-    """AngleEncoding class. Encode features into the angles of qubits via
+class DenseAngleEncoding:
+    """DenseAngleEncoding class. Encode features into the angles of qubits via
 
     |\psi> = cos(\theta/2) |0> + e^{i \phi} sin(\theta / 2) |1>.
 
@@ -46,7 +46,7 @@ class AngleEncoding:
     """
 
     def __init__(self, data, encoder, feature_map):
-        """Initialize an AngleEncoding class."""
+        """Initialize a DenseAngleEncoding class."""
         # TODO: replace with better error checking
         assert isinstance(data, (CData, LabeledCData))
         self.data = data
