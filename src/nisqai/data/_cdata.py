@@ -10,8 +10,9 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from numpy import amax, array, average, random, float64
+from numpy import amax, array, average, random, float64, std
 from copy import deepcopy
+import torch
 
 
 class CData():
@@ -19,7 +20,7 @@ class CData():
 
     def __init__(self, data):
         """Initialize a BaseCData object.
-        
+
         Args:
             data [type: numpy array]
                 data values, shape should be (samples, features).
@@ -31,38 +32,62 @@ class CData():
         self.raw_data = data
         self.data = deepcopy(self.raw_data)
         self.num_samples, self.num_features = data.shape
-        self._process()
 
-    def _normalize(self):
-        """Divides all data by the max element."""
-        # TODO: complete method
-        #self.data /= amax(self.data)
-        pass
+    def scale_features(self, method):
+        """ Performs feature scaling on data.
 
-    def _center(self):
-        """Subtracts the mean of the data from each entry."""
-        # TODO: complete method
-        #self.data -= average(self.data)
-        pass
+        Args:
+            method [type: string]
+                specifies desired feature scaling method
+                * 'min-max norm'
+                x' = (x - min(x))/(max(x) - min(x))
+                * 'mean norm'
+                x' = (x-avg(x))/(max(x) - min(x))
+                * 'standardize'
+                x' = (x - avg(x))/sigma
+                * 'L2 norm'
+                x' = x / L2norm(x)
+                * 'L1 norm'
+                x' = x / L1norm(x)
+        """
+        data = self.data
+        if method == 'min-max norm':
+            mmin, mmax = min(data), max(data)
+            self.data = (data - mmin) / (mmax - mmin)
+        elif method == 'mean norm':
+            mean, mmin, mmax = average(data), min(data), max(data)
+            self.data = (data - mean) / (mmax - mmin)
+        elif method == 'standardize':
+            mean, sd = average(data), std(data)
+            self.data = (data - mean) / sd
+        elif method == 'L2 norm':
+            mean = average(data)
+            self.data = data / mean
+        elif method == 'L1 norm':
+            L1norm = sum(abs(data))
+            self.data = data / L1norm
 
-    def _process(self):
-        """Processes data."""
-        self._center()
-        self._normalize()
-
-    def reduce_features(self, features_to_keep):
+    def reduce_features(self, kfeat):
         """Performs (classical) principal component analysis
          on the data and keeps the desired number of features.
 
         Args:
-            features_to_keep [type: float]
+            kfeat [type: float]
                 keeps this ratio of features.
 
         Examples:
             reduce_features(0.2) --> keeps top 20% of features after PCA
         """
-        # TODO: complete method
-        pass
+        # cast data as PyTorch tensor
+        data = torch.from_numpy(self.data)
+
+        # preprocess the data
+        data_mean = torch.mean(data, 0)
+        data = data - data_mean.expand_as(data)
+
+        # do svd
+        U, S, V = torch.svd(torch.t(data))
+        return torch.mm(data, U[:, :kfeat])
 
     def __getitem__(self, item):
         """Override indexing to return data elements."""
@@ -71,6 +96,7 @@ class CData():
 
 class LabeledCData(CData):
     """Classical data with labels."""
+
     def __init__(self, data, labels):
         """Initialize classical data with labels.
 
@@ -125,11 +151,13 @@ def random_data(num_features, num_samples, labels, dtype=float64, seed=None):
 
     return CData(data)
 
+
 def get_iris_setosa_data():
     """Returns a CData object with Iris-Setosa flower data."""
     # TODO: complete function
     # Question: Store this data in the library or download it on the fly?
     pass
+
 
 def get_mnist_data():
     """Returns a CDdata object with MNIST digits data."""
