@@ -14,8 +14,7 @@
 
 from pyquil import gates
 
-#from nisqai.layer._base_ansatz import BaseAnsatz
-from _base_ansatz import BaseAnsatz
+from nisqai.layer._base_ansatz import BaseAnsatz
 from numpy import pi
 
 
@@ -39,7 +38,7 @@ def test_depth():
     """Checks that depth is being calculated correctly from compiled quil program."""
     c = BaseAnsatz(5)
     c.circuit += [gates.X(0), gates.RZ(pi/4, 3)]
-    
+
     qc = "Aspen-1-6Q-C-qvm"
 
     print(c.depth(qc))
