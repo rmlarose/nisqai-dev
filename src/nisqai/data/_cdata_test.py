@@ -11,7 +11,7 @@
 #   limitations under the License.
 
 from nisqai.data._cdata import CData, LabeledCData, random_data
-from numpy import array
+from numpy import array, isclose
 from numpy.random import rand
 
 
@@ -41,8 +41,77 @@ def test_get_random_data_basic():
     assert cdata.num_samples == 4
 
 
+def test_scale_features_min_max_norm():
+    """Tests min-max norm method of scale_features."""
+    data = array([[0.564, 20.661], [-18.512, 41.168], [-0.009, 20.440]])
+    cdata = CData(data)
+    # correct answer computed with Mathematica
+    answer = array([[1, 0.0106619], [0, 1], [0.969962, 0]])
+
+    # perform min-max norm scaling on features and check answer
+    cdata.scale_features('min-max norm')
+    assert isclose(answer, cdata.data).all()
+
+
+def test_scale_features_mean_norm():
+    """Tests mean norm method of scale_features."""
+    data = array([[0.564, 20.661], [-18.512, 41.168], [-0.009, 20.440]])
+    cdata = CData(data)
+
+    # correct answer computed in Mathematica
+    answer = array([[0.343346, -0.326225], [-0.656654, 0.663113], [0.313308, -0.336887]])
+
+    # perform mean norm scaling on features and check answer
+    cdata.scale_features('mean norm')
+    assert isclose(answer, cdata.data).all()
+
+
+def test_scale_features_standardize():
+    """Tests standardization method of scale_features."""
+    data = array([[0.564, 20.661], [-18.512, 41.168], [-0.009, 20.440]])
+    cdata = CData(data)
+
+    # correct answer computed in Mathematica
+    answer = array([[0.60355, -0.568043], [-1.1543, 1.15465], [0.550748, -0.586608]])
+
+    # perform standardization feature scaling and check answer
+    cdata.scale_features('standardize')
+    assert isclose(answer, cdata.data).all()
+
+
+def test_scale_features_L2_norm():
+    """Tests L2 norm method of scale_features."""
+    data = array([[0.564, 20.661], [-18.512, 41.168], [-0.009, 20.440]])
+    cdata = CData(data)
+
+    # correct answer computed in Mathematica
+    answer = array([[0.0304526, 0.409996], [-0.999536, 0.816936], [-0.000485946, 0.40561]])
+
+    # perform L2 normalization and check answer
+    cdata.scale_features('L2 norm')
+    assert isclose(answer, cdata.data).all()
+
+
+def test_scale_features_L1_norm():
+    """Tests L1 norm method of scale_features."""
+    data = array([[0.564, 20.661], [-18.512, 41.168], [-0.009, 20.440]])
+    cdata = CData(data)
+
+    # correct answer computed in Mathematica
+    answer = array([[0.029552, 0.25114], [-0.969976, 0.500407], [-0.000471575, 0.248453]])
+
+    # perform L1 normalization and check answer
+    cdata.scale_features('L1 norm')
+    assert isclose(answer, cdata.data).all()
+
+
 if __name__ == "__main__":
     test_basic_cdata()
     test_basic_labeled_cdata()
     test_get_random_data_basic()
+    test_scale_features_min_max_norm()
+    test_scale_features_mean_norm()
+    test_scale_features_standardize()
+    test_scale_features_L2_norm()
+    test_scale_features_L1_norm()
     print("All tests for CData passed.")

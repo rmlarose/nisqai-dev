@@ -10,7 +10,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from numpy import amax, array, average, random, float64, std
+from numpy import array, random, float64
+from numpy.linalg import norm as LAnorm
 from copy import deepcopy
 import torch
 
@@ -31,6 +32,9 @@ class CData():
         # for pandas dataframes, just need to convert it to an array
         self.raw_data = data
         self.data = deepcopy(self.raw_data)
+        shape = data.shape
+        if len(shape) <= 1:
+            raise ValueError("A machine can't learn anything from a single sample!")
         self.num_samples, self.num_features = data.shape
 
     def scale_features(self, method):
@@ -52,17 +56,22 @@ class CData():
         """
         data = self.data
         if method == 'min-max norm':
-            mmin, mmax = min(data), max(data)
+            mmin = data.min(axis=0)
+            mmax = data.max(axis=0)
             self.data = (data - mmin) / (mmax - mmin)
         elif method == 'mean norm':
-            mean, mmin, mmax = average(data), min(data), max(data)
+            mean = data.mean(axis=0)
+            mmin = data.min(axis=0)
+            mmax = data.max(axis=0)
             self.data = (data - mean) / (mmax - mmin)
         elif method == 'standardize':
-            mean, sd = average(data), std(data)
+            mean = data.mean(axis=0)
+            # ddof = 1 gives sample sd
+            sd = data.std(axis=0, ddof=1)
             self.data = (data - mean) / sd
         elif method == 'L2 norm':
-            mean = average(data)
-            self.data = data / mean
+            norm = LAnorm(data, axis=0)
+            self.data = data / norm
         elif method == 'L1 norm':
             L1norm = sum(abs(data))
             self.data = data / L1norm
