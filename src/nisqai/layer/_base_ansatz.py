@@ -15,11 +15,13 @@ ansatz classes.
 """
 
 from pyquil import Program, get_qc, list_quantum_computers
+from pyquil.quilbase import Gate
 
 REAL_MEM_TYPE = "REAL"
 BIT_MEM_TYPE = "BIT"
 
-class BaseAnsatz():
+
+class BaseAnsatz:
     """Base ansatz for all ansatz classes."""
     
     def __init__(self, num_qubits):
@@ -31,7 +33,23 @@ class BaseAnsatz():
         """Returns the number of qubits in the ansatz."""
         return self._num_qubits
 
-    def depth(self, quantum_computer):
+    def compile(self, computer):
+        """Returns a compiled circuit for a given quantum computer.
+
+        Args:
+            computer : str
+                Quantum computer to compile to
+        """
+        # make sure the quantum computer is valid
+        qc_list = list_quantum_computers()
+        assert (computer.startswith(tuple(qc_list)) or
+                (computer[0:-5].isdigit() and computer[-5::] == 'q-qvm'))
+
+        # compile to the given computer and return the number of instructions
+        qc = get_qc(computer)
+        return qc.compiler.quil_to_native_quil(self.circuit)
+
+    def depth(self, computer):
         """Computes the depth of the circuit ansatz.
         
         Here, the depth is the maximum number of "incompressible" operations
@@ -39,16 +57,7 @@ class BaseAnsatz():
         EDIT: Since it's not obvious how to efficiently implement the above,
         let depth be the number of gates after compilation.
         """
-        # TODO: make gate_alphabet an argument (probably write a gate_alphabet
-        # class)
-        qc_list = list_quantum_computers()
-        assert ( quantum_computer.startswith(tuple(qc_list)) or 
-            ( quantum_computer[0:-5].isdigit() and quantum_computer[-5::] == 'q-qvm') )
-        qc = get_qc(quantum_computer)
-        p = self.circuit
-        np = qc.compiler.quil_to_native_quil(p)
-        return len(np.instructions)
-        
+        return len([obj for obj in self.compile(computer) if type(obj) == Gate])
 
     def num_ops(self, qubits):
         """Returns the total number of operations over a subset of qubits
@@ -79,8 +88,22 @@ class BaseAnsatz():
         for q in range(self._num_qubits):
             self.circuit.inst(gate(q))
 
+    def add_at(self, gate, qubit_indices):
+        """Adds the gate to self.circuit at each index in qubit_indices.
+
+        Args:
+            gate : pyquil gate operation
+                Gate to add to the circuit.
+
+            qubit_indices : iterable
+                Indices of which qubit to add the gate at.
+        """
+        gates = [gate(ind) for ind in qubit_indices]
+        self.circuit.inst(gates)
+
     def clear_circuit(self):
         """Clears all instructions in the circuit ansatz."""
+        # TODO: rewrite clearing only instructions, not DEFGATEs or PARAMS
         self.circuit = Program()
 
     def __str__(self):
@@ -97,4 +120,3 @@ class BaseAnsatz():
         new = BaseAnsatz(self._num_qubits)
         new.circuit = self.circuit + ansatz.circuit
         return new
-        
