@@ -10,7 +10,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from nisqai.data._cdata import CData, LabeledCData, random_data
+from nisqai.data._cdata import CData, LabeledCData, random_data, get_iris_setosa_data, get_mnist_data
 from numpy import array, isclose
 from numpy.random import rand
 
@@ -104,6 +104,15 @@ def test_scale_features_L1_norm():
     cdata.scale_features('L1 norm')
     assert isclose(answer, cdata.data).all()
 
+def test_get_iris_setosa_data():
+    # just check that data set is of correct length
+    iris = get_iris_setosa_data()
+    assert len(iris.data) == 150 and len(iris.labels) == 150
+
+def test_get_mnist_data():
+    # just check that data set is of correct length
+    mnist = get_mnist_data()
+    assert len(mnist.data) == 60000 and len(mnist.labels) == 60000
 
 if __name__ == "__main__":
     test_basic_cdata()
@@ -114,4 +123,6 @@ if __name__ == "__main__":
     test_scale_features_standardize()
     test_scale_features_L2_norm()
     test_scale_features_L1_norm()
+    test_get_iris_setosa_data()
+    test_get_mnist_data()
     print("All tests for CData passed.")
