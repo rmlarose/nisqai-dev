@@ -18,6 +18,7 @@ import os
 import torchvision
 from nisqai.data.data_sets import iris
 
+
 class CData():
     """Classical data class."""
 
@@ -35,13 +36,11 @@ class CData():
         self.raw_data = data
         self.data = deepcopy(self.raw_data)
         shape = data.shape
-        if len(shape) <= 1:
-            raise ValueError("A machine can't learn anything from a single sample!")
-        self.num_samples = data.shape[0]
+        self.num_samples = shape[0]
         # to get total number of features from tensor data
         total = 1
-        for x in data.shape[1::]:
-            total *= x  
+        for x in shape[1::]:
+            total *= x
         self.num_features = total
 
     def scale_features(self, method):
@@ -143,6 +142,7 @@ class LabeledCData(CData):
     def train_test_split(self, ratio, shuffle=False):
         """Returns testing and training data."""
         # TODO: take into account the shuffle flag
+        assert ratio >= 0 and ratio <= 1
         ind = int(ratio * self.num_samples)
         return self.data[:ind], self.data[ind + 1:]
 
@@ -172,14 +172,15 @@ def get_iris_setosa_data():
     """Returns a CData object with Iris-Setosa flower data."""
     return LabeledCData(iris.iris_data['data'], iris.iris_data['target'])
 
+
 def get_mnist_data():
     """Returns a CDdata object with MNIST digits data.
-    
-    MNIST data retrieved from training data and labels 
+
+    MNIST data retrieved from training data and labels
     contained in the torchvision datasets module.
     """
     script_dir = os.path.dirname(__file__)
     file_path = os.path.join(script_dir, './data_sets/MNIST/')
-    data = torchvision.datasets.MNIST(file_path, train=True, 
-                transform=None, target_transform=None, download=False)
+    data = torchvision.datasets.MNIST(file_path, train=True,
+                                      transform=None, target_transform=None, download=False)
     return LabeledCData(data.train_data.numpy(), data.train_labels.numpy())
