@@ -39,8 +39,39 @@ def test_measure_some():
     assert measure.measured_qubits == [3, 5, 8]
 
 
+def test_measure_tuple():
+    """Tests measurements on all qubits with a tuple as input."""
+    measure = Measurement(4, (0, 1, 2, 3))
+    assert measure.num_qubits == 4
+    assert measure.measured_qubits == [0, 1, 2, 3]
+    assert measure.num_measurements == 4
+
+
+def test_measure_change_basis():
+    """Tests changing basis of a measurement.
+    (Changes basis measurement to same basis as before.)
+    """
+    # bases to use
+    old_basis = None
+    new_basis = None
+
+    # measure in first (old) basis
+    measure = Measurement(2, range(2), old_basis)
+    assert measure.num_qubits == 2
+    assert measure.num_measurements == 2
+    assert measure.measured_qubits == [0, 1]
+
+    # change basis
+    measure.change_basis(new_basis)
+    assert measure.num_qubits == 2
+    assert measure.num_measurements == 2
+    assert measure.measured_qubits == [0, 1]
+
+
 if __name__ == "__main__":
     test_measure_all()
     test_measure_single()
     test_measure_some()
+    test_measure_tuple()
+    test_measure_change_basis()
     print("All tests for Measurement passed.")
