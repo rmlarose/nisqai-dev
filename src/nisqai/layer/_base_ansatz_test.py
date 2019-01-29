@@ -44,7 +44,7 @@ def test_depth():
     ansatz = BaseAnsatz(6)
     ansatz.circuit += [gates.X(0), gates.RZ(pi/4, 3)]
 
-    computer = "Aspen-1-6Q-C-qvm"
+    computer = "4q-qvm"
     assert ansatz.depth(computer) == 2
 
 
@@ -55,7 +55,7 @@ def test_depth_empty():
     """
     ansatz = BaseAnsatz(1)
     ansatz.circuit.inst(gates.RZ(0, 0))
-    assert ansatz.depth("Aspen-1-6Q-C-qvm") == 0
+    assert ansatz.depth("1q-qvm") == 0
 
 
 def test_compile_small():
@@ -67,7 +67,7 @@ def test_compile_small():
                + '\nHALT\n')
     ansatz = BaseAnsatz(2)
     ansatz.circuit.inst(gates.RX(pi / 2, 0))
-    compiled_circuit = ansatz.compile("Aspen-1-6Q-C-qvm")
+    compiled_circuit = ansatz.compile("6q-qvm")
     assert compiled_circuit.__str__() == correct
 
 

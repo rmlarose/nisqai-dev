@@ -42,8 +42,9 @@ class BaseAnsatz:
         """
         # make sure the quantum computer is valid
         qc_list = list_quantum_computers()
-        assert (computer.startswith(tuple(qc_list)) or
-                (computer[0:-5].isdigit() and computer[-5::] == 'q-qvm'))
+        if not (computer.startswith(tuple(qc_list)) or
+                (computer[0:-5].isdigit() and computer[-5::] == "q-qvm")):
+            raise ValueError("Invalid computer type.")
 
         # compile to the given computer and return the number of instructions
         qc = get_qc(computer)
