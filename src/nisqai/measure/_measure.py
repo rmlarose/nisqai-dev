@@ -33,7 +33,7 @@ class Measurement(BaseAnsatz):
         super().__init__(num_qubits)
         self.creg = self.circuit.declare("ro", memory_size=len(qubits_to_measure))
         self.num_measurements = len(qubits_to_measure)
-        self.measured_qubits = qubits_to_measure
+        self.measured_qubits = list(qubits_to_measure)
         self.circuit += [MEASURE(q, self.creg[ii]) for (ii, q) in enumerate(qubits_to_measure)]
 
     def change_basis(self, new_basis):

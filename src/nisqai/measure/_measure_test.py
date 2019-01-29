@@ -13,22 +13,34 @@
 from nisqai.measure._measure import Measurement
 
 
-def test_measure_simple():
-    """Checks the ability to instantiate a measurement."""
+def test_measure_all():
+    """Tests measurements on all qubits."""
     measure = Measurement(9, range(9))
     assert measure.num_qubits == 9
     assert measure.num_measurements == 9
+    assert measure.measured_qubits == list(range(9))
     assert len(measure.circuit.instructions) == 10
 
 
 def test_measure_single():
+    """Tests measurements on a single qubit."""
     measure = Measurement(10, [1])
     assert measure.num_qubits == 10
     assert measure.num_measurements == 1
+    assert measure.measured_qubits == [1]
     assert len(measure.circuit.instructions) == 2
 
 
+def test_measure_some():
+    """Tests measurements on a subset of qubits."""
+    measure = Measurement(10, [3, 5, 8])
+    assert measure.num_qubits == 10
+    assert measure.num_measurements == 3
+    assert measure.measured_qubits == [3, 5, 8]
+
+
 if __name__ == "__main__":
-    test_measure_simple()
+    test_measure_all()
     test_measure_single()
+    test_measure_some()
     print("All tests for Measurement passed.")
