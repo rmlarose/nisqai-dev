@@ -34,4 +34,4 @@ def test_simple():
 
 if __name__ == "__main__":
     test_simple()
-    print("All tests for AngleEncoding passed.")
+    print("All tests for DenseAngleEncoding passed.")

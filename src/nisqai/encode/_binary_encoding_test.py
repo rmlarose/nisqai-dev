@@ -36,6 +36,7 @@ def test_circuits():
     encoding = BinaryEncoding(cdata)
     print(encoding.circuits[2])
 
+
 if __name__ == "__main__":
     test_construct()
     test_circuits()

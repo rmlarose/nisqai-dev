@@ -16,7 +16,7 @@ from copy import deepcopy
 import torch
 
 
-class CData():
+class CData:
     """Classical data class."""
 
     def __init__(self, data):
