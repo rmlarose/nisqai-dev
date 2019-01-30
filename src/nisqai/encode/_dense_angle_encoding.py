@@ -59,6 +59,10 @@ class DenseAngleEncoding:
         # list to hold circuits for each data point, initialized to none
         self.circuits = [BaseAnsatz(num_qubits) for _ in range(self.data.num_samples)]
 
+        # write all circuits
+        for ind in range(len(self.circuits)):
+            self._write_circuit(ind)
+
     def _compute_num_qubits(self):
         """Computes the number of qubits needed for the circuit
         from the input data.
@@ -119,6 +123,11 @@ class DenseAngleEncoding:
 
         # write the program into the circuit of the ansatz
         self.circuits[feature_vector_index].circuit = prog
+
+    def __getitem__(self, ind):
+        """Returns the circuit for the data point indexed by ind."""
+        assert isinstance(ind, int)
+        return self.circuits[ind]
 
 
 def angles_to_matrix(angles):
