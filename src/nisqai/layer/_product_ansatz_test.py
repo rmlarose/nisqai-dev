@@ -14,12 +14,39 @@ from nisqai.layer._product_ansatz import ProductAnsatz
 
 
 def test_basic():
-    p = ProductAnsatz(4)
-    assert p.num_qubits == 4
+    """Tests that a ProductAnsatz can be instantiated."""
+    # create an product ansatz on four qubits
+    ansatz = ProductAnsatz(4)
 
-# TODO: add more test cases!!!
+    # check that the number of qubits is correct
+    assert ansatz.num_qubits == 4
+
+
+def test_params():
+    """Tests the params attribute has the correct shape."""
+    # create a product ansatz
+    ansatz = ProductAnsatz(5, gate_depth=4)
+
+    # test if the params attribute has the correct shape
+    assert ansatz.params.shape == (5, 4)
+
+
+def test_correct_small():
+    """Creates a small ProductAnsatz and tests if the circuit is correct."""
+    # create a small product ansatz
+    ansatz = ProductAnsatz(1)
+
+    # correct string representation of program
+    correct = "DECLARE (0, 0) REAL[1]\nDECLARE (0, 1) REAL[1]\n" + \
+              "DECLARE (0, 2) REAL[1]\nRX(pi/2) 0\nRZ((0, 0)) 0\n" + \
+              "RX(pi/2) 0\nRZ((0, 1)) 0\nRX(pi/2) 0\nRZ((0, 2)) 0\n"
+
+    # make sure the program is correct
+    assert ansatz.circuit.__str__() == correct
 
 
 if __name__ == "__main__":
     test_basic()
+    test_params()
+    test_correct_small()
     print("All tests for ProductAnsatz passed.")

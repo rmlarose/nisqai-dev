@@ -21,18 +21,16 @@ from nisqai.utils._program_utils import order
 class ProductAnsatz(BaseAnsatz):
     """Class for working with product ansatze."""
 
+    # TODO: allow input to be a sequence of gates
     def __init__(self, num_qubits, gate_depth=3):
-        BaseAnsatz.__init__(self, num_qubits)
+        super().__init__(num_qubits)
         self.gate_depth = gate_depth
-        self.write_circuit()
-
-    def write_circuit(self):
-        """Writes the product state ansatz circuit."""
-        # empty list to store parameters
         # TODO: make this a Param class (see _params.py)
         self.params = empty((self.num_qubits, self.gate_depth), dtype=list)
-        
-        # 
+        self._write_circuit()
+
+    def _write_circuit(self):
+        """Writes the product state ansatz circuit."""
         for q in range(self.num_qubits):
             for g in range(self.gate_depth):
                 # make a parameter
@@ -47,4 +45,4 @@ class ProductAnsatz(BaseAnsatz):
         self.circuit = order(self.circuit)
 
     # TODO: make sure __sum__ works as intended for ProductAnsatz class
-    # (see note in BaseAnsatz.__sum__())
+    # TODO: (see note in BaseAnsatz.__sum__())
