@@ -27,6 +27,9 @@ class AngleEncoding():
         assert isinstance(data, (CData, LabeledCData))
         self.data = data
 
+        self.encoder = encoder
+        self.feature_map = feature_map
+
         # determine number of qubits
         num_qubits = self._compute_num_qubits()
 
