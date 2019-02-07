@@ -27,6 +27,9 @@ class Measurement(BaseAnsatz):
             basis : string?
                 Basis to measure qubits in.
         """
+        if num_qubits <= 0:
+            raise ValueError("Invalid number of qubits.")
+
         # TODO: allow measurement in a different basis
         # input a string representing what basis? i.e., "Bell", etc.?
         # or input a list of gates representing what basis to measure in?
@@ -39,3 +42,26 @@ class Measurement(BaseAnsatz):
     def change_basis(self, new_basis):
         """Changes the measurement basis to a new one."""
         return self.__init__(self.num_qubits, self.measured_qubits, basis=new_basis)
+
+    # TODO: write methods for getting output CData from a measurement result
+    # TODO: Example: forming a new CData object with data [prob(0), prob(1)] as features.
+
+
+def measure_all(num_qubits):
+    """Returns a Measurement on all qubits.
+
+    Args:
+        num_qubits : int
+            Number of qubits in the circuit.
+    """
+    return Measurement(num_qubits, range(num_qubits))
+
+
+def measure_top(num_qubits):
+    """Returns a Measurement on only the first qubit.
+
+    Args:
+        num_qubits : int
+            Number of qubits in the circuit.
+    """
+    return Measurement(num_qubits, [0])
