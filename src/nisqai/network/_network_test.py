@@ -96,7 +96,26 @@ def test_get_item():
 
     # checks
     assert type(qnn[0] == BaseAnsatz)
-    print(qnn[0])
+
+
+def get_test_network(computer):
+    """Returns a 'test network' to be used in test cases. Utility function."""
+    # get network components
+    data = array([[0], [1]])
+    cdata = LabeledCData(data, labels=array([0, 1]))
+    encoder = BinaryEncoding(cdata)
+    unitary = ProductAnsatz(1)
+    measure = Measurement(1, [0])
+    return Network([encoder, unitary, measure], computer)
+
+
+# def test_compile():
+#     """Tests compiling a network for all data points."""
+#     # get a network
+#     qnn = get_test_network("1q-qvm")
+#
+#     # test compilation for the first data point
+#     print(qnn.compile(0))
 
 
 if __name__ == "__main__":
@@ -104,4 +123,6 @@ if __name__ == "__main__":
     test_build_basic()
     test_build_multiple_ansatze()
     test_get_item()
+    # TODO: figure out why this bugs out the compiler
+    #test_compile()
     print("All tests for Network passed.")

@@ -10,6 +10,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+from nisqai.utils._program_utils import order
+
 
 class Network:
     """Network class."""
@@ -63,6 +65,7 @@ class Network:
         for ii in range(1, len(self.layers)):
             network += self.layers[ii]
 
+        network.order()
         return network
 
     def propagate(self, parameters, trials):
@@ -77,6 +80,20 @@ class Network:
         """
         pass
 
+    def compile(self, index):
+        """Returns the compiled program for the data point
+        indicated by the index.
+
+        Args:
+            index : int
+                Index of data point.
+        """
+        # get the right program to compile
+        program = self._build(index)
+
+        # compile the program to the appropriate computer
+        return program.compile(self.computer)
+
     def __getitem__(self, index):
         """Returns the network with state preparation for the data
         point indicated by item.
@@ -86,3 +103,4 @@ class Network:
                 Index of data point.
         """
         return self._build(index)
+
