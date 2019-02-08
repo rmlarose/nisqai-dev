@@ -10,11 +10,10 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-"""Module with basic ansatz class definitions to be inherited by other
-ansatz classes.
-"""
+"""Basic ansatz class to be inherited by other ansatz classes."""
 
 from pyquil import Program, get_qc, list_quantum_computers
+from pyquil.quil import percolate_declares
 from pyquil.quilbase import Gate
 
 REAL_MEM_TYPE = "REAL"
@@ -25,6 +24,7 @@ class BaseAnsatz:
     """Base ansatz for all ansatz classes."""
     
     def __init__(self, num_qubits):
+        """Initialize a BaseAnsatz."""
         self._num_qubits = num_qubits
         self.circuit = Program()
 
@@ -47,8 +47,8 @@ class BaseAnsatz:
             raise ValueError("Invalid computer type.")
 
         # compile to the given computer and return the number of instructions
-        qc = get_qc(computer)
-        return qc.compiler.quil_to_native_quil(self.circuit)
+        qccomputer = get_qc(computer)
+        return qccomputer.compiler.quil_to_native_quil(self.circuit)
 
     def depth(self, computer):
         """Computes the depth of the circuit ansatz.
@@ -106,6 +106,12 @@ class BaseAnsatz:
         """Clears all instructions in the circuit ansatz."""
         # TODO: rewrite clearing only instructions, not DEFGATEs or PARAMS
         self.circuit = Program()
+
+    def order(self):
+        """Orders Quil instructions into a nominal form."""
+        # TODO: define nominal form and add more ordering conditions
+        # TODO: right now, this just means all DECLARE statements are at the top
+        percolate_declares(self.circuit)
 
     def __str__(self):
         """Returns a circuit diagram."""
