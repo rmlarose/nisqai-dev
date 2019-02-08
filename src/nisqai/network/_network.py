@@ -42,6 +42,8 @@ class Network:
 
                 Examples:
                     "Aspen-1-2Q-B"
+                    "1q-qvm"
+                    "5q-qvm"
         """
         # TODO: check if ordering of layers is valid
 

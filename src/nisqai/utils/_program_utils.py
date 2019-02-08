@@ -12,8 +12,9 @@
 
 from pyquil.quil import percolate_declares
 
+
 def order(program):
     """Orders Quil instructions into a nominal form."""
     # TODO: define nominal form and add more ordering conditions
-    # right now, this just means all DECLARE statements are at the top
+    # TODO: right now, this just means all DECLARE statements are at the top
     return percolate_declares(program)
