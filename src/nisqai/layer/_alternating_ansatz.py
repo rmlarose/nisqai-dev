@@ -22,7 +22,7 @@ class AlternatingAnsatz(BaseAnsatz):
         super().__init__(num_qubits)
         self.structure = structure
         
-        # strucutre repeats twice, so overall parameter depth is twice
+        # structure repeats twice, so overall parameter depth is twice
         self.depth = 2 * len(structure)
         
         # make the parameters and write the circuit
@@ -67,24 +67,9 @@ class AlternatingAnsatz(BaseAnsatz):
             [gates.CZ(q, (q + 1) % n) for q in range(1, stop, 2)]
             )
 
-    def _two_qubit_block(self, qubit_index):
-        """Writes a "two qubit block" on qubits labeled by qubit_index and
-        qubit_index + 1 into the circuit.
-        
-        The "two-qubit block" has the following structure:
-        
-        ----[R1]----@----[R2]----@----
-                    |            |
-        ----[R3]----X----[R4]----X----
-        
-        where each R1, ..., R4 is an arbitrary sequence of single qubit
-        rotations.
-        """
-        pass
-
     def _rot(self, qubit, num):
         """Adds a rotation to the qubit.
-        
+
         Args:
             qubit [type: int]
                 Index of qubit to be rotated.
@@ -92,7 +77,7 @@ class AlternatingAnsatz(BaseAnsatz):
             num [type: int]
                 The first or second rotation on the qubit.
                 Needed for indexing parameters.
-        
+
         Modifies:
             self.circuit
         """
