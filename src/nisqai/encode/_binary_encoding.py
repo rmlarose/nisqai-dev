@@ -39,6 +39,7 @@ class BinaryEncoding:
         self.circuits = [BaseAnsatz(num_qubits) for _ in range(self.data.num_samples)]
 
         # write the circuits
+        # TODO: utilize parametric compilation!
         for ind in range(self.data.num_samples):
             self._write_circuit(ind)
 
@@ -52,3 +53,10 @@ class BinaryEncoding:
 
         # write the circuit
         self.circuits[feature_vector_index].add_at(X, inds)
+
+    # TODO: all encoding classes will need this method.
+    # TODO: make a BaseEncoding that implements this
+    def __getitem__(self, ind):
+        """Returns the circuit for the data point indexed by ind."""
+        assert isinstance(ind, int)
+        return self.circuits[ind]
