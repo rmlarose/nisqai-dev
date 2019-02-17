@@ -33,12 +33,15 @@ class BaseAnsatz:
         """Returns the number of qubits in the ansatz."""
         return self._num_qubits
 
-    def compile(self, computer):
+    def compile(self, computer, shots=1000):
         """Returns a compiled circuit for a given quantum computer.
 
         Args:
             computer : str
-                Quantum computer to compile to
+                Quantum computer to compile to.
+
+            shots : int
+                Number of times to run the circuit.
         """
         # make sure the quantum computer is valid
         qc_list = list_quantum_computers()
@@ -46,19 +49,23 @@ class BaseAnsatz:
                 (computer[0:-5].isdigit() and computer[-5::] == "q-qvm")):
             raise ValueError("Invalid computer type.")
 
-        # compile to the given computer and return the number of instructions
-        qccomputer = get_qc(computer)
-        return qccomputer.compiler.quil_to_native_quil(self.circuit)
+        # compile to the given computer
+        computer = get_qc(computer)
+        self.circuit.wrap_in_numshots_loop(shots=shots)
+        return computer.compiler.quil_to_native_quil(self.circuit)
 
     def depth(self, computer):
-        """Computes the depth of the circuit ansatz.
-        
-        Here, the depth is the maximum number of "incompressible" operations
-        over all qubits.
-        EDIT: Since it's not obvious how to efficiently implement the above,
-        let depth be the number of gates after compilation.
+        """Returns the depth of the circuit ansatz given by
+        the total number of gates after compilation to a computer.
+
+        Args:
+            computer : str
+                Valid string specifying a quantum computer to compile to.
+
+        Returns:
+            Number of gates after compilation to the computer.
         """
-        return len([obj for obj in self.compile(computer) if type(obj) == Gate])
+        return len([obj for obj in self.compile(computer, 1) if type(obj) == Gate])
 
     def num_ops(self, qubits):
         """Returns the total number of operations over a subset of qubits
