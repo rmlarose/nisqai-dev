@@ -37,9 +37,9 @@ def test_correct_small():
     ansatz = ProductAnsatz(1)
 
     # correct string representation of program
-    correct = "DECLARE (0, 0) REAL[1]\nDECLARE (0, 1) REAL[1]\n" + \
-              "DECLARE (0, 2) REAL[1]\nRX(pi/2) 0\nRZ((0, 0)) 0\n" + \
-              "RX(pi/2) 0\nRZ((0, 1)) 0\nRX(pi/2) 0\nRZ((0, 2)) 0\n"
+    correct = "DECLARE q_0_g_0 REAL[1]\nDECLARE q_0_g_1 REAL[1]\n" + \
+              "DECLARE q_0_g_2 REAL[1]\nRX(pi/2) 0\nRZ(q_0_g_0) 0\n" + \
+              "RX(pi/2) 0\nRZ(q_0_g_1) 0\nRX(pi/2) 0\nRZ(q_0_g_2) 0\n"
 
     # make sure the program is correct
     assert ansatz.circuit.__str__() == correct
