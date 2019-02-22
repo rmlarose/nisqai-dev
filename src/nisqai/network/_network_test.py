@@ -12,6 +12,9 @@
 
 from numpy import array
 
+from pyquil import Program
+from pyquil.api import QuantumComputer
+
 from nisqai.layer._base_ansatz import BaseAnsatz
 from nisqai.network._network import Network
 from nisqai.data._cdata import random_data, CData, LabeledCData
@@ -25,7 +28,6 @@ from nisqai.encode._feature_maps import nearest_neighbor
 
 def test_simple():
     """Tests if a Network can be instantiated."""
-
     # get components for a simple network
     cdata = random_data(num_features=2, num_samples=100, labels=[1 if x < 50 else 0 for x in range(100)])
     encoder = DenseAngleEncoding(cdata, angle_simple_linear, nearest_neighbor(2, 1))
@@ -38,7 +40,6 @@ def test_simple():
 
     # check some basics
     assert qnn.computer == computer
-    assert True
 
 
 def test_build_basic():
@@ -109,13 +110,42 @@ def get_test_network(computer):
     return Network([encoder, unitary, measure], computer)
 
 
-# def test_compile():
-#     """Tests compiling a network for all data points."""
-#     # get a network
-#     qnn = get_test_network("1q-qvm")
-#
-#     # test compilation for the first data point
-#     print(qnn.compile(0))
+def test_backend():
+    """Tests that the backend is correct for a Network."""
+    # computer to use for the network
+    comp = "1q-qvm"
+
+    # get a network with the computer
+    qnn = get_test_network(comp)
+
+    # checks
+    assert type(qnn.backend) == QuantumComputer
+    assert qnn.computer == comp
+
+
+def test_compile():
+    """Tests compiling a network for all data points."""
+    # get a network
+    qnn = get_test_network("1q-qvm")
+
+    # compile a data point
+    executable = qnn.compile(index=0, shots=1000)
+
+    # checks
+    assert type(executable) == Program
+
+
+def test_propagate():
+    """Tests propagating a data point through a network."""
+    # get a network
+    qnn = get_test_network("1q-qvm")
+
+    print(qnn[0])
+
+    # propagate the zeroth data point
+    out = qnn.propagate(1, None, shots=10)
+
+    print(out)
 
 
 if __name__ == "__main__":
@@ -123,6 +153,7 @@ if __name__ == "__main__":
     test_build_basic()
     test_build_multiple_ansatze()
     test_get_item()
-    # TODO: figure out why this bugs out the compiler
-    #test_compile()
+    test_backend()
+    test_compile()
+    test_propagate()
     print("All tests for Network passed.")

@@ -10,7 +10,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from nisqai.utils._program_utils import order
+from pyquil import get_qc
 
 
 class Network:
@@ -51,6 +51,7 @@ class Network:
 
         self.layers = layers
         self.computer = computer
+        self.backend = get_qc(computer)
 
     def _build(self, data_ind):
         """Builds the network as a sequence of quantum circuits."""
@@ -70,31 +71,38 @@ class Network:
         network.order()
         return network
 
-    def propagate(self, parameters, trials):
+    def propagate(self, index, parameters, shots):
         """Runs the network and returns the result.
 
         Args:
             parameters : list
                 Any parameters needed for the network.
 
-            trials : int
-                Number of times to run each circuit.
+            index : int
+                Specifies the index of the data point to propagate.
         """
-        pass
+        # get the compiled executable instructions
+        executable = self.compile(index, shots)
 
-    def compile(self, index):
+        # run the program
+        return self.backend.run(executable)
+
+    def compile(self, index, shots):
         """Returns the compiled program for the data point
         indicated by the index.
 
         Args:
             index : int
                 Index of data point.
+
+            shots : int
+                Number of times to run the circuit.
         """
         # get the right program to compile
         program = self._build(index)
 
         # compile the program to the appropriate computer
-        return program.compile(self.computer)
+        return program.compile(self.computer, shots)
 
     def __getitem__(self, index):
         """Returns the network with state preparation for the data
@@ -106,3 +114,7 @@ class Network:
         """
         return self._build(index)
 
+    def __str__(self):
+        """Returns the circuit for the zeroth data point."""
+        # TODO: return a text drawing of the network
+        return self[0]
