@@ -10,10 +10,11 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from numpy import empty, pi
+from math import pi
 
 from pyquil import gates
 
+from nisqai.layer._params import product_ansatz_parameters
 from nisqai.layer._base_ansatz import BaseAnsatz, REAL_MEM_TYPE
 from nisqai.utils._program_utils import order
 
@@ -21,27 +22,45 @@ from nisqai.utils._program_utils import order
 class ProductAnsatz(BaseAnsatz):
     """Class for working with product ansatze."""
 
-    # TODO: allow input to be a sequence of gates
     def __init__(self, num_qubits, gate_depth=3):
+        """Initializes a ProductAnsatz.
+
+        Args:
+            num_qubits : int
+                Number of qubits in the ansatz.
+
+            gate_depth : int
+                Number of hardware gates in the pattern
+
+                ----[Rx(pi / 2)]----[Rz(parameter)]----
+
+                This pattern is a gate_depth of one.
+            """
+        # initialize the BaseAnsatz class
         super().__init__(num_qubits)
+
+        # store the gate depth
         self.gate_depth = gate_depth
-        # TODO: make this a Param class (see _params.py)
-        self.params = empty((self.num_qubits, self.gate_depth), dtype=list)
+
+        # get parameters for the ansatz
+        self.params = product_ansatz_parameters(
+            self.num_qubits, self.gate_depth, 0.0
+        )
+
+        # declare all memory references to the ansatz circuit
+        self.params.declare_memory_references(self.circuit)
+
+        # write the circuit
         self._write_circuit()
 
     def _write_circuit(self):
         """Writes the product state ansatz circuit."""
         for q in range(self.num_qubits):
             for g in range(self.gate_depth):
-                # make a parameter
-                self.params[q, g] = self.circuit.declare(
-                    "q_{}_g_{}".format(q, g), memory_type=REAL_MEM_TYPE
-                )
-                
                 # add gates into the circuit ansatz
                 self.circuit.inst(
                     gates.RX(pi / 2, q),
-                    gates.RZ(self.params[q, g], q)
+                    gates.RZ(self.params.memory_references[q][g], q)
                 )
         self.circuit = order(self.circuit)
 

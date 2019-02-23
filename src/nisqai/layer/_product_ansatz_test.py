@@ -28,7 +28,7 @@ def test_params():
     ansatz = ProductAnsatz(5, gate_depth=4)
 
     # test if the params attribute has the correct shape
-    assert ansatz.params.shape == (5, 4)
+    assert ansatz.params.shape() == (5, 4)
 
 
 def test_correct_small():
@@ -37,9 +37,9 @@ def test_correct_small():
     ansatz = ProductAnsatz(1)
 
     # correct string representation of program
-    correct = "DECLARE q_0_g_0 REAL[1]\nDECLARE q_0_g_1 REAL[1]\n" + \
-              "DECLARE q_0_g_2 REAL[1]\nRX(pi/2) 0\nRZ(q_0_g_0) 0\n" + \
-              "RX(pi/2) 0\nRZ(q_0_g_1) 0\nRX(pi/2) 0\nRZ(q_0_g_2) 0\n"
+    correct = "DECLARE q_000_g_000 REAL[1]\nDECLARE q_000_g_001 REAL[1]\n" + \
+              "DECLARE q_000_g_002 REAL[1]\nRX(pi/2) 0\nRZ(q_000_g_000) 0\n" + \
+              "RX(pi/2) 0\nRZ(q_000_g_001) 0\nRX(pi/2) 0\nRZ(q_000_g_002) 0\n"
 
     # make sure the program is correct
     assert ansatz.circuit.__str__() == correct
