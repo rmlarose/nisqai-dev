@@ -10,7 +10,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from nisqai.layer._params import Parameters
+from nisqai.layer._params import Parameters, product_ansatz_parameters
 
 
 def test_basic():
@@ -80,6 +80,36 @@ def test_names_multi_digits():
     # make sure some three digit gate indices are correct
     assert "q_000_g_123" in params.list_names()
     assert "q_000_g_100" in params.list_names()
+
+
+def test_grid_names():
+    """Tests that grid names appear properly for Parameters."""
+    # create a Parameters class
+    params = Parameters(
+        {0: [1, 2],
+         1: [3, 4]}
+    )
+
+    # correct grid names output
+    correct = [['q_000_g_000', 'q_000_g_001'], ['q_001_g_000', 'q_001_g_001']]
+
+    # test if the grid names are correct
+    assert params.grid_names() == correct
+
+
+def test_grid_values():
+    """Tests that grid values appear properly for Parameters."""
+    # create a Parameters class
+    params = Parameters(
+        {0: [1, 2],
+         1: [3, 4]}
+    )
+
+    # correct grid values output
+    correct = [[1, 2], [3, 4]]
+
+    # test if the grid names are correct
+    assert params.grid_values() == correct
 
 
 def test_unique_names():
@@ -154,12 +184,27 @@ def test_memory_map():
     assert parameters.memory_map() == correct_map
 
 
+def test_product_ansatz_parameters():
+    """Tests getting parameters for the ProductAnsatz class."""
+    # get the product ansatz parameters
+    params = product_ansatz_parameters(3, 2, 0.0)
+
+    # define the correct param values
+    correct = {0: [0.0, 0.0], 1: [0.0, 0.0], 2: [0.0, 0.0]}
+
+    # test if the params are correct
+    assert params.values == correct
+
+
 if __name__ == "__main__":
     test_basic()
     test_no_parameters_on_qubit()
     test_names()
     test_names_multi_digits()
+    test_grid_names()
+    test_grid_values()
     test_unique_names()
     test_depth()
     test_memory_map()
+    test_product_ansatz_parameters()
     print("All tests for Parameters class passed.")

@@ -18,6 +18,13 @@ from itertools import chain
 # Three digits long: 3
 FORMAT_SPEC = "0>3"
 
+# TODO: tasks left to do for Parameters class.
+# TODO: (1) Add method for removing parameters.
+# TODO: (2) Add method for adding parameters.
+# TODO: (3) Add method for simplifying parameters (e.g., all product ansatz parameters are equal).
+# TODO: (4) Add method for removing parameters from a particular qubit.
+# TODO: (5) Etc. Any other methods that would be useful.
+
 
 class Parameters:
     """Efficient data structure for storing and working with parameters in an ansatz.
@@ -166,3 +173,39 @@ class Parameters:
         of all parameter lists over all qubits.
         """
         return len(max(self.values.values(), key=len))
+
+
+def product_ansatz_parameters(num_qubits, depth, value):
+    """Returns Parameters for a product ansatz on the given
+    number of qubits for the input depth.
+
+    Args:
+        num_qubits : int
+            Number of qubits in the ansatz.
+
+        depth : int
+            Number of parameterized gates appearing on each qubit.
+
+        value : Union[float, int]
+            Initial parameter value that appears in all gates.
+    """
+    # error checks
+    if type(num_qubits) != int:
+        raise ValueError("num_qubits must be an integer.")
+    if type(depth) != int:
+        raise ValueError("depth must be an integer.")
+    try:
+        value = float(value)
+    except TypeError:
+        print("Invalid type for value.")
+        raise TypeError
+
+    # dictionary to store parameter values
+    params = {}
+
+    # fill the dictionary with the initial parameter
+    for qubit in range(num_qubits):
+        params[qubit] = [value] * depth
+
+    # return the Parameters
+    return Parameters(params)
