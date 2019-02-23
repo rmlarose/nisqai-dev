@@ -202,10 +202,31 @@ def test_memory_reference():
     params.declare_memory_references(prog)
 
     # test for correctness
-    for mref in params.memory_references.values():
-        assert type(mref) == MemoryReference
+    assert len(params.memory_references.keys()) == 2
+    for mref in list(params.memory_references.values()):
+        assert type(mref[0]) == MemoryReference
+        assert type(mref[1]) == MemoryReference
 
-    assert len(params.memory_references) == len(params.list_values())
+
+def test_memory_reference_indexing():
+    """Tests indexing for memory references."""
+    # program to declare memory references for
+    prog = Program()
+
+    # get some Parameters
+    params = Parameters(
+        {0: [1, 2],
+         1: [3, 4]}
+    )
+
+    # declare the memory references for all parameters in the program
+    params.declare_memory_references(prog)
+
+    # test for correctness
+    assert params.memory_references[0][0].name == "q_000_g_000"
+    assert params.memory_references[0][1].name == "q_000_g_001"
+    assert params.memory_references[1][0].name == "q_001_g_000"
+    assert params.memory_references[1][1].name == "q_001_g_001"
 
 
 def test_product_ansatz_parameters():
@@ -231,5 +252,6 @@ if __name__ == "__main__":
     test_depth()
     test_memory_map()
     test_memory_reference()
+    test_memory_reference_indexing()
     test_product_ansatz_parameters()
     print("All tests for Parameters class passed.")

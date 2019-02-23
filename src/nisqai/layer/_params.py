@@ -191,12 +191,15 @@ class Parameters:
         # dictionary to store memory references
         mem_refs = {}
 
-        # loop through all parameter names and create memory references
+        # loop through all circuit locations and create memory references
         for qubit in range(len(self.names)):
+            # create empty list to append memory references to
+            mem_refs[qubit] = []
             for name in self.names[qubit]:
-                mem_refs[name] = program.declare(
+                mem_ref = program.declare(
                     name, memory_type="REAL", memory_size=1
                 )
+                mem_refs[qubit].append(mem_ref)
 
         # TODO: should Parameters input a circuit/ansatz?
         self.memory_references = mem_refs
