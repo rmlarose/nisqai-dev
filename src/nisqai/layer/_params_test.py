@@ -10,6 +10,9 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+from pyquil import Program
+from pyquil.quilatom import MemoryReference
+
 from nisqai.layer._params import Parameters, product_ansatz_parameters
 
 
@@ -184,6 +187,27 @@ def test_memory_map():
     assert parameters.memory_map() == correct_map
 
 
+def test_memory_reference():
+    """Simple test for memory references."""
+    # program to declare memory references for
+    prog = Program()
+
+    # get some Parameters
+    params = Parameters(
+        {0: [1, 2],
+         1: [3, 4]}
+    )
+
+    # declare the memory references for all parameters in the program
+    params.declare_memory_references(prog)
+
+    # test for correctness
+    for mref in params.memory_references.values():
+        assert type(mref) == MemoryReference
+
+    assert len(params.memory_references) == len(params.list_values())
+
+
 def test_product_ansatz_parameters():
     """Tests getting parameters for the ProductAnsatz class."""
     # get the product ansatz parameters
@@ -206,5 +230,6 @@ if __name__ == "__main__":
     test_unique_names()
     test_depth()
     test_memory_map()
+    test_memory_reference()
     test_product_ansatz_parameters()
     print("All tests for Parameters class passed.")

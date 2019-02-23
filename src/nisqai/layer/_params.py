@@ -12,6 +12,9 @@
 
 from itertools import chain
 
+from pyquil.quil import Program
+
+
 # Standard specification format for strings.
 # Fill character: 0
 # Right justified: >
@@ -173,6 +176,30 @@ class Parameters:
         of all parameter lists over all qubits.
         """
         return len(max(self.values.values(), key=len))
+
+    def declare_memory_references(self, program):
+        """Declares all Parameters in a pyQuil Program.
+
+        Args:
+            program : pyquil.Program
+                The program to declare parameters for.
+            """
+        # error checks
+        if type(program) != Program:
+            raise ValueError("Argument program must be a pyquil.Program.")
+
+        # dictionary to store memory references
+        mem_refs = {}
+
+        # loop through all parameter names and create memory references
+        for qubit in range(len(self.names)):
+            for name in self.names[qubit]:
+                mem_refs[name] = program.declare(
+                    name, memory_type="REAL", memory_size=1
+                )
+
+        # TODO: should Parameters input a circuit/ansatz?
+        self.memory_references = mem_refs
 
 
 def product_ansatz_parameters(num_qubits, depth, value):
