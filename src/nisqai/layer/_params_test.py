@@ -177,11 +177,11 @@ def test_memory_map():
     parameters = Parameters(params)
 
     # define the correct memory map
-    correct_map = {"q_000_g_000": 0,
-                   "q_000_g_001": 1,
-                   "q_001_g_000": 2,
-                   "q_001_g_001": 3,
-                   "q_001_g_002": 4}
+    correct_map = {"q_000_g_000": [0.0],
+                   "q_000_g_001": [1.0],
+                   "q_001_g_000": [2.0],
+                   "q_001_g_001": [3.0],
+                   "q_001_g_002": [4.0]}
 
     # test if the memory map is correct
     assert parameters.memory_map() == correct_map

@@ -168,7 +168,7 @@ class Parameters:
         mem_map = {}
         for qubit in range(len(self.values)):
             for gate in range(len(self.values[qubit])):
-                mem_map[self.names[qubit][gate]] = self.values[qubit][gate]
+                mem_map[self.names[qubit][gate]] = [float(self.values[qubit][gate])]
         return mem_map
 
     def depth(self):
