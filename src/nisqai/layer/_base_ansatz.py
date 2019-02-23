@@ -15,6 +15,7 @@
 from pyquil import Program, get_qc, list_quantum_computers
 from pyquil.quil import percolate_declares
 from pyquil.quilbase import Gate
+from pyquil.api import QuantumComputer
 
 REAL_MEM_TYPE = "REAL"
 BIT_MEM_TYPE = "BIT"
@@ -37,20 +38,28 @@ class BaseAnsatz:
         """Returns a compiled circuit for a given quantum computer.
 
         Args:
-            computer : str
-                Quantum computer to compile to.
+            computer : Union[str, QuantumComputer]
+                Quantum computer to compile to, specified by a string or
+                a pyquil.api._quantum_computer.QuantumComputer object.
 
             shots : int
                 Number of times to run the circuit.
         """
         # make sure the quantum computer is valid
-        qc_list = list_quantum_computers()
-        if not (computer.startswith(tuple(qc_list)) or
-                (computer[0:-5].isdigit() and computer[-5::] == "q-qvm")):
-            raise ValueError("Invalid computer type.")
+        if type(computer) == str:
+            qc_list = list_quantum_computers()
+            if not (computer.startswith(tuple(qc_list)) or
+                    (computer[0:-5].isdigit() and computer[-5::] == "q-qvm")):
+                # TODO: print out the valid computer string specifiers here
+                raise ValueError("Invalid computer string specifier.")
+            computer = get_qc(computer)
+        else:
+            try:
+                assert type(computer) == QuantumComputer
+            except AssertionError:
+                raise TypeError
 
         # compile to the given computer
-        computer = get_qc(computer)
         self.circuit.wrap_in_numshots_loop(shots=shots)
         return computer.compiler.quil_to_native_quil(self.circuit)
 
