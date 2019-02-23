@@ -177,6 +177,18 @@ class Parameters:
         """
         return len(max(self.values.values(), key=len))
 
+    def shape(self):
+        """Returns the (height, width) of a quantum circuit, where:
+
+        height = number of qubits
+        width  = depth of the Parameters
+
+        Note that some qubits may have fewer parameters than the width.
+
+        Return type: Tuple
+        """
+        return (self._num_qubits, self.depth())
+
     def declare_memory_references(self, program):
         """Declares all Parameters in a pyQuil Program.
 
