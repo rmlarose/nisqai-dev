@@ -15,7 +15,7 @@ from nisqai.layer._base_ansatz import BaseAnsatz
 from nisqai.data._cdata import CData, LabeledCData
 
 from numpy import array, cos, sin, exp, dot, identity, isclose
-from numpy import identity, delete, linalg, matmul, random # functions yousif used
+from numpy import identity, delete, linalg, matmul, random, log2 # functions yousif used
 from pyquil import Program
 
 from pyquil.quil import DefGate
@@ -72,3 +72,10 @@ def WavefunctionEncoding(x):
         U.append(a)
         a = 0
     return array(U).T
+
+def make_program(U):
+    U_definition = DefGate("U_x", U)
+    U_gate = U_definition.get_constructor()
+    num_qubits = int(log2(len(U)))
+    # p = Program(U_definition, U_gate( QUBIT TUPLE GOES HERE ))
+    # return p
