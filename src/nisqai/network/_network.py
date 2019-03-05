@@ -11,6 +11,7 @@
 #   limitations under the License.
 
 from pyquil import get_qc
+from pyquil.api import QuantumComputer
 
 
 class Network:
@@ -24,9 +25,9 @@ class Network:
                 Iterable object of network elements.
 
                 Examples:
-                    layers = [product ansatz on one qubit, measurement]
+                    layers = [DenseAngleEncoding, ProductAnsatz, Measurement]
                     leads to a network of the form
-                        --[Gate]--[Measure]--
+                        ----[State Prep]----[Gate]----[Measure]----
 
                 Network elements must be in a valid ordering to create a network.
 
@@ -37,7 +38,7 @@ class Network:
                     (4) If network continues after measurement, an encoding ansatz
                         must follow a measurement ansatz.
 
-            computer : string
+            computer : Union[str, pyquil.api.QuantumComputer]
                 Specifies which computer to run the network on.
 
                 Examples:
@@ -47,11 +48,20 @@ class Network:
         """
         # TODO: check if ordering of layers is valid
 
-        # TODO: check if computer is valid
+        # store the layers and individual elements
+        # TODO: are both needed? which is better?
+        self._layers = layers
+        self._encoder = layers[0]
+        self._ansatz = layers[1]
+        self._measurement = layers[2]
 
-        self.layers = layers
-        self.computer = computer
-        self.backend = get_qc(computer)
+        # store the computer backend
+        if type(computer) == str:
+            self.computer = get_qc(computer)
+        elif type(computer) == QuantumComputer:
+            self.computer = computer
+        else:
+            raise TypeError
 
     def _build(self, data_ind):
         """Builds the network as a sequence of quantum circuits."""
@@ -59,33 +69,37 @@ class Network:
         # note 2/4/19: I think this could be handled with another class
 
         # grab the initial encoder circuit for the given index
-        network = self.layers[0][data_ind]
+        circuit = self._encoder[data_ind]
 
         # add all other layers
         # TODO: allow self.layers to take sublists
         # TODO: for example, [encoder, [layer1, layer2, layer3, ...], measure]
         # TODO: this could make it easier to build networks using, say, list comprehensions
-        for ii in range(1, len(self.layers)):
-            network += self.layers[ii]
+        for ii in range(1, len(self._layers)):
+            circuit += self._layers[ii]
 
-        network.order()
-        return network
+        # order the given circuit and return it
+        circuit.order()
+        return circuit
 
-    def propagate(self, index, parameters, shots):
-        """Runs the network and returns the result.
+    def propagate(self, index, shots):
+        """Runs the network and returns the result, using the current parameters.
 
         Args:
-            parameters : list
-                Any parameters needed for the network.
-
             index : int
                 Specifies the index of the data point to propagate.
+
+            shots : int
+                Number of times to execute the circuit.
         """
         # get the compiled executable instructions
         executable = self.compile(index, shots)
 
+        # use the memory map from the ansatz parameters
+        mem_map = self._ansatz.params.memory_map()
+
         # run the program
-        return self.backend.run(executable)
+        return self.computer.run(executable, memory_map=mem_map)
 
     def compile(self, index, shots):
         """Returns the compiled program for the data point
@@ -103,6 +117,19 @@ class Network:
 
         # compile the program to the appropriate computer
         return program.compile(self.computer, shots)
+
+    def train(self, cost, shots):
+        """Adjusts the parameters in the Network to minimize the cost.
+
+        Args:
+            cost : Callable
+                Function that returns the cost of the Network.
+
+            shots : int
+                Number of times to run the circuit(s).
+        """
+        print("in Network.train, len encoder =", len(self._encoder))
+        #executable = self.compile()
 
     def __getitem__(self, index):
         """Returns the network with state preparation for the data

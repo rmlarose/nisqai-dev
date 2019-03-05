@@ -58,5 +58,13 @@ class BinaryEncoding:
     # TODO: make a BaseEncoding that implements this
     def __getitem__(self, ind):
         """Returns the circuit for the data point indexed by ind."""
-        assert isinstance(ind, int)
+        if not isinstance(ind, int):
+            raise TypeError
+
         return self.circuits[ind]
+
+    # TODO: all encoding classes will need this method.
+    # TODO: make a BaseEncoding that implements this
+    def __len__(self):
+        """Returns the number of data points in the Encoder."""
+        return self.data.num_samples

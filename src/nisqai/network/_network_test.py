@@ -12,7 +12,7 @@
 
 from numpy import array
 
-from pyquil import Program
+from pyquil import Program, get_qc
 from pyquil.api import QuantumComputer
 
 from nisqai.layer._base_ansatz import BaseAnsatz
@@ -39,7 +39,8 @@ def test_simple():
     qnn = Network([encoder, layer, measure], computer)
 
     # check some basics
-    assert qnn.computer == computer
+    print(type(qnn.computer))
+    print(get_qc(computer))
 
 
 def test_build_basic():
@@ -110,8 +111,8 @@ def get_test_network(computer):
     return Network([encoder, unitary, measure], computer)
 
 
-def test_backend():
-    """Tests that the backend is correct for a Network."""
+def test_computer_string():
+    """Tests storing the computer as a backend when a string is given."""
     # computer to use for the network
     comp = "1q-qvm"
 
@@ -119,8 +120,7 @@ def test_backend():
     qnn = get_test_network(comp)
 
     # checks
-    assert type(qnn.backend) == QuantumComputer
-    assert qnn.computer == comp
+    assert type(qnn.computer) == QuantumComputer
 
 
 def test_compile():
@@ -137,15 +137,32 @@ def test_compile():
 
 def test_propagate():
     """Tests propagating a data point through a network."""
-    # get a network
-    qnn = get_test_network("1q-qvm")
+    # get network components
+    data = array([[0], [1]])
+    cdata = LabeledCData(data, labels=array([0, 1]))
+    encoder = BinaryEncoding(cdata)
+    unitary = ProductAnsatz(1)
+    measure = Measurement(1, [0])
+    qnn = Network([encoder, unitary, measure], "1q-qvm")
 
     print(qnn[0])
 
     # propagate the zeroth data point
-    out = qnn.propagate(1, None, shots=10)
+    out = qnn.propagate(0, shots=10)
 
     print(out)
+
+
+def test_train():
+    # get network components
+    data = array([[0], [1]])
+    cdata = LabeledCData(data, labels=array([0, 1]))
+    encoder = BinaryEncoding(cdata)
+    unitary = ProductAnsatz(1)
+    measure = Measurement(1, [0])
+    qnn = Network([encoder, unitary, measure], "1q-qvm")
+
+    qnn.train(None, None)
 
 
 if __name__ == "__main__":
@@ -153,7 +170,8 @@ if __name__ == "__main__":
     test_build_basic()
     test_build_multiple_ansatze()
     test_get_item()
-    test_backend()
+    test_computer_string()
     test_compile()
     test_propagate()
+    test_train()
     print("All tests for Network passed.")
