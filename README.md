@@ -6,7 +6,9 @@ NISQAI is currently in development. The [examples](examples/) folder contains in
 
 # Development Instructions
 
-1. Clone the development repository `rmlarose/nisqai-dev`:
+We're happy to accept your contributions. To do so, follow these instructions:
+
+1. Fork the development repository `rmlarose/nisqai-dev`:
 
 ```git clone https://github.com/rmlarose/nisqai-dev```
 
@@ -17,6 +19,10 @@ NISQAI is currently in development. The [examples](examples/) folder contains in
 1. Install the NISQAI package:
 
 ```pip install -e .```
+
+From here, you can make your contributions on your fork, then submit a pull request. If these are unfamiliar to you, don't worry! We're happy to help. Send an email to Ryan rlarose@umich.edu with any questions.
+
+For ideas of what to contribute, see the issues on the development repository.
 
 # Developers
 
