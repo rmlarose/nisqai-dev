@@ -31,7 +31,8 @@ def input_output_comparison_test():
     print("out", out)
     print(abs(linalg.norm(x - out)))
     """
-    # Check 2-norm distance between desired state and the state that the created unitary maps |00...0> t0.
+    # Check 2-norm distance between desired state and 
+    # the state that the created unitary maps |00...0> t0.
     assert linalg.norm(x - out) < 1e-3
 
 def test_program():
@@ -40,11 +41,11 @@ def test_program():
     x = x / linalg.norm(x)
     U = WavefunctionEncoding(x) 
     wf_sim = WavefunctionSimulator()
-    p = make_program(WavefunctionEncoding(x))
+    p = make_program(U)
     wf = wf_sim.wavefunction(p)
     print(wf)
 
 if __name__ == "__main__":
     input_output_comparison_test()
-    #test_program()
+    test_program()
     print("All tests for WavefunctionEncoding passed.")

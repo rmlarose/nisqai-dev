@@ -38,33 +38,32 @@ def WavefunctionEncoding(x):
 
         data : ...
     """
-    # Use Gram-Schmidt to compute 2^{|x|} - 1 orthogonal rows to x, starting with x and standard basis vectors.
-    # If rows a square matrix form an orthonormal basis, columns will too. Thus we'll have a unitary matrix.
+    # Use Gram-Schmidt to compute 2^{|x|} - 1 orthogonal rows to x, 
+    # starting with x and standard basis vectors.
+    # If rows a square matrix form an orthonormal basis, 
+    # columns will too. Thus we'll have a unitary matrix.
 
-    # Normalize vector
+    # Normalize vector:
     x = array(x) / linalg.norm(x)
 
     standard_basis = identity(len(x))
 
     # Delete a row so you only have 2^{|x|} - 1 orthogonal vectors
-    # But first, make sure vector input is not in span of one of the vectors used for Gram-Schmidt. (Then starting set won't be a basis.)
+    # But first, make sure vector input is not in span of one of 
+    # the vectors used for Gram-Schmidt. (Then starting set won't be a basis.)
     flag = 0
     for i in range(len(x)):
         if abs(1 - abs(dot(x.conj(), standard_basis[i]))) < 1e-2:
             standard_basis = delete(standard_basis, i, 0)
-            #print(standard_basis)
             flag = 1
             break
     if flag == 0:
         standard_basis = delete(standard_basis, 0, 0)
-    
-    #print(standard_basis)
 
     U = []
     a = x
     for k in range(len(x)):
         for i in range(k):
-            #print("here",array(U[i]).conj())
             a += dot(array(U[i]).conj(),standard_basis[k-1])*array(U[i])
         if k != 0:
             a = standard_basis[k-1] - a
@@ -74,8 +73,9 @@ def WavefunctionEncoding(x):
     return array(U).T
 
 def make_program(U):
-    U_definition = DefGate("U_x", U)
-    U_gate = U_definition.get_constructor()
     num_qubits = int(log2(len(U)))
-    # p = Program(U_definition, U_gate( QUBIT TUPLE GOES HERE ))
-    # return p
+    gate_def = DefGate("U", U)
+    U_gate = gate_def.get_constructor()
+    qubit_indices = range(num_qubits)
+    p = Program(gate_def, U_gate(*tuple(qubit_indices)))
+    return p
