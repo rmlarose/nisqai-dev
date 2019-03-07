@@ -10,7 +10,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from nisqai.utils._program_utils import order
+from nisqai.utils._program_utils import order, ascii_circuit
 from pyquil import Program, gates
 
 
@@ -21,6 +21,12 @@ def test_order_basic():
     print(order(p))
 
 
+def test_ascii_circuit_1():
+    """Do this"""
+    print("I need to do this.")
+
+
 if __name__ == "__main__":
     test_order_basic()
+    test_ascii_circuit_1()
     print("All unit tests for program_utils passed.")

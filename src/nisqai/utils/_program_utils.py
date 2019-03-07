@@ -18,3 +18,89 @@ def order(program):
     # TODO: define nominal form and add more ordering conditions
     # TODO: right now, this just means all DECLARE statements are at the top
     return percolate_declares(program)
+
+
+def ascii_circuit(program, padlen, rebind={}):
+    """
+    Creates an ascii circuit from a pyquil program.
+    Idea is to store a single line (a wire) for each qubit. Then, we the lists of lists
+    into a string that has gates in order listed in program.
+
+    Inputs
+    ------------------------------------------
+    program: pyquil program
+    padlen: determines number of - padded in between gates
+    rebind: can bebind pyquil default names to your own
+
+    Outputs
+    -------------------------------------------
+    strcirc - an ascii representation of circuit
+
+    ##TODO: Fix full list of asym for all 2-qubit circuits with asymmetry
+    ##TODO: Fix rebinds to work for gates with parametric dependence (i.e. RX(50)).
+    ##TODO: maybe? Add lines below qubit lines to add
+    connections between two qubit gates?
+    """
+    pad = ''.join('-' for n in range(padlen))
+    circ = []
+    # conventions for asymmetric 2-qubit gates (i.e. CNOT) always placed on FIRST
+    # argument; otherwise, padded with space
+    asym = {'CNOT': "'"}
+    for key in rebind.keys():
+        if key in asym:
+            asym[rebind[key]] = asym[key]
+    # prepares the ascii string by adding qubits and padding with lines
+    qubits = program.get_qubits()
+    for qubit in qubits:
+        circ.append([str(qubit) + ' '])
+
+    # breaks the program into each gate, in order
+    steps = program.out().split("\n")
+
+    # iterates over the steps and creates the "ASCII string"
+    for step in steps:
+        # redefine step by splitting it up
+        step = step.split(' ')
+        # check if 2 qubit gate and make appends to circ
+        if len(step) == 3:
+            gate, qi, qj = step
+            if gate in rebind:
+                gate = rebind[gate]
+            for count, qubit in enumerate(qubits):
+                if int(qi) == qubit:
+                    agate = gate
+                    if gate in asym:
+                        agate += asym[gate]
+                    circ[count][0] += (pad + agate + pad)
+
+                elif int(qj) == qubit:
+                    agate = gate
+                    if gate in asym:
+                        agate += ' '
+                    circ[count][0] += (pad + agate + pad)
+
+                else:
+                    midpad = ''.join('-' for n in range(len(gate)))
+                    if gate in asym:
+                        midpad += '-'
+                    circ[count][0] += (pad + midpad + pad)
+
+        # check if 1 qubit gate and make appends to circ
+        if len(step) == 2:
+            gate, q = step
+            if gate in rebind:
+                gate = rebind[gate]
+            for count, qubit in enumerate(qubits):
+                if int(q) == qubit:
+                    circ[count][0] += (pad + gate + pad)
+                else:
+                    midpad = ''.join('-' for n in range(len(gate)))
+                    circ[count][0] += (pad + midpad + pad)
+
+    # do post-processing on circ lists to make a string for printing purposes
+    strcirc = ''
+    for line in circ:
+        strcirc += line[0]
+        strcirc += '\n'
+
+    return strcirc
