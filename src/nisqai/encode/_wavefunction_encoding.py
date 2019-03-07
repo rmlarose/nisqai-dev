@@ -15,7 +15,7 @@ from nisqai.layer._base_ansatz import BaseAnsatz
 from nisqai.data._cdata import CData, LabeledCData
 
 from numpy import array, cos, sin, exp, dot, identity, isclose
-from numpy import identity, delete, linalg, matmul, random, log2 # functions yousif used
+from numpy import identity, delete, linalg, matmul, random, log2, ceil, ndarray # functions yousif used
 from pyquil import Program
 
 from pyquil.quil import DefGate
@@ -38,19 +38,32 @@ def WavefunctionEncoding(x):
 
         data : ...
     """
-    # Use Gram-Schmidt to compute 2^{|x|} - 1 orthogonal rows to x, 
+    # Make sure x is a list or array.
+    assert isinstance(x, list) or isinstance(x, ndarray), "Input vector must be a list or numpy array."
+
+    # If length of vector is not already a power of 2, make it so.
+    if ( ( len(x) & ( len(x) - 1 ) ) == 1 ) or len(x) == 0 :
+        new_len = 2**( ceil( log2( len(x) ) ) )
+        len_diff = new_len - len(x)
+        # In case x was input as an array.
+        x = list(x) + [0]*len_diff
+    
+    
+    # Normalize vector.
+    x = array(x) / linalg.norm(x)
+
+    # We'll use Gram-Schmidt to compute 2^{|x|} - 1 orthogonal rows to x, 
     # starting with x and standard basis vectors.
     # If rows a square matrix form an orthonormal basis, 
     # columns will too. Thus we'll have a unitary matrix.
-
-    # Normalize vector:
-    x = array(x) / linalg.norm(x)
 
     standard_basis = identity(len(x))
 
     # Delete a row so you only have 2^{|x|} - 1 orthogonal vectors
     # But first, make sure vector input is not in span of one of 
     # the vectors used for Gram-Schmidt. (Then starting set won't be a basis.)
+    #
+    # TODO: This method is janky and should be replaced.
     flag = 0
     for i in range(len(x)):
         if abs(1 - abs(dot(x.conj(), standard_basis[i]))) < 1e-2:
@@ -73,9 +86,9 @@ def WavefunctionEncoding(x):
     return array(U).T
 
 def make_program(U):
-    num_qubits = int(log2(len(U)))
-    gate_def = DefGate("U", U)
-    U_gate = gate_def.get_constructor()
+    num_qubits    = int(log2(len(U)))
+    gate_def      = DefGate("U", U)
+    U_gate        = gate_def.get_constructor()
     qubit_indices = range(num_qubits)
-    p = Program(gate_def, U_gate(*tuple(qubit_indices)))
+    p             = Program(gate_def, U_gate(*tuple(qubit_indices)))
     return p
