@@ -24,7 +24,7 @@ from pyquil.quil import DefGate
 def WavefunctionEncoding(x):
     """WavefunctioneEncoding class. Encode a vector |x> directly via
 
-    |\psi> = |x> / \ltwonorm(|x>).
+    |psi> = |x> / ltwonorm(|x>).
 
 
     With this encoding, an n length vector needs n qubits.
