@@ -20,9 +20,9 @@ def order(program):
     return percolate_declares(program)
 
 
-def ascii_circuit(program, padlen, rebind={}):
-    """
-    Creates an ascii circuit from a pyquil program.
+def ascii_circuit(program, padlen=2, rebind={}):
+    """Creates an ascii circuit from a pyquil program.
+
     Idea is to store a single line (a wire) for each qubit. Then, we the lists of lists
     into a string that has gates in order listed in program.
 
@@ -36,10 +36,9 @@ def ascii_circuit(program, padlen, rebind={}):
     -------------------------------------------
     strcirc - an ascii representation of circuit
 
-    ##TODO: Fix full list of asym for all 2-qubit circuits with asymmetry
-    ##TODO: Fix rebinds to work for gates with parametric dependence (i.e. RX(50)).
-    ##TODO: maybe? Add lines below qubit lines to add
-    connections between two qubit gates?
+    TODO: Fix full list of asym for all 2-qubit circuits with asymmetry
+    TODO: Fix rebinds to work for gates with parametric dependence (i.e. RX(50)).
+    TODO: maybe? Add lines below qubit lines to add connections between two qubit gates?
     """
     pad = ''.join('-' for n in range(padlen))
     circ = []

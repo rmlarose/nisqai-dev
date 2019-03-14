@@ -21,12 +21,47 @@ def test_order_basic():
     print(order(p))
 
 
-def test_ascii_circuit_1():
-    """Do this"""
-    print("I need to do this.")
+def test_ascii_circuit_basic():
+    """Tests drawing a program on one qubit."""
+    prog = Program(
+        [gates.H(0),
+         gates.X(0)]
+    )
+    drawing = ascii_circuit(prog, 2)
+
+    assert type(drawing) == str
+    print(drawing)
+
+
+def test_ascii_circuit_multiple_qubits():
+    """Tests drawing a program with single qubit gates on multiple qubits."""
+    prog = Program(
+        [gates.H(0),
+         gates.X(1),
+         gates.Z(0),
+         gates.H(1)]
+    )
+    drawing = ascii_circuit(prog, 2)
+
+    assert type(drawing) == str
+    print(drawing)
+
+
+def test_ascii_circuit_two_qubit_gates():
+    """Tests drawing a program with two qubit gates."""
+    prog = Program(
+        [gates.H(0),
+         gates.CNOT(0, 1)]
+    )
+    drawing = ascii_circuit(prog, 2)
+
+    assert type(drawing) == str
+    print(drawing)
 
 
 if __name__ == "__main__":
     test_order_basic()
-    test_ascii_circuit_1()
+    test_ascii_circuit_basic()
+    test_ascii_circuit_multiple_qubits()
+    test_ascii_circuit_two_qubit_gates()
     print("All unit tests for program_utils passed.")
