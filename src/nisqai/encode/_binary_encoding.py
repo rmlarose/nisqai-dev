@@ -31,6 +31,7 @@ class BinaryEncoding:
         """Initializes a BinaryEncoding."""
         assert isinstance(data, (CData, LabeledCData))
         self.data = data
+
         # TODO: make sure the data consists of ints only
         # compute the number of qubits needed from the data
         num_qubits = self.data.num_features
