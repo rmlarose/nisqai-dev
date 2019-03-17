@@ -11,6 +11,7 @@
 #   limitations under the License.
 
 from pyquil.quil import percolate_declares
+import pyquil
 
 
 def order(program):
@@ -127,6 +128,87 @@ def ascii_drawer(program, padlen=2, rebind={'MEASURE': 'MSR'}):
     strcirc = ''
     for line in circ:
         strcirc += line[0]
+        strcirc += '\n'
+
+    return strcirc
+
+
+def ascii_drawer2(program, padlen=2):
+    """Creates an ascii circuit from a pyquil program.
+
+    Idea is to store a single line (a wire) for each qubit as a diciontary to a string.
+    Then a final string is contructed with \n between qubits for printing.
+
+    Inputs
+    ------------------------------------------
+    program: pyquil program
+    padlen: determines number of - padded in between gates
+
+    Outputs
+    -------------------------------------------
+    strcirc - an ascii representation of circuit
+
+    TODO: add asym?
+    TODO: add rebinds to bring down pad length from left (resulting from longest gate)
+    """
+    gateorder = {qubit: [] for qubit in program.get_qubits()}
+    gatenum = {qubit: [-1] for qubit in program.get_qubits()}
+    longest_gate_len = 0
+    for gate in program:
+        gate_name_len = len(gate.out().split(' ')[0])
+        if gate_name_len > longest_gate_len:
+            longest_gate_len = gate_name_len
+        if isinstance(gate, pyquil.quilbase.Gate):
+            qubits = gate.qubits
+            # pre-processing for 2 qubit gates
+            if len(qubits) == 2:
+                # find the higher gatenum between the qubit's wire-paths
+                first_num = gatenum[int(qubits[0].out())][-1]
+                second_num = gatenum[int(qubits[0].out())][-1]
+                if first_num > second_num:
+                    higher_num = first_num
+                else:
+                    higher_num = second_num
+                # assign this higher number + 1 to BOTH
+                gatenum[int(qubits[0].out())].append(higher_num + 1)
+                gatenum[int(qubits[1].out())].append(higher_num + 1)
+                # add the gate to each qubit's wire
+                gateorder[int(qubits[0].out())].append(gate.out().split(' ')[0])
+                gateorder[int(qubits[1].out())].append(gate.out().split(' ')[0])
+            # pre-processing for 1 qubit gates
+            else:
+                # increment the gate number for this qubit's wire
+                prev_num = gatenum[int(qubits[0].out())][-1]
+                gatenum[int(qubits[0].out())].append(prev_num + 1)
+                # add the gate to the qubits's wire
+                gateorder[int(qubits[0].out())].append(gate.out().split(' ')[0])
+
+    most_gates_key = max(gatenum, key=lambda x: len(set(gatenum[x])))
+    rpad = ''.join('-' for n in range(padlen))
+    # conventions for asymmetric 2-qubit gates (i.e. CNOT) always placed on FIRST
+    # argument; otherwise, padded with space
+    qubits = program.get_qubits()
+    circ = {qubit: '' for qubit in qubits}
+
+    for num in gatenum[most_gates_key]:
+        for qubit in qubits:
+            if num == -1:
+                circ[qubit] += ('|' + str(qubit) + '>-')
+            else:
+                if num in gatenum[qubit]:
+                    gate = gateorder[qubit].pop(0)
+                    gate_len = len(gate)
+                    diff = longest_gate_len - gate_len
+                    lpad = ''.join('-' for n in range(diff))
+                    circ[qubit] += (lpad + gate + rpad)
+                else:
+                    lpad = ''.join('-' for i in range(longest_gate_len))
+                    circ[qubit] += (lpad + rpad)
+
+    # do post-processing on circ lists to make a string for printing purposes
+    strcirc = ''
+    for key in circ:
+        strcirc += circ[key]
         strcirc += '\n'
 
     return strcirc
