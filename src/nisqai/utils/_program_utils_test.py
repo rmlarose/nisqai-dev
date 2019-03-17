@@ -10,10 +10,11 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+from numpy import array
+
 from nisqai.utils._program_utils import order, make_ascii_circuit
 from pyquil import Program, gates
 from pyquil.quil import Pragma
-import numpy as np
 
 
 def test_order_basic():
@@ -24,7 +25,12 @@ def test_order_basic():
 
 
 def test_ascii_circuit_basic():
-    """Tests drawing a program on one qubit."""
+    """Tests drawing a program on one qubit.
+
+    Should display:
+
+    0 |0> --H----X--
+    """
     prog = Program(
         [gates.H(0),
          gates.X(0)]
@@ -36,7 +42,13 @@ def test_ascii_circuit_basic():
 
 
 def test_ascii_circuit_multiple_qubits():
-    """Tests drawing a program with single qubit gates on multiple qubits."""
+    """Tests drawing a program with single qubit gates on multiple qubits.
+
+    Should display:
+
+    0 |0> --H---------Z-------
+    1 |0> -------X---------H--
+    """
     prog = Program(
         [gates.H(0),
          gates.X(1),
@@ -50,7 +62,13 @@ def test_ascii_circuit_multiple_qubits():
 
 
 def test_ascii_circuit_two_qubit_gates():
-    """Tests drawing a program with two qubit gates."""
+    """Tests drawing a program with two qubit gates.
+
+    Should display:
+
+    0 |0> --H----CNOT'--
+    1 |0> -------CNOT --
+    """
     prog = Program(
         [gates.H(0),
          gates.CNOT(0, 1)]
@@ -61,12 +79,18 @@ def test_ascii_circuit_two_qubit_gates():
     print(drawing)
 
 
-def test_ascii_circuit_with_definted_gate():
-    """Tests drawing a program with defined gate."""
+def test_ascii_circuit_with_defined_gate():
+    """Tests drawing a program with defined gate.
+
+    Should display:
+
+    0 |0> --S----CNOT'--
+    1 |0> -------CNOT --
+    """
     prog = Program()
-    Sgate = np.array([[1, 0],
-                      [0, 1]])
-    prog.defgate("S", Sgate)
+    sgate = array([[1, 0],
+                   [0, 1]])
+    prog.defgate("S", sgate)
     prog += ("S", 0)
     prog += gates.CNOT(0, 1)
     drawing = make_ascii_circuit(prog)
@@ -75,8 +99,15 @@ def test_ascii_circuit_with_definted_gate():
     print(drawing)
 
 
-def test_ascii_circuit_with_pramga1():
-    """Tests drawing a program with a pramga."""
+def test_ascii_circuit_with_pragma1():
+    """Tests drawing a program with a pragma.
+
+    Should display:
+
+    0 |0> --CNOT'--
+    1 |0> --CNOT --
+
+    """
     prog = Program()
     prog += Program(Pragma('INITIAL_REWIRING', ['"GREEDY"']))
     prog += gates.CNOT(0, 1)
@@ -86,8 +117,15 @@ def test_ascii_circuit_with_pramga1():
     print(drawing)
 
 
-def test_ascii_circuit_with_pramga2():
-    """Tests drawing a program with a different pramga."""
+def test_ascii_circuit_with_pragma2():
+    """Tests drawing a program with a different pramga.
+
+    Should display:
+
+    0 |0> --H----CNOT'--
+    1 |0> -------CNOT --
+
+    """
     prog = Program(
         [gates.H(0),
          gates.CNOT(0, 1)]
@@ -100,10 +138,62 @@ def test_ascii_circuit_with_pramga2():
 
 
 def test_ascii_circuit_with_measurement():
-    """Tests drawing a program with a measurement."""
+    """Tests drawing a program with a measurement.
+
+    Should display:
+
+    0 |0> --H----CNOT'----MSR--
+    1 |0> -------CNOT ---------
+
+    """
     prog = Program(
         [gates.H(0),
          gates.CNOT(0, 1)]
+    )
+    # adds a measurement to register 'ro'
+    creg = prog.declare("ro", memory_size=1)
+    prog += (gates.MEASURE(0, creg[0]))
+    drawing = make_ascii_circuit(prog)
+
+    assert type(drawing) == str
+    print(drawing)
+
+
+def test_cnot_non_adjacent_qubits():
+    """Tests drawing a program with a CNOT gate between non-adjacent qubits.
+
+    Should display:
+
+    0 |0> --H----CNOT'----CNOT'----MSR--
+    1 |0> -------CNOT ------------------
+    2 |0> ----------------CNOT ---------
+
+    """
+    prog = Program(
+        [gates.H(0),
+         gates.CNOT(0, 1),
+         gates.CNOT(0, 2)]
+    )
+    # adds a measurement to register 'ro'
+    creg = prog.declare("ro", memory_size=1)
+    prog += (gates.MEASURE(0, creg[0]))
+    drawing = make_ascii_circuit(prog)
+
+    assert type(drawing) == str
+    print(drawing)
+
+
+def test_empty_qubit():
+    """Tests drawing a program with no operations on a qubit.
+
+    Should display:
+
+    0 |0> --H----CNOT'----MSR--
+    2 |0> -------CNOT ---------
+    """
+    prog = Program(
+        [gates.H(0),
+         gates.CNOT(0, 2)]
     )
     # adds a measurement to register 'ro'
     creg = prog.declare("ro", memory_size=1)
@@ -119,8 +209,10 @@ if __name__ == "__main__":
     test_ascii_circuit_basic()
     test_ascii_circuit_multiple_qubits()
     test_ascii_circuit_two_qubit_gates()
-    test_ascii_circuit_with_definted_gate()
-    test_ascii_circuit_with_pramga1()
-    test_ascii_circuit_with_pramga2()
+    test_ascii_circuit_with_defined_gate()
+    test_ascii_circuit_with_pragma1()
+    test_ascii_circuit_with_pragma2()
     test_ascii_circuit_with_measurement()
+    test_cnot_non_adjacent_qubits()
+    test_empty_qubit()
     print("All unit tests for program_utils passed.")

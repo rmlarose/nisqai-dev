@@ -58,7 +58,7 @@ def make_ascii_circuit(program, padlen=2, rebind={'MEASURE': 'MSR'}):
     # prepares the ascii string by adding qubits and padding with lines
     qubits = program.get_qubits()
     for qubit in qubits:
-        circ.append([str(qubit) + ' '])
+        circ.append([str(qubit) + ' |0> '])
 
     # breaks the program up by newline
     steps = program.out().split("\n")
