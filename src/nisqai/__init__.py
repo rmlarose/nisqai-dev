@@ -10,8 +10,14 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from nisqai.data import *
-from nisqai.encode import *
-from nisqai.layer import *
+"""
+NISQAI - An open-source library for machine learning on near-term quantum computers.
+"""
+
+import nisqai.data
+import nisqai.encode
+import nisqai.layer
+import nisqai.network
+import nisqai.cost
 
 from ._version import __version__
