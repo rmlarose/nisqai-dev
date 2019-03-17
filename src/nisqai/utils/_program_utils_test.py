@@ -12,7 +12,7 @@
 
 from numpy import array
 
-from nisqai.utils._program_utils import order, make_ascii_circuit
+from nisqai.utils._program_utils import order, ascii_drawer
 from pyquil import Program, gates
 from pyquil.quil import Pragma
 
@@ -35,7 +35,7 @@ def test_ascii_circuit_basic():
         [gates.H(0),
          gates.X(0)]
     )
-    drawing = make_ascii_circuit(prog, 2)
+    drawing = ascii_drawer(prog, 2)
 
     assert type(drawing) == str
     print(drawing)
@@ -55,7 +55,7 @@ def test_ascii_circuit_multiple_qubits():
          gates.Z(0),
          gates.H(1)]
     )
-    drawing = make_ascii_circuit(prog, 2)
+    drawing = ascii_drawer(prog, 2)
 
     assert type(drawing) == str
     print(drawing)
@@ -73,7 +73,7 @@ def test_ascii_circuit_two_qubit_gates():
         [gates.H(0),
          gates.CNOT(0, 1)]
     )
-    drawing = make_ascii_circuit(prog, 2)
+    drawing = ascii_drawer(prog, 2)
 
     assert type(drawing) == str
     print(drawing)
@@ -93,7 +93,7 @@ def test_ascii_circuit_with_defined_gate():
     prog.defgate("S", sgate)
     prog += ("S", 0)
     prog += gates.CNOT(0, 1)
-    drawing = make_ascii_circuit(prog)
+    drawing = ascii_drawer(prog)
 
     assert type(drawing) == str
     print(drawing)
@@ -111,7 +111,7 @@ def test_ascii_circuit_with_pragma1():
     prog = Program()
     prog += Program(Pragma('INITIAL_REWIRING', ['"GREEDY"']))
     prog += gates.CNOT(0, 1)
-    drawing = make_ascii_circuit(prog)
+    drawing = ascii_drawer(prog)
 
     assert type(drawing) == str
     print(drawing)
@@ -131,7 +131,7 @@ def test_ascii_circuit_with_pragma2():
          gates.CNOT(0, 1)]
     )
     prog += Pragma('DELAY', [1], str(2))
-    drawing = make_ascii_circuit(prog)
+    drawing = ascii_drawer(prog)
 
     assert type(drawing) == str
     print(drawing)
@@ -153,7 +153,7 @@ def test_ascii_circuit_with_measurement():
     # adds a measurement to register 'ro'
     creg = prog.declare("ro", memory_size=1)
     prog += (gates.MEASURE(0, creg[0]))
-    drawing = make_ascii_circuit(prog)
+    drawing = ascii_drawer(prog)
 
     assert type(drawing) == str
     print(drawing)
@@ -177,7 +177,7 @@ def test_cnot_non_adjacent_qubits():
     # adds a measurement to register 'ro'
     creg = prog.declare("ro", memory_size=1)
     prog += (gates.MEASURE(0, creg[0]))
-    drawing = make_ascii_circuit(prog)
+    drawing = ascii_drawer(prog)
 
     assert type(drawing) == str
     print(drawing)
@@ -198,7 +198,7 @@ def test_empty_qubit():
     # adds a measurement to register 'ro'
     creg = prog.declare("ro", memory_size=1)
     prog += (gates.MEASURE(0, creg[0]))
-    drawing = make_ascii_circuit(prog)
+    drawing = ascii_drawer(prog)
 
     assert type(drawing) == str
     print(drawing)

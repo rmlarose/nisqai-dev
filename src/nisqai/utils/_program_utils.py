@@ -20,7 +20,7 @@ def order(program):
     return percolate_declares(program)
 
 
-def make_ascii_circuit(program, padlen=2, rebind={'MEASURE': 'MSR'}):
+def ascii_drawer(program, padlen=2, rebind={'MEASURE': 'MSR'}):
     """Creates an ascii circuit from a pyquil program.
 
     Idea is to store a single line (a wire) for each qubit. Then, we the lists of lists
