@@ -26,7 +26,7 @@ def test_basic():
     parameters = Parameters(params)
 
     # make sure the class was instantiated correctly
-    assert parameters.values == params
+    assert parameters._values == params
 
 
 def test_no_parameters_on_qubit():
@@ -241,6 +241,35 @@ def test_product_ansatz_parameters():
     assert params.values == correct
 
 
+def test_update_parameters():
+    """Tests for correct values after updating parameters."""
+    # get some Parameters
+    params = Parameters({0: [0]})
+
+    # ensure the initial memory map is correct
+    assert params.memory_map() == {"q_000_g_000": [0.0]}
+
+    # update the values
+    params.update_values({0: [1]})
+
+    # ensure the new memory map is correct
+    assert params.memory_map() == {"q_000_g_000": [1.0]}
+
+
+def test_update_parameters_memory_map():
+    """Tests updating parameters and returning a memory map."""
+    # get some Parameters
+    params = Parameters({0: [0]})
+
+    # ensure the initial memory map is correct
+    assert params.memory_map() == {"q_000_g_000": [0.0]}
+
+    new_map = params.update_values_memory_map({0: [1]})
+
+    assert params.values == {0: [1.0]}
+    assert new_map == {"q_000_g_000": [1.0]}
+
+
 if __name__ == "__main__":
     test_basic()
     test_no_parameters_on_qubit()
@@ -254,4 +283,6 @@ if __name__ == "__main__":
     test_memory_reference()
     test_memory_reference_indexing()
     test_product_ansatz_parameters()
+    test_update_parameters()
+    test_update_parameters_memory_map()
     print("All tests for Parameters class passed.")

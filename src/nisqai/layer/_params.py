@@ -100,10 +100,10 @@ class Parameters:
         """
         # store the parameter dictionary
         # TODO: write a method to make sure the parameter dictionary is valid
-        self.values = parameters
+        self._values = parameters
 
         # extract the number of qubits
-        self._num_qubits = len(self.values.keys())
+        self._num_qubits = len(self._values.keys())
 
         # make the dictionary of parameter names
         self.names = self._make_parameter_names()
@@ -128,19 +128,24 @@ class Parameters:
             q_999_g_024 = Twenty fourth (!) parameterized gate on qubit 999. (!!!)
         """
         names = {}
-        for qubit in self.values.keys():
+        for qubit in self._values.keys():
             names[qubit] = []
             qubit_key = format(qubit, FORMAT_SPEC)
-            for gate in range(len(self.values[qubit])):
+            for gate in range(len(self._values[qubit])):
                 gate_key = format(gate, FORMAT_SPEC)
                 names[qubit].append(
                     "q_{}_g_{}".format(qubit_key, gate_key)
                 )
         return names
 
+    @property
+    def values(self):
+        """Returns the current values of the Parameters as a dict."""
+        return self._values
+
     def list_values(self):
         """Returns a one dimensional list of all parameter values."""
-        return list(chain.from_iterable(self.values.values()))
+        return list(chain.from_iterable(self._values.values()))
 
     def list_names(self):
         """Returns a one dimensional list of all parameter names."""
@@ -148,7 +153,7 @@ class Parameters:
 
     def grid_values(self):
         """Returns a two dimensional array of all parameter values."""
-        return list(self.values.values())
+        return list(self._values.values())
 
     def grid_names(self):
         """Returns a two dimensional array of all parameter names."""
@@ -166,16 +171,25 @@ class Parameters:
         # TODO: speedup implementation of this method: crucial for fast implementations
         # TODO: make more Pythonic
         mem_map = {}
-        for qubit in range(len(self.values)):
-            for gate in range(len(self.values[qubit])):
-                mem_map[self.names[qubit][gate]] = [float(self.values[qubit][gate])]
+        for qubit in range(len(self._values)):
+            for gate in range(len(self._values[qubit])):
+                mem_map[self.names[qubit][gate]] = [float(self._values[qubit][gate])]
         return mem_map
+
+    def update_values(self, values):
+        """Updates the values of the Parameters in place."""
+        self._values = values
+
+    def update_values_memory_map(self, values):
+        """Updates the values of the parameters in place and returns a memory map."""
+        self._values = values
+        return self.memory_map()
 
     def depth(self):
         """Returns the depth of the Parameters, defined as the maximum length
         of all parameter lists over all qubits.
         """
-        return len(max(self.values.values(), key=len))
+        return len(max(self._values.values(), key=len))
 
     def shape(self):
         """Returns the (height, width) of a quantum circuit, where:
@@ -187,7 +201,7 @@ class Parameters:
 
         Return type: Tuple
         """
-        return (self._num_qubits, self.depth())
+        return self._num_qubits, self.depth()
 
     def declare_memory_references(self, program):
         """Declares all Parameters in a pyQuil Program.
