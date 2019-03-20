@@ -12,9 +12,12 @@
 
 from numpy import array
 
-from nisqai.utils._program_utils import order, ascii_drawer
 from pyquil import Program, gates
 from pyquil.quil import Pragma
+
+from nisqai.utils._program_utils import order, ascii_drawer
+from nisqai.layer import ProductAnsatz
+
 
 
 def test_order_basic():
@@ -35,7 +38,7 @@ def test_ascii_circuit_basic():
         [gates.H(0),
          gates.X(0)]
     )
-    drawing = ascii_drawer(prog, 2)
+    drawing = ascii_drawer(prog)
 
     assert type(drawing) == str
     print(drawing)
@@ -55,7 +58,7 @@ def test_ascii_circuit_multiple_qubits():
          gates.Z(0),
          gates.H(1)]
     )
-    drawing = ascii_drawer(prog, 2)
+    drawing = ascii_drawer(prog)
 
     assert type(drawing) == str
     print(drawing)
@@ -204,6 +207,18 @@ def test_empty_qubit():
     print(drawing)
 
 
+def test_product_ansatz():
+    """Creates a ProductAnsatz and draws it."""
+    # get an ansatz
+    ansatz = ProductAnsatz(4)
+
+    # make the drawing
+    drawing = ascii_drawer(ansatz.circuit)
+
+    # show the drawing
+    print(drawing)
+
+
 if __name__ == "__main__":
     test_order_basic()
     test_ascii_circuit_basic()
@@ -215,4 +230,5 @@ if __name__ == "__main__":
     test_ascii_circuit_with_measurement()
     test_cnot_non_adjacent_qubits()
     test_empty_qubit()
+    test_product_ansatz()
     print("All unit tests for program_utils passed.")

@@ -21,7 +21,7 @@ def order(program):
     return percolate_declares(program)
 
 
-def ascii_drawer(program, padlen=2, rebind={'MEASURE': 'MSR'}):
+def ascii_drawer_simple(program, padlen=2, rebind={'MEASURE': 'MSR'}):
     """Creates an ascii circuit from a pyquil program.
 
     Idea is to store a single line (a wire) for each qubit. Then, we the lists of lists
@@ -133,7 +133,7 @@ def ascii_drawer(program, padlen=2, rebind={'MEASURE': 'MSR'}):
     return strcirc
 
 
-def ascii_drawer2(program, padlen=2):
+def ascii_drawer(program, padlen=4):
     """Creates an ascii circuit from a pyquil program.
 
     Idea is to store a single line (a wire) for each qubit as a diciontary to a string.
