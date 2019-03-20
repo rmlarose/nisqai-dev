@@ -133,7 +133,7 @@ def ascii_drawer_simple(program, padlen=2, rebind={'MEASURE': 'MSR'}):
     return strcirc
 
 
-def ascii_drawer(program, padlen=4):
+def ascii_drawer(program, padlen=4, rebind={}):
     """Creates an ascii circuit from a pyquil program.
 
     Idea is to store a single line (a wire) for each qubit as a diciontary to a string.
@@ -148,16 +148,28 @@ def ascii_drawer(program, padlen=4):
     -------------------------------------------
     strcirc - an ascii representation of circuit
 
-    TODO: add asym?
+    TODO: add asym
     TODO: add rebinds to bring down pad length from left (resulting from longest gate)
     """
+    #asym = ['CNOT']
+    #asym_mark = "'"
+
     gateorder = {qubit: [] for qubit in program.get_qubits()}
     gatenum = {qubit: [-1] for qubit in program.get_qubits()}
     longest_gate_len = 0
+
     for gate in program:
-        gate_name_len = len(gate.out().split(' ')[0])
+        if gate in rebind:
+            oldgate = gate.out().split(' ')[0]
+            newgate = oldgate.replace(gate, rebind[gate])
+            # if gate in asym:
+            #    newgate += asym_mark
+            gate_name_len = len(newgate)
+        else:
+            gate_name_len = len(gate.out().split(' ')[0])
         if gate_name_len > longest_gate_len:
             longest_gate_len = gate_name_len
+
         if isinstance(gate, pyquil.quilbase.Gate):
             qubits = gate.qubits
             # pre-processing for 2 qubit gates
@@ -193,10 +205,17 @@ def ascii_drawer(program, padlen=4):
     for num in gatenum[most_gates_key]:
         for qubit in qubits:
             if num == -1:
-                circ[qubit] += ('|' + str(qubit) + '>-')
+                circ[qubit] += ('|0>-')
             else:
                 if num in gatenum[qubit]:
                     gate = gateorder[qubit].pop(0)
+                    if gate in rebind:
+                        newgate = gate.replace(gate, rebind[gate])
+                        # if gate in asym:
+                        #newgate += asym_mark
+                        gate = newgate
+                    # if gate in asym:
+                        #gate += asym_mark
                     gate_len = len(gate)
                     diff = longest_gate_len - gate_len
                     lpad = ''.join('-' for n in range(diff))
