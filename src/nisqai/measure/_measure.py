@@ -11,9 +11,7 @@
 #   limitations under the License.
 
 from nisqai.layer._base_ansatz import BaseAnsatz
-from pyquil.gates import MEASURE, H, RX, RZ, RY, CNOT
-import numpy as np
-from pyquil.api import get_qc, WavefunctionSimulator
+from pyquil.gates import MEASURE, H, RX, RZ, RY, CNOT, PHASE
 
 class Measurement(BaseAnsatz):
     """Measurement class."""
@@ -59,7 +57,7 @@ class Measurement(BaseAnsatz):
 
             elif basis_gate.lower() ==  "xy":
                 # Measurement in Pauli X-Y Plane, with angle : basis_angle.
-                self.circuit += [RZ(basis_angle, q) for q in qubits_to_measure]
+                self.circuit += [PHASE(basis_angle, q) for q in qubits_to_measure]
                 self.circuit += [H(q) for q in qubits_to_measure]
 
             elif basis_gate.lower() ==  "bell":
