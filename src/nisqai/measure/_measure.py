@@ -42,7 +42,7 @@ class Measurement(BaseAnsatz):
         self.num_measurements = len(qubits_to_measure)
         self.measured_qubits = list(qubits_to_measure)
 
-        #all qubits measured in same basis e.g. ['RX', theta] measures in RX(theta)|0/1> basis
+        # all qubits measured in same basis e.g. ['RX', theta] measures in RX(theta)|0/1> basis.
         if basis_gate is not None:
             if basis_gate.lower()   == "rx":
                 self.circuit += [RX(basis_angle, q) for q in qubits_to_measure]
@@ -58,19 +58,19 @@ class Measurement(BaseAnsatz):
                 self.circuit += [H(q) for q in qubits_to_measure]
 
             elif basis_gate.lower() ==  "xy":
-                # Measurement in Pauli X-Y Plane, with angle : basis_angle
+                # Measurement in Pauli X-Y Plane, with angle : basis_angle.
                 self.circuit += [RZ(basis_angle, q) for q in qubits_to_measure]
                 self.circuit += [H(q) for q in qubits_to_measure]
 
             elif basis_gate.lower() ==  "bell":
-                # Bell basis measurement
+                # Bell basis measurement for 2 qubits.
                 if num_qubits == 2:
                     self.circuit += CNOT(qubits_to_measure[0], qubits_to_measure[1])
                     self.circuit += H(qubits_to_measure[0])
                 else: raise ValueError('Number of Qubits for Bell Measurement must be 2.')
 
             elif basis_gate.lower() ==  "ghz":
-                # GHZ basis measurement
+                # GHZ basis measurement for all qubits.
                 self.circuit += [CNOT(qubits_to_measure[0], q) for q in qubits_to_measure[1:]]
                 self.circuit += H(qubits_to_measure[0])
             
@@ -118,7 +118,7 @@ def measure_qubit(num_qubits, qubit_index):
         num_qubits : int
                     Number of qubits in the circuit.
         qubit_index : int
-                    Qubit on which measurement is performed
+                    Qubit index on which measurement is performed
     """
     if qubit_index > num_qubits:
         raise ValueError("Qubit to be measured is not in available qubits")
