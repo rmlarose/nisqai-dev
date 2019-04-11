@@ -10,8 +10,9 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from nisqai.measure._measure import Measurement
-
+#from nisqai.measure._measure import Measurement
+from _measure import Measurement
+import numpy as np
 
 def test_measure_all():
     """Tests measurements on all qubits."""
@@ -49,23 +50,36 @@ def test_measure_tuple():
 
 def test_measure_change_basis():
     """Tests changing basis of a measurement.
-    (Changes basis measurement to same basis as before.)
+    (Changes basis measurement to a RZ(pi/4) and GHZ basis ~ 1/sqrt(2)[|000..0> +|111..1>]
     """
     # bases to use
     old_basis = None
-    new_basis = None
+  
+    new_basis_list = ['RZ', np.pi / 4]
+
+    new_basis_string = 'GHZ'
 
     # measure in first (old) basis
-    measure = Measurement(2, range(2), old_basis)
+    measure = Measurement(2, range(2))
+
     assert measure.num_qubits == 2
     assert measure.num_measurements == 2
     assert measure.measured_qubits == [0, 1]
 
     # change basis
-    measure.change_basis(new_basis)
+    measure.change_basis(new_basis_list)
+    
+    assert measure.basis_gate == 'RZ'
+    assert measure.basis_angle == np.pi/4
     assert measure.num_qubits == 2
     assert measure.num_measurements == 2
     assert measure.measured_qubits == [0, 1]
+
+    # change basis again
+    measure.change_basis(new_basis_string)
+
+    assert measure.basis_gate == 'GHZ'
+    assert measure.basis_angle == None
 
 
 if __name__ == "__main__":
