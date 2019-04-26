@@ -13,6 +13,7 @@
 from itertools import chain
 
 from pyquil.quil import Program
+from math import log2
 
 
 # Standard specification format for strings.
@@ -132,6 +133,7 @@ class Parameters:
             names[qubit] = []
             qubit_key = format(qubit, FORMAT_SPEC)
             for gate in range(len(self._values[qubit])):
+                print(gate)
                 gate_key = format(gate, FORMAT_SPEC)
                 names[qubit].append(
                     "q_{}_g_{}".format(qubit_key, gate_key)
@@ -264,4 +266,40 @@ def product_ansatz_parameters(num_qubits, depth, value):
         params[qubit] = [value] * depth
 
     # return the Parameters
+    return Parameters(params)
+
+def mera_ansatz_parameters(num_qubits, depth, value):
+    # error checks
+    if type(num_qubits) != int:
+        raise ValueError("num_qubits must be an integer.")
+    if ( ( num_qubits & ( num_qubits - 1 ) ) == 1 ) or num_qubits == 0 :
+        raise ValueError("num_qubits must be a power of 2 for TTN / MERA circuit topology.")
+    if type(depth) != int:
+        print(depth)
+        print(type(depth))
+        raise ValueError("depth must be an integer.")
+    if log2(num_qubits) != depth:
+        raise ValueError("log2(num_qubits) must equal depth for TTN / MERA circuit topology.")
+    try:
+        value = float(value)
+    except TypeError:
+        print("Invalid type for value.")
+        raise TypeError
+    
+    params = {}
+    for i in range(num_qubits):
+        params[i] = [None] * (2*depth - 1)
+    print("depth",depth)
+    for i in range(depth, 0, -1):
+        for j in range(2):
+            for g in range(2**(i-1) - 1 + j):
+                q = 2**(depth-i+1)*(g-j/2+1)-1
+                layer = 2*(depth-i)+j
+                if i == 1:
+                    layer -= 1
+                params[q][layer] = value
+                params[q + 2**(depth-i)][layer] = value
+
+    # return the Parameters
+    print("params:", params)
     return Parameters(params)
