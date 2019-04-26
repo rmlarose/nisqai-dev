@@ -61,7 +61,7 @@ class Parameters:
                 IMPORTANT: All qubit indices must explicitly be included as keys, even if
                 some qubits do not have parameterized gates.
 
-                Qubits with no parameterized gates should have empty lists as values
+                Qubits with no parameterized gate at a certain depth will have None in the list
                 for that qubit index.
 
                 Examples:
@@ -85,8 +85,8 @@ class Parameters:
 
 
                     parameters = {0 : [1, 2],
-                                  1 : []
-                                  2 : [3]}
+                                  1 : [None, None]
+                                  2 : [3, None]}
 
                         Corresponds to a circuit which looks like:
 
@@ -133,7 +133,6 @@ class Parameters:
             names[qubit] = []
             qubit_key = format(qubit, FORMAT_SPEC)
             for gate in range(len(self._values[qubit])):
-                print(gate)
                 gate_key = format(gate, FORMAT_SPEC)
                 names[qubit].append(
                     "q_{}_g_{}".format(qubit_key, gate_key)
@@ -275,8 +274,6 @@ def mera_ansatz_parameters(num_qubits, depth, value):
     if ( ( num_qubits & ( num_qubits - 1 ) ) == 1 ) or num_qubits == 0 :
         raise ValueError("num_qubits must be a power of 2 for TTN / MERA circuit topology.")
     if type(depth) != int:
-        print(depth)
-        print(type(depth))
         raise ValueError("depth must be an integer.")
     if log2(num_qubits) != depth:
         raise ValueError("log2(num_qubits) must equal depth for TTN / MERA circuit topology.")
@@ -289,7 +286,7 @@ def mera_ansatz_parameters(num_qubits, depth, value):
     params = {}
     for i in range(num_qubits):
         params[i] = [None] * (2*depth - 1)
-    print("depth",depth)
+    # print("depth", depth)
     for i in range(depth, 0, -1):
         for j in range(2):
             for g in range(2**(i-1) - 1 + j):
@@ -300,6 +297,8 @@ def mera_ansatz_parameters(num_qubits, depth, value):
                 params[q][layer] = value
                 params[q + 2**(depth-i)][layer] = value
 
+    # give parameterized circuit structure:
+    # print("params:", params)
+
     # return the Parameters
-    print("params:", params)
     return Parameters(params)
