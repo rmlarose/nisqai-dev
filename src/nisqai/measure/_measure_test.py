@@ -10,8 +10,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-#from nisqai.measure._measure import Measurement
-from _measure import Measurement, measure_all, measure_qubit, measure_top
+# from nisqai.measure._measure import Measurement
+from nisqai.measure._measure import Measurement, measure_all, measure_qubit, measure_top
 import numpy as np
 import unittest
 
