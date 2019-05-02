@@ -25,8 +25,8 @@ A MeasurementOutcome inputs this data and makes it easy to work with,
 interpret, visualize, modify, and prepare for future encoding.
 """
 
-from numpy import ndarray
-
+from numpy import ndarray, array
+import time
 
 class MeasurementOutcome:
     """Measurement outcome class for dealing with sampled bit strings from circuits."""
@@ -103,7 +103,6 @@ class MeasurementOutcome:
         # TODO: there must be a better way of writing this!
         # get the bit string
         bit_string = self[index]
-
         # string to store the bits
         string = ""
 
@@ -113,6 +112,9 @@ class MeasurementOutcome:
                 string += "0"
             else:
                 string += "1"
+
+        # alternative way but may be slower
+        # string = "".join([str(bit) for bit in bit_string])
 
         return int(string, 2)
 

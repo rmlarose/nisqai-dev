@@ -169,6 +169,6 @@ if __name__ == "__main__":
     test_measure_some()
     test_measure_tuple()
     test_measure_change_basis()
-    print("All tests for Measurement passed.")
     unittest.main()
+    print("All tests for Measurement passed.")
 
