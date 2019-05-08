@@ -10,7 +10,6 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-# from nisqai.measure._measure import Measurement
 from nisqai.measure._measure import Measurement, measure_all, measure_qubit, measure_top
 import numpy as np
 import unittest
@@ -169,6 +168,6 @@ if __name__ == "__main__":
     test_measure_some()
     test_measure_tuple()
     test_measure_change_basis()
-    print("All tests for Measurement passed.")
     unittest.main()
+    print("All tests for Measurement passed.")
 

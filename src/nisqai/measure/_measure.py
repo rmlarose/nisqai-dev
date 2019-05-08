@@ -42,6 +42,8 @@ class Measurement(BaseAnsatz):
 
         # all qubits measured in same basis e.g. ['RX', theta] measures in RX(theta)|0/1> basis.
         if basis_gate is not None:
+            if basis_gate.lower() == 'z':
+                pass
             if basis_gate.lower()   == "rx":
                 self.circuit += [RX(basis_angle, q) for q in qubits_to_measure]
 
@@ -54,7 +56,6 @@ class Measurement(BaseAnsatz):
             elif basis_gate.lower() ==  "h":
                 # Measurement in |+/-> basis
                 self.circuit += [H(q) for q in qubits_to_measure]
-
             elif basis_gate.lower() ==  "xy":
                 # Measurement in Pauli X-Y Plane, with angle : basis_angle.
                 self.circuit += [PHASE(basis_angle, q) for q in qubits_to_measure]
@@ -66,12 +67,14 @@ class Measurement(BaseAnsatz):
                     self.circuit += CNOT(qubits_to_measure[0], qubits_to_measure[1])
                     self.circuit += H(qubits_to_measure[0])
                 else: raise ValueError('Number of Qubits for Bell Measurement must be 2.')
-
+                
             elif basis_gate.lower() ==  "ghz":
                 # GHZ basis measurement for all qubits.
                 self.circuit += [CNOT(qubits_to_measure[0], q) for q in qubits_to_measure[1:]]
                 self.circuit += H(qubits_to_measure[0])
-            
+                
+            else: raise ValueError("Specified measurement basis is not available")
+
         self.circuit += [MEASURE(q, self.creg[ii]) for (ii, q) in enumerate(qubits_to_measure)]
 
     def change_basis(self, new_basis):
@@ -83,7 +86,6 @@ class Measurement(BaseAnsatz):
             self.basis_gate = new_basis
             self.basis_angle = None
         else: raise TypeError("New basis must be either a list or a string")
-
         return self.__init__(self.num_qubits, self.measured_qubits, self.basis_gate, self.basis_angle)
 
     # TODO: write methods for getting output CData from a measurement result.
