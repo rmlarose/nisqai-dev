@@ -15,7 +15,7 @@
 from pyquil import gates
 
 from nisqai.layer._base_ansatz import BaseAnsatz
-from numpy import pi
+from numpy import array, pi, exp
 
 
 def test_basic():
@@ -71,6 +71,26 @@ def test_compile_small():
     assert compiled_circuit.__str__() == correct
 
 
+def test_compile_defined_gate():
+    """Tests compiling a program with a defined gate."""
+    # get an ansatz
+    ansatz = BaseAnsatz(1)
+
+    # get a matrix for a gate
+    gate = array([[1.0, 0], [0, exp(1j * 2 * pi / 32)]])
+
+    # define a gate
+    ansatz.circuit.defgate("G", gate)
+
+    # add the gate
+    ansatz.circuit += ("G", 0)
+
+    # compile the program
+    compiled = ansatz.compile("1q-qvm")
+
+    print(compiled)
+
+
 def test_add_at():
     """Tests the BaseAnsatz.add_at method for a small circuit."""
     ansatz = BaseAnsatz(4)
@@ -86,5 +106,6 @@ if __name__ == "__main__":
     test_depth()
     test_depth_empty()
     test_compile_small()
+    test_compile_defined_gate()
     test_add_at()
     print("All tests for BaseAnsatz class passed.")
