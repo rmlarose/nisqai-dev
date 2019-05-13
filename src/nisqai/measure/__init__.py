@@ -10,3 +10,5 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+from nisqai.measure._measure import Measurement
+from nisqai.measure._measurement_outcome import MeasurementOutcome

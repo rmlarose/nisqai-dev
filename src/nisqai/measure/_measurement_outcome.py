@@ -64,7 +64,6 @@ class MeasurementOutcome:
         if type(outcome) != ndarray:
             raise ValueError("outcome must be of type numpy.ndarray.")
 
-
         # store the outcome
         self._raw_outcome = outcome
 
@@ -73,7 +72,6 @@ class MeasurementOutcome:
 
         # get the number of shots
         self._shots = self._raw_outcome.shape[0]
-
 
     @property
     def raw_outcome(self):
@@ -115,6 +113,11 @@ class MeasurementOutcome:
                 string += "1"
 
         return int(string, 2)
+
+    # TODO: implement
+    def average_outcome(self):
+        """Returns the average over all sampled bit strings."""
+        pass
 
     def __getitem__(self, index):
         """Returns the sampled outcome for the given index."""
