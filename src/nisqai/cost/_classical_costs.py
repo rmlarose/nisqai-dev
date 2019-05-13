@@ -14,3 +14,25 @@
 # for example, indicator cost function based on measurement results as in the one-qubit-classifier
 
 # should this class take in a "network" or "trainer" class?
+
+
+def indicator(prediction, label):
+    """Returns one if the prediction doesn't match the label, else zero.
+
+    Args:
+
+        prediction : int
+            Prediction of a data point by a classifier.
+
+        label : int
+            Actual label of a data point by a classifier.
+        """
+    return 1 if prediction != label else 0
+
+# TODO: implement
+def cross_entropy(network_distribution, known_distribution):
+    pass
+
+# TODO: implement
+def l2distance(network_distribution, known_distribution):
+    pass

@@ -10,4 +10,30 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-# TODO: test classes/methods/functions in _quantum_costs.py!
+from pyquil.gates import X
+
+from nisqai.cost import HilbertSchmidtDistance
+from nisqai.layer._base_ansatz import BaseAnsatz
+from nisqai.utils._program_utils import ascii_drawer
+
+
+def test_basic():
+    """Visual test of HilbertSchmidtDistance."""
+    # number of qubits
+    n = 2
+
+    # example circuit
+    ansatz = BaseAnsatz(n)
+
+    # adding arbitrary gates
+    ansatz.circuit += [X(q) for q in range(n)]
+
+    # form the HST circuit
+    hstansatz = HilbertSchmidtDistance(ansatz)
+
+    # display the circuit
+    print(hstansatz.hst.circuit)
+
+
+if __name__ == "__main__":
+    test_basic()
