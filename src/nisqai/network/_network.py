@@ -10,6 +10,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+from nisqai.measure import MeasurementOutcome
+
 from pyquil import get_qc
 from pyquil.api import QuantumComputer
 
@@ -17,7 +19,7 @@ from pyquil.api import QuantumComputer
 class Network:
     """Network class."""
 
-    def __init__(self, layers, computer):
+    def __init__(self, layers, computer, predictor=None):
         """Initializes a network with the input layers.
 
         Args:
@@ -45,17 +47,21 @@ class Network:
                     "Aspen-1-2Q-B"
                     "1q-qvm"
                     "5q-qvm"
+
+            predictor : Callable
+                Function that inputs a bit string and outputs a label
+                (i.e., either 0 or 1) representing the class.
         """
         # TODO: check if ordering of layers is valid
 
-        # store the layers and individual elements
+        # Store the layers and individual elements
         # TODO: are both needed? which is better?
         self._layers = layers
         self._encoder = layers[0]
         self._ansatz = layers[1]
         self._measurement = layers[2]
 
-        # store the computer backend
+        # Store the computer backend
         if type(computer) == str:
             self.computer = get_qc(computer)
         elif type(computer) == QuantumComputer:
@@ -63,43 +69,30 @@ class Network:
         else:
             raise TypeError
 
+        # Number of data points
+        self.num_data_points = self._encoder.data.num_samples
+
+        # TODO: Make sure the predictor function is valid (returns 0 or 1)
+        self.predictor = predictor
+
     def _build(self, data_ind):
         """Builds the network as a sequence of quantum circuits."""
         # TODO: what about multicircuit networks?
-        # note 2/4/19: I think this could be handled with another class
+        #  note 2/4/19: I think this could be handled with another class
 
-        # grab the initial encoder circuit for the given index
+        # Grab the initial encoder circuit for the given index
         circuit = self._encoder[data_ind]
 
-        # add all other layers
+        # Add all other layers
         # TODO: allow self.layers to take sublists
-        # TODO: for example, [encoder, [layer1, layer2, layer3, ...], measure]
-        # TODO: this could make it easier to build networks using, say, list comprehensions
+        #  for example, [encoder, [layer1, layer2, layer3, ...], measure]
+        #  this could make it easier to build networks using, say, list comprehensions
         for ii in range(1, len(self._layers)):
             circuit += self._layers[ii]
 
-        # order the given circuit and return it
+        # Order the given circuit and return it
         circuit.order()
         return circuit
-
-    def propagate(self, index, shots):
-        """Runs the network and returns the result, using the current parameters.
-
-        Args:
-            index : int
-                Specifies the index of the data point to propagate.
-
-            shots : int
-                Number of times to execute the circuit.
-        """
-        # get the compiled executable instructions
-        executable = self.compile(index, shots)
-
-        # use the memory map from the ansatz parameters
-        mem_map = self._ansatz.params.memory_map()
-
-        # run the program
-        return self.computer.run(executable, memory_map=mem_map)
 
     def compile(self, index, shots):
         """Returns the compiled program for the data point
@@ -112,13 +105,110 @@ class Network:
             shots : int
                 Number of times to run the circuit.
         """
-        # get the right program to compile
+        # Get the right program to compile. Note type(program) == BaseAnsatz.
         program = self._build(index)
 
-        # compile the program to the appropriate computer
+        # Compile the program to the appropriate computer
         return program.compile(self.computer, shots)
 
-    def train(self, cost, shots):
+    def propagate(self, index, angles=None, shots=1000):
+        """Runs the network (propagates a data point) and returns the circuit result.
+
+        Args:
+            index : int
+                Specifies the index of the data point to propagate.
+
+            angles : dict
+                Angles for the unitary ansatz.
+
+            shots : int
+                Number of times to execute the circuit.
+        """
+        # Get the compiled executable instructions
+        executable = self.compile(index, shots)
+
+        # Use the memory map from the ansatz parameters
+        if not angles:
+            mem_map = self._ansatz.params.memory_map()
+        else:
+            mem_map = self._ansatz.params.update_values_memory_map(angles)
+
+        # Run the program and store the raw results
+        output = self.computer.run(executable, memory_map=mem_map)
+
+        # Return a MeasurementOutcome of the results
+        return MeasurementOutcome(output)
+
+    def predict(self, index, angles=None, shots=1000):
+        """Returns the prediction of the data point corresponding to the index.
+
+        Args:
+            index : int
+                Specifies the index of the data point to get a prediction of.
+
+            angles : dict
+                Angles for the unitary ansatz.
+
+            shots : int
+                Number of times to execute the circuit.
+        """
+        # Propagate the network to get the outcome
+        output = self.propagate(index, angles, shots)
+
+        # Use the predictor function to get the prediction from the output
+        # TODO: NOTE: This is not compatible with classical costs such as cross entropy.
+        prediction = self.predictor(output)
+
+        # Return the prediction
+        return prediction
+
+    def cost_of_point(self, index, angles=None, shots=1000):
+        """Returns the cost of a particular data point.
+
+        Args:
+            index : int
+                Specifies the data point.
+
+            angles : dict
+                Angles for the unitary ansatz.
+
+            shots : int
+                Number of times to execute the circuit.
+        """
+        # Get the network's prediction of the data point
+        prediction = self.predict(index, angles, shots)
+
+        # Get the actual label of the data point
+        label = self._encoder.data.labels[index]
+
+        # TODO: Generalize to arbitrary cost functions.
+        #  Input a cost function into the Network, then use this.
+        return int(prediction != label)
+
+    def cost(self, angles, shots=1000):
+        """Returns the total cost of the network at the given angles.
+
+        Args:
+            angles : dict
+                Angles for the unitary ansatz.
+
+            shots : int
+                Number of times to execute the circuit.
+
+        Returns : float
+            Total cost of the network.
+        """
+        # Variable to store the cost
+        val = 0.0
+
+        # Add the cost for each data point
+        for ii in range(self.num_data_points):
+            val += self.cost_of_point(ii, angles, shots)
+
+        # Return the total normalized cost
+        return val / self.num_data_points
+
+    def train(self, shots=1000, initial_angles=None):
         """Adjusts the parameters in the Network to minimize the cost.
 
         Args:
@@ -128,8 +218,11 @@ class Network:
             shots : int
                 Number of times to run the circuit(s).
         """
-        print("in Network.train, len encoder =", len(self._encoder))
-        #executable = self.compile()
+        # Get a prediction by running the circuit
+
+        # Compute the cost of that prediction
+
+        # Minimize the cost
 
     def __getitem__(self, index):
         """Returns the network with state preparation for the data

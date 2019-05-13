@@ -153,6 +153,105 @@ def test_propagate():
     print(out)
 
 
+def test_propagate_with_angles():
+    """Tests propagating a data point through a network with specified
+    angles for the ansatz.
+    """
+    # get network components
+    data = array([[0], [1]])
+    cdata = LabeledCData(data, labels=array([0, 1]))
+    encoder = BinaryEncoding(cdata)
+    ansatz = ProductAnsatz(1)
+    measure = Measurement(1, [0])
+
+    # make the network
+    qnn = Network([encoder, ansatz, measure], "1q-qvm")
+
+    print(qnn._ansatz.params._values)
+
+    # get angles to propagate with
+    angles = {0: [1.0, 0.0, 0.0]}
+
+    # propagate the network
+    out = qnn.propagate(0, angles, shots=10)
+
+    print(qnn._ansatz.params._values)
+
+    print(out)
+
+
+def test_predict():
+    """Tests getting a prediction for a data point propagated through the network."""
+    # Get components for the network
+    data = array([[1, 0], [0, 1]])
+    cdata = LabeledCData(data, labels=array([0, 1]))
+    encoder = BinaryEncoding(cdata)
+    ansatz = ProductAnsatz(2)
+    measure = Measurement(2, [0, 1])
+
+    # Define a basic predictor (function which inputs a measurement outcome and returns a label)
+    def predictor(outcome):
+        return 0
+
+    # Build the network
+    qnn = Network(layers=[encoder, ansatz, measure], computer="2q-qvm", predictor=predictor)
+
+    # Get the prediction for each data point
+    predict1 = qnn.predict(0)
+    predict2 = qnn.predict(1)
+
+    # Make sure the predictions are both correct
+    assert(predict1 == 0)
+    assert(predict2 == 0)
+
+
+def test_cost_of_point():
+    """Tests Network.cost_of_point."""
+    # Get components for the network
+    data = array([[1, 0], [0, 1]])
+    cdata = LabeledCData(data, labels=array([0, 1]))
+    encoder = BinaryEncoding(cdata)
+    ansatz = ProductAnsatz(2)
+    measure = Measurement(2, [0, 1])
+
+    # Define a basic predictor (function which inputs a measurement outcome and returns a label)
+    def predictor(outcome):
+        return 0
+
+    # Build the network
+    qnn = Network(layers=[encoder, ansatz, measure], computer="2q-qvm", predictor=predictor)
+
+    # Compute the cost of each point
+    cost0 = qnn.cost_of_point(index=0)
+    cost1 = qnn.cost_of_point(index=1)
+
+    # Make sure the costs are correct
+    assert cost0 == 0
+    assert cost1 == 1
+
+
+def test_cost():
+    """Tests that Network.cost returns a correct value for a given Network.."""
+    # Get components for the network
+    data = array([[1, 0], [0, 1]])
+    cdata = LabeledCData(data, labels=array([0, 1]))
+    encoder = BinaryEncoding(cdata)
+    ansatz = ProductAnsatz(2)
+    measure = Measurement(2, [0, 1])
+
+    # Define a basic predictor (function which inputs a measurement outcome and returns a label)
+    def predictor(outcome):
+        return 0
+
+    # Build the network
+    qnn = Network(layers=[encoder, ansatz, measure], computer="2q-qvm", predictor=predictor)
+
+    # Compute the cost of the network
+    cost = qnn.cost(angles={0: [0.0], 1: [0.0]})
+
+    assert abs(cost - 0.5) <= 1e-3
+
+
 def test_train():
     # get network components
     data = array([[0], [1]])
@@ -162,7 +261,9 @@ def test_train():
     measure = Measurement(1, [0])
     qnn = Network([encoder, unitary, measure], "1q-qvm")
 
-    qnn.train(None, None)
+    trainout = qnn.train(10)
+
+    print("trainout =", trainout)
 
 
 if __name__ == "__main__":
@@ -173,5 +274,9 @@ if __name__ == "__main__":
     test_computer_string()
     test_compile()
     test_propagate()
-    test_train()
+    test_propagate_with_angles()
+    test_predict()
+    test_cost_of_point()
+    test_cost()
+    #test_train()
     print("All tests for Network passed.")
