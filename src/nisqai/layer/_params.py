@@ -13,6 +13,7 @@
 from itertools import chain
 
 from pyquil.quil import Program
+from math import log2
 
 
 # Standard specification format for strings.
@@ -60,7 +61,7 @@ class Parameters:
                 IMPORTANT: All qubit indices must explicitly be included as keys, even if
                 some qubits do not have parameterized gates.
 
-                Qubits with no parameterized gates should have empty lists as values
+                Qubits with no parameterized gate at a certain depth will have None in the list
                 for that qubit index.
 
                 Examples:
@@ -84,8 +85,8 @@ class Parameters:
 
 
                     parameters = {0 : [1, 2],
-                                  1 : []
-                                  2 : [3]}
+                                  1 : [None, None]
+                                  2 : [3, None]}
 
                         Corresponds to a circuit which looks like:
 
@@ -262,6 +263,42 @@ def product_ansatz_parameters(num_qubits, depth, value):
     # fill the dictionary with the initial parameter
     for qubit in range(num_qubits):
         params[qubit] = [value] * depth
+
+    # return the Parameters
+    return Parameters(params)
+
+def mera_ansatz_parameters(num_qubits, depth, value):
+    # error checks
+    if type(num_qubits) != int:
+        raise ValueError("num_qubits must be an integer.")
+    if ( ( num_qubits & ( num_qubits - 1 ) ) == 1 ) or num_qubits == 0 :
+        raise ValueError("num_qubits must be a power of 2 for TTN / MERA circuit topology.")
+    if type(depth) != int:
+        raise ValueError("depth must be an integer.")
+    if log2(num_qubits) != depth:
+        raise ValueError("log2(num_qubits) must equal depth for TTN / MERA circuit topology.")
+    try:
+        value = float(value)
+    except TypeError:
+        print("Invalid type for value.")
+        raise TypeError
+    
+    params = {}
+    for i in range(num_qubits):
+        params[i] = [None] * (2*depth - 1)
+    # print("depth", depth)
+    for i in range(depth, 0, -1):
+        for j in range(2):
+            for g in range(2**(i-1) - 1 + j):
+                q = 2**(depth-i+1)*(g-j/2+1)-1
+                layer = 2*(depth-i)+j
+                if i == 1:
+                    layer -= 1
+                params[q][layer] = value
+                params[q + 2**(depth-i)][layer] = value
+
+    # give parameterized circuit structure:
+    # print("params:", params)
 
     # return the Parameters
     return Parameters(params)

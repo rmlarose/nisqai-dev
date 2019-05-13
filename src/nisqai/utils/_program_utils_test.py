@@ -19,7 +19,6 @@ from nisqai.utils._program_utils import order, ascii_drawer
 from nisqai.layer import ProductAnsatz
 
 
-
 def test_order_basic():
     """Tests an ordered program is in the nominal form."""
     p = Program(gates.H(0))
