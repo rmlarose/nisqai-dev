@@ -30,9 +30,9 @@ class CData:
                 data values, shape should be (samples, features).
         """
         # TODO: allow data to be a pandas dataframe, 2d list, and
-        # other possible data types people would just want to throw
-        # into the class without thinking about it
-        # for pandas dataframes, just need to convert it to an array
+        #  other possible data types people would just want to throw
+        #  into the class without thinking about it
+        #  for pandas dataframes, just need to convert it to an array
         self.raw_data = data
         self.data = deepcopy(self.raw_data)
         shape = data.shape
