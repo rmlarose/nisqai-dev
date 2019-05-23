@@ -13,14 +13,19 @@
 from itertools import chain
 
 from pyquil.quil import Program
-from math import log2
-
+from numpy import log2
 
 # Standard specification format for strings.
 # Fill character: 0
 # Right justified: >
 # Three digits long: 3
 FORMAT_SPEC = "0>3"
+
+
+# Errors
+class InvalidParameterList(Exception):
+    pass
+
 
 # TODO: tasks left to do for Parameters class.
 # TODO: (1) Add method for removing parameters.
@@ -186,6 +191,55 @@ class Parameters:
         self._values = values
         return self.memory_map()
 
+    def _list_to_dict(self, lst):
+        """Converts a valid list to a dictionary and returns the dictionary.
+
+        Valid lists have the correct number of parameters (including None elements).
+
+        Args:
+            lst : list
+                List of parameter values, including None elements.
+
+                Examples:
+                    lst = [1, 2, 3, None, 5, 6]
+
+                    is valid for a one qubit circuit with depth six
+
+                    ---[1]---[2]---[3]---[]----[5]---[6]---
+
+                    or a two qubit circuit with depth three
+
+                    ---[1]---[2]---[3]---
+                    ---[]----[5]---[6]---
+
+                    or a three qubit circuit with depth two
+
+                    ---[1]---[2]---
+                    ---[3]---[]----
+                    ---[5]---[6]---
+
+                    Any other parameterized circuit is NOT valid!
+        """
+        # Get the total number of qubits and depth of the parameters
+        nqubits, depth = self.shape()
+
+        # Error check: Make sure the number of parameters in the list is correct
+        if nqubits * depth != len(lst):
+            raise InvalidParameterList(
+                "Number of parameters is not valid. It must be equal to" +
+                "(nqubits * depth) = {}.\n".format(nqubits * depth) +
+                "Are you explicitly declaring None for non-parameterized gates?"
+            )
+
+        # Initialize an empty dictionary for the parameters
+        params = {}
+
+        # Add the values to the dictionary
+        for ii in range(nqubits):
+            params[ii] = lst[ii * depth: (ii + 1) * depth]
+
+        return params
+
     def depth(self):
         """Returns the depth of the Parameters, defined as the maximum length
         of all parameter lists over all qubits.
@@ -267,11 +321,25 @@ def product_ansatz_parameters(num_qubits, depth, value):
     # return the Parameters
     return Parameters(params)
 
+
+# TODO(Yousif): This function needs a doc string. I made a skeleton below.
 def mera_ansatz_parameters(num_qubits, depth, value):
-    # error checks
+    """Returns a Parameters object for the MERA Tensor network ansatz.
+
+    Args:
+        num_qubits : int
+            Number of qubits in the parameterized circuit.
+
+        depth : int
+            [What is depth?]
+
+        value : float
+            [What is value?]
+    """
+    # Error checks
     if type(num_qubits) != int:
         raise ValueError("num_qubits must be an integer.")
-    if ( ( num_qubits & ( num_qubits - 1 ) ) == 1 ) or num_qubits == 0 :
+    if ((num_qubits & (num_qubits - 1)) == 1) or num_qubits == 0:
         raise ValueError("num_qubits must be a power of 2 for TTN / MERA circuit topology.")
     if type(depth) != int:
         raise ValueError("depth must be an integer.")
@@ -282,23 +350,23 @@ def mera_ansatz_parameters(num_qubits, depth, value):
     except TypeError:
         print("Invalid type for value.")
         raise TypeError
-    
+
+    # Define an empty dictionary for the parameters
     params = {}
+
+    # Initialize all parameter values to None
     for i in range(num_qubits):
         params[i] = [None] * (2*depth - 1)
-    # print("depth", depth)
+
+    # TODO(Yousif): What is this code doing?
     for i in range(depth, 0, -1):
         for j in range(2):
-            for g in range(2**(i-1) - 1 + j):
-                q = 2**(depth-i+1)*(g-j/2+1)-1
-                layer = 2*(depth-i)+j
+            for g in range(2**(i - 1) - 1 + j):
+                q = 2**(depth - i + 1)*(g - j / 2 + 1) - 1
+                layer = 2 * (depth - i) + j
                 if i == 1:
                     layer -= 1
                 params[q][layer] = value
                 params[q + 2**(depth-i)][layer] = value
 
-    # give parameterized circuit structure:
-    # print("params:", params)
-
-    # return the Parameters
     return Parameters(params)

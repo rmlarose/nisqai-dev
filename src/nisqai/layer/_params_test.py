@@ -270,6 +270,29 @@ def test_update_parameters_memory_map():
     assert new_map == {"q_000_g_000": [1.0]}
 
 
+def test_list_to_dict():
+    """Tests converting a list to a dictionary for the parameters."""
+    # Get a parameters object
+    params = Parameters({0: [1, 2, 3],
+                         1: [None, 4, None],
+                         2: [5, 6, None]})
+
+    # Make a list of new parameter values of the correct length
+    nqubits, depth = params.shape()
+    list_values = list(range(nqubits * depth))
+
+    # Turn the list into a dictionary of values
+    dict_values = params._list_to_dict(list_values)
+
+    # Define the correct dictionary
+    correct = {0: [0, 1, 2],
+               1: [4, 5, 6],
+               2: [7, 8, 9]}
+
+    # Make sure the converted list is correct
+    assert dict_values == correct
+
+
 if __name__ == "__main__":
     test_basic()
     test_no_parameters_on_qubit()
@@ -285,4 +308,5 @@ if __name__ == "__main__":
     test_product_ansatz_parameters()
     test_update_parameters()
     test_update_parameters_memory_map()
+    test_list_to_dict()
     print("All tests for Parameters class passed.")
