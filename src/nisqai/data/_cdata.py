@@ -152,20 +152,47 @@ class LabeledCData(CData):
         return self.data[item], self.labels[item]
 
 
-def random_data(num_features, num_samples, labels, dtype=float64, seed=None):
+def random_data(num_features, num_samples, labels, seed=None):
     """Returns a CData object with random data."""
-    # seed the random number generator if one is provided
+    # Seed the random number generator if one is provided
     if seed:
         random.seed(seed)
 
-    # get some random data
+    # Get some random data
     data = random.rand(num_samples, num_features)
 
-    # if labels, return a labeled data object
+    # If labels, return a labeled data object
     if labels:
         return LabeledCData(data, labels)
 
     return CData(data)
+
+
+def random_data_vertical_boundary(num_samples, seed=None):
+    """Returns a CData object with randomly sampled data points
+    in the (two-dimensional) unit square. Points left of the line
+    x = 0.5 are labeled 0, and points right of the line are labeled 1.
+
+    Args:
+        num_samples : int
+            Number of data points to return.
+    """
+    # Seed the random number generator if one is provided
+    if seed:
+        random.seed(seed)
+
+    # Get some random data
+    data = random.rand(num_samples, 2)
+
+    # Do the labeling
+    labels = []
+    for point in data:
+        if point[0] < 0.5:
+            labels.append(0)
+        else:
+            labels.append(1)
+
+    return LabeledCData(data, labels)
 
 
 def get_iris_setosa_data():
