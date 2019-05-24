@@ -186,27 +186,25 @@ class Parameters:
         """Updates the values of the Parameters in place.
 
         Args:
-            values : Union[dict, list]
+            values : Union[dict, list, tuple, numpy.ndarray]
                 New parameter values.
         """
-        if type(values) == list:
-            values = self._list_to_dict(values)
-        elif type(values) != dict:
-            raise ValueError("values must be a dict or a list")
+        if type(values) != dict and type(values) != list:
+            try:
+                values = list(values)
+                values = self._list_to_dict(values)
+            except TypeError:
+                raise InvalidParameterList("Invalid type for values. Must be a dict, list, tuple, or numpy array.")
         self._values = values
 
     def update_values_memory_map(self, values):
         """Updates the values of the parameters in place and returns a memory map.
 
         Args:
-            values : Union[dict, list]
+            values : Union[dict, list, tuple, numpy.ndarray]
                 New parameter values
         """
-        if type(values) == list:
-            values = self._list_to_dict(values)
-        elif type(values) != dict:
-            raise ValueError("values must be a dict or a list")
-        self._values = values
+        self.update_values(values)
         return self.memory_map()
 
     def _list_to_dict(self, lst):

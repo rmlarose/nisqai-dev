@@ -308,7 +308,7 @@ class ParametersTest(unittest.TestCase):
         """Tests updating parameters and returning a memory map with a list of new
         parameter values.
         """
-        # get some Parameters
+        # Get some Parameters
         params = Parameters({0: [0]})
 
         # Ensure the initial memory map is correct
