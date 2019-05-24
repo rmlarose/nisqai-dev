@@ -189,7 +189,7 @@ class Parameters:
             values : Union[dict, list, tuple, numpy.ndarray]
                 New parameter values.
         """
-        if type(values) != dict and type(values) != list:
+        if type(values) != dict:
             try:
                 values = list(values)
                 values = self._list_to_dict(values)
