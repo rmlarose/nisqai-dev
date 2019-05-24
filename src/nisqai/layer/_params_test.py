@@ -290,6 +290,39 @@ class ParametersTest(unittest.TestCase):
         # Make sure the converted list is correct
         self.assertEqual(dict_values, correct)
 
+    def test_update_parameters_with_list(self):
+        """Tests updating parameters using a list of new parameter values."""
+        # Get some Parameters
+        params = Parameters({0: [0]})
+
+        # Ensure the initial memory map is correct
+        self.assertEqual(params.memory_map(), {"q_000_g_000": [0.0]})
+
+        # Update the values
+        params.update_values([1])
+
+        # Ensure the new memory map is correct
+        self.assertEqual(params.memory_map(), {"q_000_g_000": [1.0]})
+
+    def test_update_parameters_memory_map_with_list(self):
+        """Tests updating parameters and returning a memory map with a list of new
+        parameter values.
+        """
+        # get some Parameters
+        params = Parameters({0: [0]})
+
+        # Ensure the initial memory map is correct
+        self.assertEqual(params.memory_map(), {"q_000_g_000": [0.0]})
+
+        # Update the values
+        memory_map = params.update_values_memory_map([1])
+
+        # Ensure the returned memory map is correct
+        self.assertEqual(memory_map, {"q_000_g_000": [1.0]})
+
+        # Ensure the new memory map is correct
+        self.assertEqual(params.memory_map(), {"q_000_g_000": [1.0]})
+
 
 if __name__ == "__main__":
     unittest.main()

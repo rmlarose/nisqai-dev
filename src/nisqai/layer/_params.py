@@ -104,14 +104,14 @@ class Parameters:
                     has no parameterized gates. Qubit 2 has parameter 3 for its first
                     parameterized gate.
         """
-        # store the parameter dictionary
+        # Store the parameter dictionary
         # TODO: write a method to make sure the parameter dictionary is valid
         self._values = parameters
 
-        # extract the number of qubits
+        # Extract the number of qubits
         self._num_qubits = len(self._values.keys())
 
-        # make the dictionary of parameter names
+        # Make the dictionary of parameter names
         self.names = self._make_parameter_names()
 
     def _make_parameter_names(self):
@@ -183,11 +183,29 @@ class Parameters:
         return mem_map
 
     def update_values(self, values):
-        """Updates the values of the Parameters in place."""
+        """Updates the values of the Parameters in place.
+
+        Args:
+            values : Union[dict, list]
+                New parameter values.
+        """
+        if type(values) == list:
+            values = self._list_to_dict(values)
+        elif type(values) != dict:
+            raise ValueError("values must be a dict or a list")
         self._values = values
 
     def update_values_memory_map(self, values):
-        """Updates the values of the parameters in place and returns a memory map."""
+        """Updates the values of the parameters in place and returns a memory map.
+
+        Args:
+            values : Union[dict, list]
+                New parameter values
+        """
+        if type(values) == list:
+            values = self._list_to_dict(values)
+        elif type(values) != dict:
+            raise ValueError("values must be a dict or a list")
         self._values = values
         return self.memory_map()
 
@@ -269,12 +287,12 @@ class Parameters:
         if type(program) != Program:
             raise ValueError("Argument program must be a pyquil.Program.")
 
-        # dictionary to store memory references
+        # Dictionary to store memory references
         mem_refs = {}
 
-        # loop through all circuit locations and create memory references
+        # Loop through all circuit locations and create memory references
         for qubit in range(len(self.names)):
-            # create empty list to append memory references to
+            # Create empty list to append memory references to
             mem_refs[qubit] = []
             for name in self.names[qubit]:
                 mem_ref = program.declare(
