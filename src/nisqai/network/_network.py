@@ -135,7 +135,7 @@ class Network:
         executable = self.compile(index, shots)
 
         # Use the memory map from the ansatz parameters
-        if not angles:
+        if angles is None:
             mem_map = self._ansatz.params.memory_map()
         else:
             mem_map = self._ansatz.params.update_values_memory_map(angles)
