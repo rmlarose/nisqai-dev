@@ -14,4 +14,5 @@ from nisqai.data._cdata import (CData,
                                 LabeledCData,
                                 random_data,
                                 get_iris_setosa_data,
-                                get_mnist_data)
+                                get_mnist_data,
+                                random_data_vertical_boundary)
