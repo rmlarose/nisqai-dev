@@ -253,17 +253,27 @@ def test_cost():
 
 
 def test_train():
-    # get network components
-    data = array([[0], [1]])
-    cdata = LabeledCData(data, labels=array([0, 1]))
+    # Get components for the network
+    data = array([[1], [1]])
+    cdata = LabeledCData(data, labels=array([1, 1]))
     encoder = BinaryEncoding(cdata)
-    unitary = ProductAnsatz(1)
+    ansatz = ProductAnsatz(1)
     measure = Measurement(1, [0])
-    qnn = Network([encoder, unitary, measure], "1q-qvm")
 
-    trainout = qnn.train(10)
+    # Define a basic predictor (function which inputs a measurement outcome and returns a label)
+    def predictor(outcome):
+        return 1
 
-    print("trainout =", trainout)
+    # Build the network
+    qnn = Network(layers=[encoder, ansatz, measure], computer="1q-qvm", predictor=predictor)
+
+    # Compute the cost of the network. It should be zero.
+    cost = qnn.cost(angles={0: [0.0]})
+
+    # Train the network
+    res = qnn.train(trainer="COBYLA", initial_angles=[0.0])
+
+    print(res)
 
 
 if __name__ == "__main__":
@@ -278,5 +288,5 @@ if __name__ == "__main__":
     test_predict()
     test_cost_of_point()
     test_cost()
-    #test_train()
+    test_train()
     print("All tests for Network passed.")
