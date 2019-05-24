@@ -14,10 +14,11 @@
 NISQAI - An open-source library for machine learning on near-term quantum computers.
 """
 
+import nisqai.cost
 import nisqai.data
 import nisqai.encode
 import nisqai.layer
+import nisqai.measure
 import nisqai.network
-import nisqai.cost
 
 from ._version import __version__
