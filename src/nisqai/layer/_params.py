@@ -71,13 +71,13 @@ class Parameters:
 
                 Examples:
 
-                    parameters = {0 : [1, 2],
-                                  1 : [3, 4]}
+                    parameters = {0 : [pi/4, pi/3],
+                                  1 : [pi/8, pi/6]}
 
                         Corresponds to a circuit which looks like:
 
-                        Qubit 0 ----[1]----[2]----
-                        Qubit 1 ----[3]----[4]----
+                        Qubit 0 ----[pi/4]----[pi/3]----
+                        Qubit 1 ----[pi/8]----[pi/6]----
 
                         That is: A circuit with two qubits, 0 and 1, where qubit 0 has
                         parameters 1 and 2 for its first and second parameterized gates,
@@ -346,11 +346,45 @@ def mera_ansatz_parameters(num_qubits, depth, value):
         num_qubits : int
             Number of qubits in the parameterized circuit.
 
-        depth : int
-            [What is depth?]
+        depth : int [must equal log2(num_qubits)]
+            Scale of MERA network, equivalently, the number of times binary branching occurs.
+
+            Example. Here is a depth 3 MERA network:
+
+            |0>-----||--
+                    ||
+            |0>--||-||-------||--
+                 ||          ||
+            |0>--||-||--     ||
+                    ||       ||
+            |0>--||-||----||-||----||--
+                 ||       ||       ||
+            |0>--||-||--  ||       ||
+                    ||    ||       ||
+            |0>--||-||----||-||--  ||
+                 ||          ||    ||
+            |0>--||-||--     ||    ||
+                    ||       ||    ||
+            |0>-----||-------||----||------MEASURE
+                 1        2        3
+            
+            The ||'s represent 2-body gates and which qubits they operate on.
+            Qubit wires that are discontinued are being traced out / discarded.
+            
+            Layer 1 with num_qubits/(2^1) alternating gates; 
+            Layer 2 with num_qubits/(2^2) alternating gates;
+            ...
+            Layer i with num_qubits/(2^i) alternating gates.
+
+            Thus we see why the constraint depth = log2(num_qubits) is necessary,
+            and that depth is NOT the actual circuit depth (it is actually
+            2*depth - 1 gates deep).
+
+            For the inspiration of our implementation, see "Hierarchical Quantum Classifiers" by
+            Grant et al. at https://arxiv.org/abs/1804.03680
 
         value : float
-            [What is value?]
+            Initial parameter value that appears in all gates.
     """
     # Error checks
     if type(num_qubits) != int:
@@ -374,7 +408,7 @@ def mera_ansatz_parameters(num_qubits, depth, value):
     for i in range(num_qubits):
         params[i] = [None] * (2*depth - 1)
 
-    # TODO(Yousif): What is this code doing?
+    # This code builds the MERA structure outlined above in the example.
     for i in range(depth, 0, -1):
         for j in range(2):
             for g in range(2**(i - 1) - 1 + j):
