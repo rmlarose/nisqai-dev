@@ -346,7 +346,7 @@ def mera_ansatz_parameters(num_qubits, depth, value):
             Number of qubits in the parameterized circuit.
 
         depth : int [must equal log2(num_qubits)]
-            Scale of MERA network, equivalently, the number of times binary branching occurs.
+            Number of "hyperlayers" in MERA network, i.e., the number of different "scales" of alternating layers.
 
             Example. Here is a depth 3 MERA network:
 
