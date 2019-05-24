@@ -10,4 +10,4 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from ._program_utils import order, ascii_drawer_simple
+from nisqai.utils._program_utils import order, ascii_drawer
