@@ -338,7 +338,6 @@ def product_ansatz_parameters(num_qubits, depth, value):
     return Parameters(params)
 
 
-# TODO(Yousif): This function needs a doc string. I made a skeleton below.
 def mera_ansatz_parameters(num_qubits, depth, value):
     """Returns a Parameters object for the MERA Tensor network ansatz.
 
