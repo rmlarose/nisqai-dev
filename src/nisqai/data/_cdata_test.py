@@ -124,6 +124,18 @@ class DataTest(unittest.TestCase):
         cdata.scale_features('L1 norm')
         self.assertTrue(allclose(cdata.data, answer))
 
+    def test_reduce_features_size(self):
+        """Ensures PCA gives correct shape."""
+        data = array([[0.564, 20.661, 1], [-18.512, 41.168, -1],
+                      [-0.009, 20.440, 7]])
+        cdata = CData(data)
+
+        # perform PCA to reduce to 2 features
+        kfeat = .6 # reduce by nearest int closest to 60% rounding up
+        data2d = cdata.reduce_features(kfeat)
+        self.assertTrue(data2d.shape == (2, 2))    
+        
+
     def test_get_iris_setosa_data(self):
         """Checks that iris setosa data set is of correct length."""
         iris = get_iris_setosa_data()

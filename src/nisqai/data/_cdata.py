@@ -10,10 +10,12 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from numpy import array, random, float64
+from math import ceil
+from numpy import (array, random, float64,
+                   mean, cov)
 from numpy.linalg import norm as LAnorm
+from numpy.linalg import eig
 from copy import deepcopy
-import torch
 import os
 import torchvision
 from nisqai.data.data_sets import iris
@@ -93,17 +95,30 @@ class CData:
         Examples:
             reduce_features(0.2) --> keeps top 20% of features after PCA
         """
-        # cast data as PyTorch tensor
-        data = torch.from_numpy(self.data)
+        data = self.data
+        
+        # calculate mean of data along each column (feature)
+        M = mean(data, axis=0)
+        
+        # center columns by subtracting column means
+        C = data - M
+        
+        # calcualte covariance of centered matrix
+        # np.cov expects each row to be variable (i.e. feature)
+        V = cov(C.T)
+        
+        # get eigendecomposition of covariance matrix
+        values, vectors = eig(V)
 
-        # preprocess the data
-        data_mean = torch.mean(data, 0)
-        data = data - data_mean.expand_as(data)
+        # project data w/ 1 col as 1st principle component of P
+        P = vectors.T.dot(C.T).T
 
-        # do svd
-        U, S, V = torch.svd(torch.t(data))
-        return torch.mm(data, U[:, :kfeat])
+        # get only kfeat fraction of data
+        pnum = ceil(kfeat*self.features)
+        data = data.resisze(data.num_samples, pnum)
 
+        return data
+    
     def __getitem__(self, item):
         """Override indexing to return data elements."""
         return self.data[item]
