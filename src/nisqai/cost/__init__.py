@@ -10,5 +10,5 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+from nisqai.cost._classical_costs import indicator
 from nisqai.cost._quantum_costs import HilbertSchmidtDistance
-

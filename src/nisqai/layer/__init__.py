@@ -10,6 +10,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from ._alternating_ansatz import AlternatingAnsatz
-from ._entangling_ansatz import EntanglingAnsatz
-from ._product_ansatz import ProductAnsatz
+from nisqai.layer._alternating_ansatz import AlternatingAnsatz
+from nisqai.layer._entangling_ansatz import EntanglingAnsatz
+from nisqai.layer._mera_ansatz import MeraAnsatz
+from nisqai.layer._product_ansatz import ProductAnsatz

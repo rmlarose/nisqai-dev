@@ -12,8 +12,15 @@
 
 from nisqai.measure import MeasurementOutcome
 
+from numpy import ndarray
+
 from pyquil import get_qc
 from pyquil.api import QuantumComputer
+
+# TODO: This should be updated to something like
+#  from nisqai.trainer import this_optimization_method
+#  for now this is just for simplicity
+from scipy.optimize import minimize
 
 
 class Network:
@@ -118,7 +125,7 @@ class Network:
             index : int
                 Specifies the index of the data point to propagate.
 
-            angles : dict
+            angles : Union[dict, list]
                 Angles for the unitary ansatz.
 
             shots : int
@@ -128,7 +135,7 @@ class Network:
         executable = self.compile(index, shots)
 
         # Use the memory map from the ansatz parameters
-        if not angles:
+        if angles is None:
             mem_map = self._ansatz.params.memory_map()
         else:
             mem_map = self._ansatz.params.update_values_memory_map(angles)
@@ -146,7 +153,7 @@ class Network:
             index : int
                 Specifies the index of the data point to get a prediction of.
 
-            angles : dict
+            angles : Union[dict, list]
                 Angles for the unitary ansatz.
 
             shots : int
@@ -169,7 +176,7 @@ class Network:
             index : int
                 Specifies the data point.
 
-            angles : dict
+            angles : Union(dict, list)
                 Angles for the unitary ansatz.
 
             shots : int
@@ -189,7 +196,7 @@ class Network:
         """Returns the total cost of the network at the given angles.
 
         Args:
-            angles : dict
+            angles : Union(dict, list)
                 Angles for the unitary ansatz.
 
             shots : int
@@ -208,21 +215,35 @@ class Network:
         # Return the total normalized cost
         return val / self.num_data_points
 
-    def train(self, shots=1000, initial_angles=None):
+    def train(self, trainer, initial_angles, shots=1000):
         """Adjusts the parameters in the Network to minimize the cost.
 
         Args:
-            cost : Callable
-                Function that returns the cost of the Network.
+            trainer : callable
+                Optimization function used to minimize the cost.
+
+            initial_angles : Union[dict, list]
 
             shots : int
                 Number of times to run the circuit(s).
         """
-        # Get a prediction by running the circuit
+        # Make sure the trainer is valid
+        if type(trainer) != str:
+            raise ValueError(
+                "Invalid trainer. Currently must be a string identifier.\n" +
+                "Options are:\n" +
+                "\t'Powell'\n"
+                "\t'COBYLA'\n"
+            )
 
-        # Compute the cost of that prediction
+        # Define the objective function
+        obj = lambda angles: self.cost(angles=angles, shots=shots)
 
-        # Minimize the cost
+        # Call the trainer
+        res = minimize(obj, x0=initial_angles, method=trainer)
+
+        # TODO: Define a NISQAI standard output for trainer results
+        return res
 
     def __getitem__(self, index):
         """Returns the network with state preparation for the data

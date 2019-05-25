@@ -10,4 +10,9 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from nisqai.data._cdata import CData, LabeledCData, random_data
+from nisqai.data._cdata import (CData,
+                                LabeledCData,
+                                random_data,
+                                get_iris_setosa_data,
+                                get_mnist_data,
+                                random_data_vertical_boundary)

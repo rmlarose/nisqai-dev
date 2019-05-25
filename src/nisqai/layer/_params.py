@@ -71,13 +71,13 @@ class Parameters:
 
                 Examples:
 
-                    parameters = {0 : [1, 2],
-                                  1 : [3, 4]}
+                    parameters = {0 : [pi/4, pi/3],
+                                  1 : [pi/8, pi/6]}
 
                         Corresponds to a circuit which looks like:
 
-                        Qubit 0 ----[1]----[2]----
-                        Qubit 1 ----[3]----[4]----
+                        Qubit 0 ----[pi/4]----[pi/3]----
+                        Qubit 1 ----[pi/8]----[pi/6]----
 
                         That is: A circuit with two qubits, 0 and 1, where qubit 0 has
                         parameters 1 and 2 for its first and second parameterized gates,
@@ -104,14 +104,14 @@ class Parameters:
                     has no parameterized gates. Qubit 2 has parameter 3 for its first
                     parameterized gate.
         """
-        # store the parameter dictionary
+        # Store the parameter dictionary
         # TODO: write a method to make sure the parameter dictionary is valid
         self._values = parameters
 
-        # extract the number of qubits
+        # Extract the number of qubits
         self._num_qubits = len(self._values.keys())
 
-        # make the dictionary of parameter names
+        # Make the dictionary of parameter names
         self.names = self._make_parameter_names()
 
     def _make_parameter_names(self):
@@ -183,12 +183,28 @@ class Parameters:
         return mem_map
 
     def update_values(self, values):
-        """Updates the values of the Parameters in place."""
+        """Updates the values of the Parameters in place.
+
+        Args:
+            values : Union[dict, list, tuple, numpy.ndarray]
+                New parameter values.
+        """
+        if type(values) != dict:
+            try:
+                values = list(values)
+                values = self._list_to_dict(values)
+            except TypeError:
+                raise InvalidParameterList("Invalid type for values. Must be a dict, list, tuple, or numpy array.")
         self._values = values
 
     def update_values_memory_map(self, values):
-        """Updates the values of the parameters in place and returns a memory map."""
-        self._values = values
+        """Updates the values of the parameters in place and returns a memory map.
+
+        Args:
+            values : Union[dict, list, tuple, numpy.ndarray]
+                New parameter values
+        """
+        self.update_values(values)
         return self.memory_map()
 
     def _list_to_dict(self, lst):
@@ -269,12 +285,12 @@ class Parameters:
         if type(program) != Program:
             raise ValueError("Argument program must be a pyquil.Program.")
 
-        # dictionary to store memory references
+        # Dictionary to store memory references
         mem_refs = {}
 
-        # loop through all circuit locations and create memory references
+        # Loop through all circuit locations and create memory references
         for qubit in range(len(self.names)):
-            # create empty list to append memory references to
+            # Create empty list to append memory references to
             mem_refs[qubit] = []
             for name in self.names[qubit]:
                 mem_ref = program.declare(
@@ -322,7 +338,6 @@ def product_ansatz_parameters(num_qubits, depth, value):
     return Parameters(params)
 
 
-# TODO(Yousif): This function needs a doc string. I made a skeleton below.
 def mera_ansatz_parameters(num_qubits, depth, value):
     """Returns a Parameters object for the MERA Tensor network ansatz.
 
@@ -330,11 +345,45 @@ def mera_ansatz_parameters(num_qubits, depth, value):
         num_qubits : int
             Number of qubits in the parameterized circuit.
 
-        depth : int
-            [What is depth?]
+        depth : int [must equal log2(num_qubits)]
+            Number of "hyperlayers" in MERA network, i.e., the number of different "scales" of alternating layers.
+
+            Example. Here is a depth 3 MERA network:
+
+            |0>-----||--
+                    ||
+            |0>--||-||-------||--
+                 ||          ||
+            |0>--||-||--     ||
+                    ||       ||
+            |0>--||-||----||-||----||--
+                 ||       ||       ||
+            |0>--||-||--  ||       ||
+                    ||    ||       ||
+            |0>--||-||----||-||--  ||
+                 ||          ||    ||
+            |0>--||-||--     ||    ||
+                    ||       ||    ||
+            |0>-----||-------||----||------MEASURE
+                 1        2        3
+            
+            The ||'s represent 2-body gates and which qubits they operate on.
+            Qubit wires that are discontinued are being traced out / discarded.
+            
+            Layer 1 with num_qubits/(2^1) alternating gates; 
+            Layer 2 with num_qubits/(2^2) alternating gates;
+            ...
+            Layer i with num_qubits/(2^i) alternating gates.
+
+            Thus we see why the constraint depth = log2(num_qubits) is necessary,
+            and that depth is NOT the actual circuit depth (it is actually
+            2*depth - 1 gates deep).
+
+            For the inspiration of our implementation, see "Hierarchical Quantum Classifiers" by
+            Grant et al. at https://arxiv.org/abs/1804.03680
 
         value : float
-            [What is value?]
+            Initial parameter value that appears in all gates.
     """
     # Error checks
     if type(num_qubits) != int:
@@ -358,7 +407,7 @@ def mera_ansatz_parameters(num_qubits, depth, value):
     for i in range(num_qubits):
         params[i] = [None] * (2*depth - 1)
 
-    # TODO(Yousif): What is this code doing?
+    # This code builds the MERA structure outlined above in the example.
     for i in range(depth, 0, -1):
         for j in range(2):
             for g in range(2**(i - 1) - 1 + j):
