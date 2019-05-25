@@ -11,3 +11,4 @@
 #   limitations under the License.
 
 from ._program_utils import order, ascii_drawer_simple
+from ._forest_utils import activate_qvm_quilc, deactivate_qvm_quilc
