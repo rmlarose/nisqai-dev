@@ -96,28 +96,26 @@ class CData:
             reduce_features(0.2) --> keeps top 20% of features after PCA
         """
         data = self.data
-        
+
         # calculate mean of data along each column (feature)
         M = mean(data, axis=0)
-        
+
         # center columns by subtracting column means
         C = data - M
-        
+
         # calcualte covariance of centered matrix
         # np.cov expects each row to be variable (i.e. feature)
         V = cov(C.T)
-        
+
         # get eigendecomposition of covariance matrix
         values, vectors = eig(V)
 
-        # project data w/ 1 col as 1st principle component of P
+        # project data w/ 1st col as 1st principle component of P
         P = vectors.T.dot(C.T).T
 
-        # get only kfeat fraction of data
-        pnum = ceil(kfeat*self.features)
-        data = data.resisze(data.num_samples, pnum)
-
-        return data
+        # only return kfeat fraction of features with data
+        n_features = ceil(kfeat*self.num_features)
+        return P.T[:n_features].T
     
     def __getitem__(self, item):
         """Override indexing to return data elements."""

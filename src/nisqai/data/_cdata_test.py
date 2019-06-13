@@ -133,7 +133,7 @@ class DataTest(unittest.TestCase):
         # perform PCA to reduce to 2 features
         kfeat = .6 # reduce by nearest int closest to 60% rounding up
         data2d = cdata.reduce_features(kfeat)
-        self.assertTrue(data2d.shape == (2, 2))    
+        self.assertTrue(data2d.shape == (3, 2))    
         
 
     def test_get_iris_setosa_data(self):
