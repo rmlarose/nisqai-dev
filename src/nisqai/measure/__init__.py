@@ -12,3 +12,4 @@
 
 from nisqai.measure._measure import Measurement
 from nisqai.measure._measurement_outcome import MeasurementOutcome
+from nisqai.measure._predictors import split_predictor
