@@ -17,8 +17,11 @@ import time
 
 import nisqai
 
+# Start the Rigetti QVM and Quil compiler
+qvm_server, quilc_server, _ = nisqai.utils.startQVMandQUILC()
+
 # Get random two dimensional data
-cdata = nisqai.data.random_data_vertical_boundary(50)
+cdata = nisqai.data.random_data_vertical_boundary(20)
 
 # Use a dense angle encoding (two features per qubit)
 encoder = nisqai.encode.DenseAngleEncoding(
@@ -42,3 +45,6 @@ res = qnn.train(trainer="COBYLA", initial_angles=[0, 0, 0], shots=1000)
 print("Train time:", (time.time() - start) / 60, "minutes.")
 print("Train result:")
 print(res)
+
+# Stop the Rigetti QVM and Quil compiler
+nisqai.utils.stopQVMandQUILC(qvm_server, quilc_server)
