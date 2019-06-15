@@ -10,7 +10,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-"""Example notebook demonstrating the single qubit perceptron on random data using NISQAI."""
+"""Example NISQAI script demonstrating the single qubit perceptron on random data."""
 
 # Imports
 import time
