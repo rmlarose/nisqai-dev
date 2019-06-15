@@ -20,5 +20,6 @@ import nisqai.encode
 import nisqai.layer
 import nisqai.measure
 import nisqai.network
+import nisqai.utils
 
 from ._version import __version__
