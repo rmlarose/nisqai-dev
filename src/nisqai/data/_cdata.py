@@ -42,16 +42,26 @@ class CData:
         #  for pandas dataframes, just need to convert it to an array
         self.raw_data = data
         self.data = deepcopy(self.raw_data)
-        shape = data.shape
-        self.num_samples = shape[0]
-        # to get total number of features from tensor data
-        total = 1
-        for x in shape[1::]:
-            total *= x
-        self.num_features = total
 
         # Descriptors for the data set
         self._centered = False
+        self._centered = self.is_centered()
+
+    @property
+    def num_features(self):
+        """Returns the number of features in the data set.
+
+        Return type: int
+        """
+        return self.data.shape[1]
+
+    @property
+    def num_samples(self):
+        """Returns the number of samples (feature vectors) in the data set.
+
+        Return type: int
+        """
+        return self.data.shape[0]
 
     def mean(self):
         """Returns the mean of the data."""
@@ -59,10 +69,21 @@ class CData:
 
     def center(self):
         """Modifies data by subtracting the mean."""
-        self.data = self.data - mean(self.data, axis=0)
-        self._centered = True
+        if not self._centered:
+            self.data = self.data - mean(self.data, axis=0)
+            self._centered = True
 
-    def is_centered(self):
+    def is_centered(self, tolerance=1e-3):
+        """Returns True if the data set is centered, else False."""
+        # If we know the data is already centered, return True
+        if self._centered:
+            return True
+
+        # Otherwise, do the standard check
+        if abs(sum(self.mean()) - 0.0) > tolerance:
+            self._centered = False
+        else:
+            self._centered = True
         return self._centered
 
     def scale_features(self, method):
@@ -251,8 +272,16 @@ def get_mnist_data():
     MNIST data retrieved from training data and labels
     contained in the torchvision datasets module.
     """
+    pass
     script_dir = os.path.dirname(__file__)
     file_path = os.path.join(script_dir, './data_sets/MNIST/')
     data = torchvision.datasets.MNIST(file_path, train=True,
                                       transform=None, target_transform=None, download=False)
+    # TODO: What are the types here:
+    #  Data is required to be a two-dimensional numpy.ndarray of the form
+    #  [feature vector #1,
+    #   feature vector #2,
+    #   ...
+    #   feature vector #N]
+    #  and features should be a one-dimensional numpy.ndarray of the same length.
     return LabeledCData(data.train_data.numpy(), data.train_labels.numpy())
