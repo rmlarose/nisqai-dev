@@ -113,27 +113,33 @@ class DataTest(unittest.TestCase):
 
     def test_scale_features_L1_norm(self):
         """Tests L1 norm method of scale_features."""
+        # Get some data
         data = array([[0.564, 20.661], [-18.512, 41.168], [-0.009, 20.440]])
         cdata = CData(data)
 
-        # correct answer computed in Mathematica
+        # Correct answer computed in Mathematica
         # TODO: can we compute the right answer in Python?
         answer = array([[0.029552, 0.25114], [-0.969976, 0.500407], [-0.000471575, 0.248453]])
 
-        # perform L1 normalization and check answer
+        # Perform L1 normalization and check answer
         cdata.scale_features('L1 norm')
         self.assertTrue(allclose(cdata.data, answer))
 
     def test_reduce_features_size(self):
         """Ensures PCA gives correct shape."""
+        # Get some data
         data = array([[0.564, 20.661, 1], [-18.512, 41.168, -1],
                       [-0.009, 20.440, 7]])
         cdata = CData(data)
 
-        # perform PCA to reduce to 2 features
-        kfeat = .6 # reduce by nearest int closest to 60% rounding up
-        data2d = cdata.reduce_features(kfeat)
-        self.assertTrue(data2d.shape == (3, 2))    
+        # ===================================
+        # Perform PCA to reduce to 2 features
+        # ===================================
+
+        # Reduce by nearest int closest to 60%, rounding up
+        frac = 0.6
+        cdata.reduce_features(frac)
+        self.assertTrue(cdata.data.shape == (3, 2))
         
 
     def test_get_iris_setosa_data(self):

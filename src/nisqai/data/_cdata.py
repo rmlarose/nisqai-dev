@@ -11,13 +11,18 @@
 #   limitations under the License.
 
 from math import ceil
-from numpy import (array, random, float64,
-                   mean, cov)
+import os
+
+from copy import deepcopy
+from numpy import (array,
+                   random,
+                   mean,
+                   cov)
 from numpy.linalg import norm as LAnorm
 from numpy.linalg import eig
-from copy import deepcopy
-import os
+
 import torchvision
+
 from nisqai.data.data_sets import iris
 
 
@@ -45,8 +50,23 @@ class CData:
             total *= x
         self.num_features = total
 
+        # Descriptors for the data set
+        self._centered = False
+
+    def mean(self):
+        """Returns the mean of the data."""
+        return mean(self.data, axis=0)
+
+    def center(self):
+        """Modifies data by subtracting the mean."""
+        self.data = self.data - mean(self.data, axis=0)
+        self._centered = True
+
+    def is_centered(self):
+        return self._centered
+
     def scale_features(self, method):
-        """ Performs feature scaling on data.
+        """Performs feature scaling on data.
 
         Args:
             method [type: string]
@@ -62,60 +82,73 @@ class CData:
                 * 'L1 norm'
                 x' = x / L1norm(x)
         """
-        data = self.data
-        if method == 'min-max norm':
-            mmin = data.min(axis=0)
-            mmax = data.max(axis=0)
-            self.data = (data - mmin) / (mmax - mmin)
-        elif method == 'mean norm':
-            mean = data.mean(axis=0)
-            mmin = data.min(axis=0)
-            mmax = data.max(axis=0)
-            self.data = (data - mean) / (mmax - mmin)
-        elif method == 'standardize':
-            mean = data.mean(axis=0)
-            # ddof = 1 gives sample sd
-            sd = data.std(axis=0, ddof=1)
-            self.data = (data - mean) / sd
-        elif method == 'L2 norm':
-            norm = LAnorm(data, axis=0)
-            self.data = data / norm
-        elif method == 'L1 norm':
-            L1norm = sum(abs(data))
-            self.data = data / L1norm
+        # Try to catch wrong string formatting
+        method = method.lower().strip()
 
-    def reduce_features(self, kfeat):
+        # Min-max norm
+        if method == 'min-max norm':
+            mmin = self.data.min(axis=0)
+            mmax = self.data.max(axis=0)
+            self.data = (self.data - mmin) / (mmax - mmin)
+
+        # Mean norm
+        elif method == 'mean norm':
+            mean = self.data.mean(axis=0)
+            mmin = self.data.min(axis=0)
+            mmax = self.data.max(axis=0)
+            self.data = (self.data - mean) / (mmax - mmin)
+
+        # Standardize
+        elif method == 'standardize':
+            mean = self.data.mean(axis=0)
+            # ddof = 1 gives sample sd
+            sd = self.data.std(axis=0, ddof=1)
+            self.data = (self.data - mean) / sd
+
+        # L2 norm
+        elif method == 'L2 norm' or method == "l2 norm":
+            norm = LAnorm(self.data, axis=0)
+            self.data = self.data / norm
+
+        # L1 norm
+        elif method == 'L1 norm' or method == "l1 norm":
+            L1norm = sum(abs(self.data))
+            self.data = self.data / L1norm
+
+        else:
+            raise ValueError("Unsupported normalization method.")
+
+    def reduce_features(self, fraction):
         """Performs (classical) principal component analysis
          on the data and keeps the desired number of features.
 
+         Modifies self.data in place.
+
         Args:
-            kfeat [type: float]
+            fraction [type: float]
                 keeps this ratio of features.
 
-        Examples:
+        Example:
             reduce_features(0.2) --> keeps top 20% of features after PCA
         """
-        data = self.data
+        # Center columns by subtracting the column mean
+        if not self._centered:
+            self.center()
 
-        # calculate mean of data along each column (feature)
-        M = mean(data, axis=0)
+        # Calculate the covariance of centered matrix
+        # Note: np.cov expects each row to be variable (i.e. feature)
+        covariance = cov(self.data.T)
 
-        # center columns by subtracting column means
-        C = data - M
+        # Get eigenvectors of covariance matrix
+        _, evecs = eig(covariance)
 
-        # calcualte covariance of centered matrix
-        # np.cov expects each row to be variable (i.e. feature)
-        V = cov(C.T)
+        # Project data with first column as first principle component
+        projected = evecs.T.dot(self.data.T).T
 
-        # get eigendecomposition of covariance matrix
-        values, vectors = eig(V)
+        # Only keep the input fraction of features
+        nfeatures = ceil(fraction * self.num_features)
 
-        # project data w/ 1st col as 1st principle component of P
-        P = vectors.T.dot(C.T).T
-
-        # only return kfeat fraction of features with data
-        n_features = ceil(kfeat*self.num_features)
-        return P.T[:n_features].T
+        self.data = projected.T[:nfeatures].T
     
     def __getitem__(self, item):
         """Override indexing to return data elements."""
@@ -124,7 +157,6 @@ class CData:
 
 class LabeledCData(CData):
     """Classical data with labels."""
-
     def __init__(self, data, labels):
         """Initialize classical data with labels.
 
@@ -155,7 +187,7 @@ class LabeledCData(CData):
     def train_test_split(self, ratio, shuffle=False):
         """Returns testing and training data."""
         # TODO: take into account the shuffle flag
-        assert ratio >= 0 and ratio <= 1
+        assert 0 <= ratio <= 1
         ind = int(ratio * self.num_samples)
         return self.data[:ind], self.data[ind + 1:]
 
