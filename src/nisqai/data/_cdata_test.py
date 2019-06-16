@@ -141,7 +141,33 @@ class DataTest(unittest.TestCase):
         frac = 0.6
         cdata.reduce_features(frac)
         self.assertTrue(cdata.data.shape == (3, 2))
-        
+
+    def test_keep_labels(self):
+        """Tests keeping only a subset of data with certain labels."""
+        # Create some arbitrary data and labels
+        data = array([[1], [2], [3], [4], [5], [6]])
+        labels = array([1, 1, 2, 2, 3, 3])
+
+        # Create a LabeledCData object
+        lcdata = LabeledCData(data, labels)
+
+        self.assertTrue(array_equal(lcdata.data, data))
+        self.assertTrue(array_equal(lcdata.labels, labels))
+
+        self.assertIn(3, lcdata.labels)
+
+        # Only keep the 1 and 2 labels
+        lcdata.keep_data_with_labels([1, 2])
+
+        self.assertNotIn(3, lcdata.labels)
+
+        # Correct answers
+        newdata = array([[1], [2], [3], [4]])
+        newlabels = array([1, 1, 2, 2])
+
+        print(lcdata.data)
+        self.assertTrue(array_equal(lcdata.data, newdata))
+        self.assertTrue(array_equal(lcdata.labels, newlabels))
 
     def test_get_iris_setosa_data(self):
         """Checks that iris setosa data set is of correct length."""

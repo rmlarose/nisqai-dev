@@ -17,10 +17,10 @@ from copy import deepcopy
 from numpy import (array,
                    random,
                    mean,
-                   cov)
+                   cov,
+                   delete)
 from numpy.linalg import norm as LAnorm
 from numpy.linalg import eig
-
 import torchvision
 
 from nisqai.data.data_sets import iris
@@ -205,12 +205,47 @@ class LabeledCData(CData):
         """
         return array([func(x) for x in self.data])
 
+    @property
+    def num_classes(self):
+        """Returns the number of distinct labels."""
+        return len(set(self.labels))
+
     def train_test_split(self, ratio, shuffle=False):
         """Returns testing and training data."""
         # TODO: take into account the shuffle flag
         assert 0 <= ratio <= 1
         ind = int(ratio * self.num_samples)
         return self.data[:ind], self.data[ind + 1:]
+
+    def keep_data_with_labels(self, labels_to_keep):
+        """Modifies data by removing a (data, label) pair if the label is not in labels_to_keep.
+
+        Args:
+            labels_to_keep : list<int>
+                List of labels to keep (discard all others).
+
+                Examples:
+                    labels_to_keep = [0, 1]
+                        Discard all (data, label) pairs with labels other than 0 or 1.
+
+                    labels_to_keep = [0, 2]
+                        Discard all (data, label) pairs with labels other than 0 or 2.
+
+        REQUIRES:
+            Each label in labels_to_keep to be a valid label present in the data set.
+        """
+        # List to store all indices at which to delete (data, label) pairs
+        indices = []
+
+        # Loop over all (data, label) pairs, keeping track of the index
+        for (index, label) in enumerate(self.labels):
+            # If we don't want to keep this label, add this to the indices to remove
+            if label not in labels_to_keep:
+                indices.append(index)
+
+        # Remove the (data, label) pairs at these indices
+        self.data = delete(self.data, indices, axis=0)
+        self.labels = delete(self.labels, indices)
 
     def __getitem__(self, item):
         """Override indexing to return data elements."""
