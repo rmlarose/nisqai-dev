@@ -154,18 +154,68 @@ class DataTest(unittest.TestCase):
         self.assertTrue(array_equal(lcdata.data, data))
         self.assertTrue(array_equal(lcdata.labels, labels))
 
+        # Make sure 3 is in the labels, for contrast
         self.assertIn(3, lcdata.labels)
 
         # Only keep the 1 and 2 labels
         lcdata.keep_data_with_labels([1, 2])
 
+        # Make sure 3 has been removed from the labels, for contrast
         self.assertNotIn(3, lcdata.labels)
 
         # Correct answers
         newdata = array([[1], [2], [3], [4]])
         newlabels = array([1, 1, 2, 2])
 
-        print(lcdata.data)
+        # Make sure the new data is correct
+        self.assertTrue(array_equal(lcdata.data, newdata))
+        self.assertTrue(array_equal(lcdata.labels, newlabels))
+
+    def test_keep_labels_all(self):
+        """Tests keeping only a subset of data with certain labels."""
+        # Create some arbitrary data and labels
+        data = array([[1], [2], [3], [4], [5], [6]])
+        labels = array([1, 1, 2, 2, 1, 2])
+
+        # Create a LabeledCData object
+        lcdata = LabeledCData(data, labels)
+
+        self.assertTrue(array_equal(lcdata.data, data))
+        self.assertTrue(array_equal(lcdata.labels, labels))
+
+        # Only keep the 1 and 2 labels
+        lcdata.keep_data_with_labels([1, 2])
+
+        # Make sure the new data is correct
+        self.assertTrue(array_equal(lcdata.data, data))
+        self.assertTrue(array_equal(lcdata.labels, labels))
+
+    def test_keep_labels2(self):
+        """Tests keeping only a subset of data with certain labels."""
+        # Create some arbitrary data and labels
+        data = array([[1], [2], [3], [4], [5], [6]])
+        labels = array([1, 1, 2, 2, 3, 3])
+
+        # Create a LabeledCData object
+        lcdata = LabeledCData(data, labels)
+
+        self.assertTrue(array_equal(lcdata.data, data))
+        self.assertTrue(array_equal(lcdata.labels, labels))
+
+        # Make sure 2 is in the labels, for contrast
+        self.assertIn(2, lcdata.labels)
+
+        # Only keep the 1 and 3 labels
+        lcdata.keep_data_with_labels([1, 3])
+
+        # Make sure 3 has been removed from the labels, for contrast
+        self.assertNotIn(2, lcdata.labels)
+
+        # Correct answers
+        newdata = array([[1], [2], [5], [6]])
+        newlabels = array([1, 1, 3, 3])
+
+        # Make sure the new data is correct
         self.assertTrue(array_equal(lcdata.data, newdata))
         self.assertTrue(array_equal(lcdata.labels, newlabels))
 
