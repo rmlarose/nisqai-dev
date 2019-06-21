@@ -25,8 +25,8 @@ A MeasurementOutcome inputs this data and makes it easy to work with,
 interpret, visualize, modify, and prepare for future encoding.
 """
 
-from numpy import ndarray, array
-import time
+from numpy import ndarray, zeros
+
 
 class MeasurementOutcome:
     """Measurement outcome class for dealing with sampled bit strings from circuits."""
@@ -116,6 +116,53 @@ class MeasurementOutcome:
 
         return int(string, 2)
 
+    def counts_bit_strings(self):
+        """Returns a dictionary of measurement counts in the form
+
+            {bit string: number of occurences}
+
+        where the bit string is of length n (number of qubits measured).
+
+        Compare with counts_integers.
+
+        Examples:
+            For the raw result
+
+            result = array([[1, 0],
+                            [0, 0],
+                            [1, 0],
+                            [0, 1],
+                            [0, 0]])
+
+            MeasurementOutcome(result).counts_bit_strings() returns
+
+            {"00": 2, "01": 1, "10": 2, "11": 0}
+
+        NOTE: All valid bit strings are included in the dictionary keys.
+
+        """
+        pass
+
+    def counts_integers(self):
+        """Returns a dictionary of measurement counts in the form
+
+            {integer: number of occurrences}
+
+        where integer is in the range [0, 2^n). Compare with counts_bit_strings.
+        """
+        pass
+
+    def average(self):
+        """Returns an average over all bit strings (taken as vectors)."""
+        # Initialize a vector to store the average
+        avg = zeros(self.num_qubits)
+
+        # Loop over all raw measurement outcomes
+        for vec in self._raw_outcome:
+            avg += vec
+
+        return avg / self._shots
+
     # TODO: implement
     def average_outcome(self):
         """Returns the average over all sampled bit strings."""
@@ -138,5 +185,5 @@ class MeasurementOutcome:
         return self._raw_outcome[index, :]
 
     def __len__(self):
-        """Returns the number of shots/samples in a measurment outcome."""
+        """Returns the number of shots/samples in a measurement outcome."""
         return self.shots

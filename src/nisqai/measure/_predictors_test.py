@@ -10,6 +10,29 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from nisqai.measure._measure import Measurement
+# Imports
+import unittest
+from numpy import array
+
 from nisqai.measure._measurement_outcome import MeasurementOutcome
 from nisqai.measure._predictors import split_predictor
+
+
+class PredictorTest(unittest.TestCase):
+    """Unit tests for predictor functions."""
+
+    def test_split_predictor_zero(self):
+        res = array([[1, 0], [1, 0], [1, 0], [1, 0]])
+        meas = MeasurementOutcome(res)
+
+        self.assertEqual(split_predictor(meas), 0)
+
+    def test_split_predictor_one(self):
+        res = array([[1, 1], [1, 1], [0, 1], [0, 0]])
+        meas = MeasurementOutcome(res)
+
+        self.assertEqual(split_predictor(meas), 1)
+
+
+if __name__ == "__main__":
+    unittest.main()

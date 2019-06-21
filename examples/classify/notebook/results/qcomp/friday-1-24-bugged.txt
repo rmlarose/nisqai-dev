@@ -1,0 +1,85 @@
+(base) [ON QPU] [forest@12-qmi oneq-perceptron]$ python run.py 2
+COMPUTER = Aspen-1-2Q-B
+Evaluating the cost at: [ 0.13034922 -0.3243604 ]
+The current value of the cost is: 0.58
+Evaluating the cost at: [ 0.13034922 -0.3243604 ]
+The current value of the cost is: 0.57
+Evaluating the cost at: [ 1.13034922 -0.3243604 ]
+The current value of the cost is: 0.53
+Evaluating the cost at: [ 2.74838322 -0.3243604 ]
+The current value of the cost is: 0.5
+Evaluating the cost at: [ 3.070385  -0.3243604]
+The current value of the cost is: 0.52
+Evaluating the cost at: [ 2.74838322 -0.3243604 ]
+The current value of the cost is: 0.51
+Evaluating the cost at: [ 2.13034925 -0.3243604 ]
+The current value of the cost is: 0.5
+Evaluating the cost at: [ 1.74838324 -0.3243604 ]
+The current value of the cost is: 0.5
+Evaluating the cost at: [ 1.93936624 -0.3243604 ]
+The current value of the cost is: 0.51
+Evaluating the cost at: [ 1.51231526 -0.3243604 ]
+The current value of the cost is: 0.5
+Evaluating the cost at: [ 1.36641722 -0.3243604 ]
+The current value of the cost is: 0.51
+Evaluating the cost at: [ 1.6024852 -0.3243604]
+The current value of the cost is: 0.5
+Evaluating the cost at: [ 1.65821329 -0.3243604 ]
+The current value of the cost is: 0.49
+Evaluating the cost at: [ 1.69265514 -0.3243604 ]
+The current value of the cost is: 0.5
+Evaluating the cost at: [ 1.64293465 -0.3243604 ]
+The current value of the cost is: 0.5
+Evaluating the cost at: [ 1.67349193 -0.3243604 ]
+The current value of the cost is: 0.49
+Evaluating the cost at: [ 1.67349193 -0.3243604 ]
+The current value of the cost is: 0.49
+Evaluating the cost at: [1.67349193 0.6756396 ]
+The current value of the cost is: 0.65
+Evaluating the cost at: [ 1.67349193 -1.9423944 ]
+The current value of the cost is: 0.28
+Evaluating the cost at: [ 1.67349193 -6.75659711]
+The current value of the cost is: 0.46
+Evaluating the cost at: [ 1.67349193 -1.9423944 ]
+The current value of the cost is: 0.28
+Evaluating the cost at: [ 1.67349193 -3.78125615]
+The current value of the cost is: 0.6
+Evaluating the cost at: [ 1.67349193 -2.64477707]
+The current value of the cost is: 0.41
+Evaluating the cost at: [ 1.67349193 -1.32436042]
+The current value of the cost is: 0.16
+Evaluating the cost at: [ 1.67349193 -0.94239441]
+The current value of the cost is: 0.3
+Evaluating the cost at: [ 1.67349193 -1.46022961]
+The current value of the cost is: 0.09
+Evaluating the cost at: [ 1.67349193 -1.56738951]
+The current value of the cost is: 0.09
+Evaluating the cost at: [ 1.67349193 -1.51380956]
+The current value of the cost is: 0.06
+Evaluating the cost at: [ 1.67349193 -1.52570405]
+The current value of the cost is: 0.06
+Evaluating the cost at: [ 1.67349193 -1.53771749]
+The current value of the cost is: 0.06
+Evaluating the cost at: [ 1.67349193 -1.54985106]
+The current value of the cost is: 0.08
+Evaluating the cost at: [ 3.21663464 -2.75107458]
+The current value of the cost is: 0.43
+Evaluating the cost at: [ 1.67349193 -1.53771749]
+The current value of the cost is: 0.04
+Evaluating the cost at: [ 2.67349193 -1.53771749]
+The current value of the cost is: 0.34
+Evaluating the cost at: [ 0.05545793 -1.53771749]
+The current value of the cost is: 0.52
+Evaluating the cost at: [ 1.67349193 -1.53771749]
+The current value of the cost is: 0.07
+Evaluating the cost at: [ 1.05545796 -1.53771749]
+The current value of the cost is: 0.17
+Evaluating the cost at: [ 2.05545793 -1.53771749]
+The current value of the cost is: 0.14
+Evaluating the cost at: [ 1.59892791 -1.53771749]
+The current value of the cost is: 0.04
+Evaluating the cost at: [ 1.39134087 -1.53771749]
+The current value of the cost is: 0.06
+Traceback (most recent call last):
+  File "/home/forest/miniconda3/lib/python3.7/site-packages/pyquil/api/_base_connection.py", line 72, in parse_error
+

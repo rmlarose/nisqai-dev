@@ -10,18 +10,47 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-"""Example NISQAI script demonstrating the single qubit perceptron on random data."""
+"""Example NISQAI script demonstrating how to reduce features for the single qubit perceptron."""
 
 # Imports
 import time
-
 import nisqai
+import numpy as np
 
 # Start the Rigetti QVM and Quil compiler
 qvm_server, quilc_server, _ = nisqai.utils.startQVMandQUILC()
 
-# Get random two dimensional data
-cdata = nisqai.data.random_data_vertical_boundary(20)
+# Some artificial data
+mydata = np.array([
+    [1, -1, 2, 1],
+    [2, -1, -4, 5],
+    [4, 3, 1, -2],
+    [8, 6, 7, 5],
+    [3, -1, 9, 9],
+    [0, 1, 1, -0]
+])
+
+# Labels for the data
+labels = np.array([1, 1, 0, 0, 1, 0])
+
+# Create a LabeledCData object from the classical data
+cdata = nisqai.data.LabeledCData(mydata, labels)
+
+# Reduce the number of features
+print("Data before PCA:")
+print("Number of features:", cdata.num_features)
+print(cdata.data)
+
+cdata.reduce_features(0.5)
+
+print("\nData after PCA:")
+print("Number of features:", cdata.num_features)
+print(cdata.data)
+
+# Scale the features
+print("\nData after scaling:")
+cdata.scale_features("L1 norm")
+print(cdata.data)
 
 # Use a dense angle encoding (two features per qubit)
 encoder = nisqai.encode.DenseAngleEncoding(

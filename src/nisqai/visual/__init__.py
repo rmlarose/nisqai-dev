@@ -10,17 +10,4 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-"""
-NISQAI - An open-source library for machine learning on near-term quantum computers.
-"""
-
-import nisqai.cost
-import nisqai.data
-import nisqai.encode
-import nisqai.layer
-import nisqai.measure
-import nisqai.network
-import nisqai.utils
-import nisqai.visual
-
-from ._version import __version__
+from nisqai.visual._plots import scatter, scatter_with_labels
