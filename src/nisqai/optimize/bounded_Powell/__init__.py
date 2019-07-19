@@ -18,9 +18,13 @@ direc: initial set of direction vectors for the qPowell methods. The
        parameter's directions.
 maxls: int, maximum function evaluations used at each linesearch. Default
             is no max.
-method: str, which qPowell method to use. The default is None or "", which 
-             defaults to just the standard qPowell method. The other option
-             is "locally-bounded".
+method: str, which bounded_Powell method to use. The default is None or "", which 
+             defaults to just the standard bounded_Powell method, where the parameters
+             of the problem are bounded within lower_bound and upper_bound. The other 
+            option is "locally-bounded", where the parameters are still bounded within
+            lower_bound and upper_bound, but at each iteration they are bounded to a
+            smaller local region. The local region then moves around within the bounds
+            lower_bound and upper_bound.
 lower_bound: list or array of numbers. lower_bound[i] is the lower bound
                                        of the i^th parameter in x0. If no
                                        lower_bound is provided, then -pi

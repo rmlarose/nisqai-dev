@@ -304,7 +304,7 @@ def bounded_Powell(f, x0, args=(), **kwargs):
     Examples usage:
 
     >>> from scipy.optimize import minimize
-    >>> from boundedPowell import bounded_Powell
+    >>> from bounded_Powell import bounded_Powell
     >>> res = minimize(
     >>>     [function],
     >>>     [initial params],
