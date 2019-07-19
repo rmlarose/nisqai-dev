@@ -12,17 +12,17 @@
 
 # TODO: test classes/methods/functions in _classical_costs.py!
 
-from _classical_costs import Metrics, DistributionCostFunctions, indicator
+from ._classical_costs import Metrics, DistributionCostFunctions, indicator
 import numpy as np
 import unittest
 class TestSingleInputClassicalCosts(unittest.TestCase):
     '''Testing for classical costs with only scalar valued inputs'''
 
     def test_indicator_function(self):
-    """Test to check if indicator function works properly"""
+        """Test to check if indicator function works properly"""
 
-    value = indicator(0, 1)
-    self.assertEqual(value, 1)
+        value = indicator(0, 1)
+        self.assertEqual(value, 1)
 
 class TestClassicalProbabilityCosts(unittest.TestCase):
     '''Testing for Metric/DistributionCostFunctions class of classical costs
