@@ -14,11 +14,14 @@ from math import ceil
 import os
 
 from copy import deepcopy
+
 from numpy import (array,
                    random,
+                   max,
                    mean,
                    cov,
-                   delete)
+                   delete,
+                   linspace)
 from numpy.linalg import norm as LAnorm
 from numpy.linalg import eig
 import torchvision
@@ -136,6 +139,10 @@ class CData:
             L1norm = sum(abs(self.data))
             self.data = self.data / L1norm
 
+        # Infinity norm
+        elif method in ("inf norm", "infty norm", "infinity norm", "inf", "infty", "infinity"):
+            self.data /= max(self.data, axis=0)
+
         else:
             raise ValueError("Unsupported normalization method.")
 
@@ -190,7 +197,7 @@ class LabeledCData(CData):
             self.labels = self._compute_labels(labels)
         else:
             # TODO: make sure they're an acceptable type,
-            # then convert them to a standard type
+            #  then convert them to a standard type
             assert len(labels) == self.num_samples
             self.labels = labels
 
@@ -294,6 +301,31 @@ def random_data_vertical_boundary(num_samples, seed=None):
             labels.append(1)
 
     return LabeledCData(data, labels)
+
+
+def grid_data(xnum, ynum, labeler=None):
+    """Returns a CData object with a two-dimensional (xnum x ynum) grid of points.
+
+    Args:
+        xnum : int
+            The number of grid points along the x-axis (horizontal axis).
+
+        ynum : int
+            The number of grid points along the y-axis (vertical axis).
+
+        labeler : callable
+            Function which determines the labels.
+    """
+    data = []
+
+    for x in linspace(0.0, 1.0, xnum):
+        for y in linspace(0.0, 1.0, ynum):
+            data.append([x, y])
+
+    if labeler is None:
+        return CData(array(data))
+    else:
+        return LabeledCData(array(data), labeler)
 
 
 def get_iris_setosa_data():
