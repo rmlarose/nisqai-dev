@@ -22,5 +22,6 @@ import nisqai.measure
 import nisqai.network
 import nisqai.utils
 import nisqai.visual
+import nisqai.optimize
 
 from ._version import __version__

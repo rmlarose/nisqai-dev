@@ -2,3 +2,6 @@ scipy
 numpy
 psutil
 pyquil
+torchvision
+matplotlib
+
