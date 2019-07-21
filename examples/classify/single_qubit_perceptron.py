@@ -21,7 +21,10 @@ import nisqai
 qvm_server, quilc_server, _ = nisqai.utils.startQVMandQUILC()
 
 # Get random two dimensional data
-cdata = nisqai.data.random_data_vertical_boundary(20)
+cdata = nisqai.data.random_data_vertical_boundary(50)
+
+# Visualize the data
+nisqai.visual.scatter(cdata.data, cdata.labels)
 
 # Use a dense angle encoding (two features per qubit)
 encoder = nisqai.encode.DenseAngleEncoding(
@@ -39,12 +42,18 @@ qnn = nisqai.network.Network([encoder, ansatz, measure], "1q-qvm", predictor=nis
 
 # Train the network
 start = time.time()
-res = qnn.train(trainer="COBYLA", initial_angles=[0, 0, 0], shots=1000)
+res = qnn.train(trainer="COBYLA", initial_angles=[0, 0, 0], updates=True, shots=1000)
 
 # Print the output
 print("Train time:", (time.time() - start) / 60, "minutes.")
 print("Train result:")
 print(res)
+
+# Get the predictions at the optimal angles
+predictions = qnn.predict_all(angles=res["x"])
+
+# Visualize the classified data
+nisqai.visual.scatter(cdata.data, predictions)
 
 # Stop the Rigetti QVM and Quil compiler
 nisqai.utils.stopQVMandQUILC(qvm_server, quilc_server)
