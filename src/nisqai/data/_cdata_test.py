@@ -11,7 +11,7 @@
 #   limitations under the License.
 
 # Imports
-from numpy import array, array_equal, allclose
+from numpy import array, array_equal, allclose, zeros
 
 from nisqai.data._cdata import CData, LabeledCData, random_data, get_iris_setosa_data, get_mnist_data
 
@@ -261,6 +261,73 @@ class DataTest(unittest.TestCase):
 
         # Make sure the data is labelled correctly
         self.assertTrue(array_equal(labels, cdata.labels))
+
+    def test_pad_one(self):
+        """Tests padding zeros to vectors with two features."""
+        # Define some data with three features
+        data = array([[1, 2],
+                      [3, 4]])
+
+        # Get a CData object
+        cdata = CData(data)
+
+        # Pad a zero to each feature vector
+        cdata.pad_one()
+
+        # Define the correct array
+        correct = array([[1, 2, 0],
+                         [3, 4, 0]])
+
+        self.assertEqual(cdata.num_features, 3)
+        self.assertTrue(array_equal(cdata.data, correct))
+
+    def test_pad_to_power2(self):
+        """Tests padding vectors of three features with zeros until the vectors have four features."""
+        # Define some data with three features
+        data = array([[1, 2, 3],
+                      [4, 5, 6]])
+
+        # Get a CData object
+        cdata = CData(data)
+
+        # Pad it until the dimension is a power of two
+        cdata.pad_to_power2()
+
+        # Define the correct array
+        correct = array([[1, 2, 3, 0],
+                         [4, 5, 6, 0]])
+
+        self.assertEqual(cdata.num_features, 4)
+        self.assertTrue(array_equal(cdata.data, correct))
+
+    def test_to_power2_already_a_power(self):
+        """Tests that nothing happens when the number of features is already a power of two."""
+        # Define some data with four features
+        data = array([[1, 2, 3, 4],
+                      [4, 5, 6, 7]])
+
+        # Get a CData object
+        cdata = CData(data)
+
+        # Pad it until the dimension is a power of two
+        cdata.pad_to_power2()
+
+        self.assertEqual(cdata.num_features, 4)
+        self.assertTrue(array_equal(cdata.data, data))
+
+    def test_to_power2_medium(self):
+        """Tests padding with a 33 element feature vector to get to a 64 element feature vector."""
+        # Define some data
+        data = array([[0]*33, [1]*33])
+
+        # Get a LabeledCData object
+        lcdata = LabeledCData(data, labels=[0, 1])
+
+        # Pad the data
+        lcdata.pad_to_power2()
+
+        self.assertEqual(lcdata.num_features, 64)
+        self.assertTrue(allclose(lcdata.labels, [0, 1]))
 
     # TODO: The previous input to LabeledCData was not of the correct type.
     #  Hence, the subsequent checks do not make sense when comparing arrays.

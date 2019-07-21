@@ -16,7 +16,7 @@ import os
 from copy import deepcopy
 import numpy as np
 
-import torchvision
+from torchvision import datasets
 
 from nisqai.data.data_sets import iris
 
@@ -35,7 +35,7 @@ class CData:
         #  other possible data types people would just want to throw
         #  into the class without thinking about it
         #  for pandas dataframes, just need to convert it to an array
-        self.raw_data = data
+        self.raw_data = deepcopy(data)
         self.data = deepcopy(self.raw_data)
 
         # Descriptors for the data set
@@ -82,21 +82,36 @@ class CData:
         return self._centered
 
     def scale_features(self, method):
-        """Performs feature scaling on data.
+        """Modifies features of data by scaling them according to a specified method.
 
         Args:
-            method [type: string]
-                specifies desired feature scaling method
-                * 'min-max norm'
-                x' = (x - min(x))/(max(x) - min(x))
-                * 'mean norm'
-                x' = (x-avg(x))/(max(x) - min(x))
-                * 'standardize'
-                x' = (x - avg(x))/sigma
-                * 'L2 norm'
-                x' = x / L2norm(x)
-                * 'L1 norm'
-                x' = x / L1norm(x)
+            method : str
+                Key string which specifies the desired feature scaling method.
+                Options:
+
+                    'min-max norm'
+                        x' = (x - min(x))/(max(x) - min(x))
+
+                    'mean norm'
+                        x' = (x-avg(x))/(max(x) - min(x))
+
+                    'standardize'
+                        x' = (x - avg(x))/sigma
+
+                    'L2 norm'
+                        x' = x / L2norm(x)
+
+                    'L1 norm'
+                        x' = x / L1norm(x)
+
+                    "inf norm"
+                        Divides each feature by the max value for that feature over all samples.
+
+        Returns:
+            None
+
+        Modifies:
+            self.data
         """
         # Try to catch wrong string formatting
         method = method.lower().strip()
@@ -140,13 +155,13 @@ class CData:
 
     def reduce_features(self, fraction):
         """Performs (classical) principal component analysis
-         on the data and keeps the desired number of features.
+         on the data and keeps the desired fraction of features.
 
          Modifies self.data in place.
 
         Args:
             fraction [type: float]
-                keeps this ratio of features.
+                Keeps this ratio of features.
 
         Example:
             reduce_features(0.2) --> keeps top 20% of features after PCA
@@ -169,9 +184,69 @@ class CData:
         nfeatures = ceil(fraction * self.num_features)
 
         self.data = projected.T[:nfeatures].T
-    
+
+    def pad_one(self):
+        """Appends a zero element to each data point, increasing the dimension by one.
+
+        Modifies: self.data
+
+        Examples:
+            If
+                    cdata.data = [[1, 2],
+                                  [3, 4]]
+
+            then calling cdata.pad_one() will modify the data to
+
+                    cdata.data = [[1, 2, 0],
+                                  [3, 4, 0]]
+
+            The dimension of each feature vector is now three.
+
+        This is useful, for example, in any encoding that requires an even number of qubits when the input data has
+        an odd number of features.
+        """
+        # Get an array of zeros to append to self.data
+        zeros = np.array([[0]] * self.data.shape[0], dtype=self.data.dtype)
+
+        self.data = np.append(self.data, zeros, axis=1)
+
+    def pad_to_power2(self):
+        """Appends zero elements to each data point until the dimension the next highest power of two.
+
+        Modifies: self.data.
+
+        Examples:
+            If
+                    cdata.data = [[1, 2, 3],
+                                  [4, 5, 6]],
+
+            then calling cdata.pad_to_power2() will modify the data to
+
+                    cdata.data = [[1, 2, 3, 0],
+                                  [4, 5, 6, 0]].
+
+            The dimension is now a power of two (four).
+
+        This is useful, for example, in a WaveFunctionEncoding, which encodes each feature into an amplitude.
+        """
+        # Keep appending zeros until the number of features is a power of two
+        while self.num_features & (self.num_features - 1) != 0:
+            self.pad_one()
+
+    def reset(self):
+        """Resets self.data to original input value. Warning: This cannot be undone!
+
+        Modifies: self.data
+        """
+        self.data = deepcopy(self.raw_data)
+
     def __getitem__(self, item):
-        """Override indexing to return data elements."""
+        """Returns the feature vector indexed by item.
+
+        Args:
+            item : item
+                Index of feature vector to return.
+        """
         return self.data[item]
 
 
@@ -334,7 +409,7 @@ def get_mnist_data():
     pass
     script_dir = os.path.dirname(__file__)
     file_path = os.path.join(script_dir, './data_sets/MNIST/')
-    data = torchvision.datasets.MNIST(
+    data = datasets.MNIST(
         file_path, train=True, transform=None, target_transform=None, download=False
     )
     # TODO: What are the types here:
