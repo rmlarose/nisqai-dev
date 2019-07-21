@@ -1,21 +1,18 @@
 sudo: false
+
 language: python
-matrix:
-  include:
-  - os: linux
-  python: "3.5"
-  addons:
-    apt:
-      sources: ['ubuntu-toolchain-r-test']
-      packages: ['gcc-4.9', 'g++-4.9']
-  env: CC=gcc-4.9 CXX=g++-4.9 PYTHON=3.5
-  - os: linux
-    python: "3.6"
-    addons:
-      apt:
-        sources: ['ubuntu-toolchain-r-test']
-        packages: ['gcc-4.9', 'g++-4.9']
-    env: CC=gcc-4.9 CXX=g++-4.9 PYTHON=3.6
+
+variables:
+  QVM_URL: "http://qvm:5000"
+  QUILC_URL: "tcp://quilc:5555"
+
+services:
+  - name: rigetti/qvm
+    alias: qvm
+    command: ["-S"]
+  - name: rigetti/quilc
+    alias: quilc
+    command: ["-R"]
 
 branches:
   only:
@@ -31,4 +28,6 @@ install:
   pip3 install -r requirements.txt
   pip3 install -e .
 
-script: export OMP_NUM_THREADS=1 && pytest src/nisqai --cov src/nisqai
+test:
+  script: 
+    pytest src/nisqai --cov src/nisqai
