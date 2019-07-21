@@ -14,19 +14,19 @@ def test_minimize():
     # testing bounded_Powell
     maxfev = 2000
     assert minimize(fun, x0, method="bounded_Powell",
-                    options=dict(maxfev=maxfev, gs=False)).fun < -240
+                    options=dict(maxfev=maxfev, gs=False)).fun < -200
 
     assert minimize(fun, x0, method="bounded_Powell",
-                    options=dict(maxfev=maxfev, gs=True)).fun < -240
+                    options=dict(maxfev=maxfev, gs=True)).fun < -200
 
     assert minimize(fun, x0, method="bounded_Powell",
                     options=dict(maxfev=maxfev, gs=False, 
-                                 method="locally-bounded")).fun < -240
+                                 method="locally-bounded")).fun < -200
 
     assert minimize(fun, x0, method="bounded_Powell",
                     options=dict(maxfev=maxfev, gs=True, 
-                                 method="locally-bounded")).fun < -240
+                                 method="locally-bounded")).fun < -200
 
     # testing Powell
     assert minimize(fun, x0, method="Powell",
-                    options=dict(maxfev=maxfev)).fun < -240
+                    options=dict(maxfev=maxfev)).fun < -200
