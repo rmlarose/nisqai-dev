@@ -26,10 +26,6 @@ class DenseAngleEncoding:
     With this encoding, n features require ceiling(n / 2) qubits.
 
     Args:
-
-        num_qubits : int
-            The number of qubits in the circuit.
-
         data : nisqai.data.CData or nisqai.data.LabeledCData
             Data object to be encoded in the circuit.
 
