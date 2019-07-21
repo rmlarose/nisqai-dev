@@ -1,3 +1,15 @@
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
 """
 Find the global minimium of a f with a bounded Powell method.
     - Joseph Iosue, joe.iosue@qcware.com
@@ -39,19 +51,19 @@ gs: boolean, whether or not to use gram schmidt to keep direcs orthogonal.
 Returns scipy.minimize.OptimizeResult
     See scipy's doucmentation for a description of attributes.
 
-Examples usage:
+Example usage:
 
     >>> from nisqai.optimize import minimize
     >>> res = minimize(
     >>>     [function],
     >>>     [initial params],
     >>>     options={
-                'method'='locally_bounded', 
-                'maxfev': 500,
-                'xtol': 1e-2,
-                'ftol': 1e-2,
-                ...
-            },
+    >>>         'method'='locally_bounded',
+    >>>         'maxfev': 500,
+    >>>         'xtol': 1e-2,
+    >>>         'ftol': 1e-2,
+    >>>         ...
+    >>>     },
     >>>     method="bounded_Powell",
     >>>     callback=[callback function]
     >>> )
