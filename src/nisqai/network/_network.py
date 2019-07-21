@@ -12,7 +12,7 @@
 
 from nisqai.measure import MeasurementOutcome
 
-from numpy import ndarray
+from numpy import array
 
 from pyquil import get_qc
 from pyquil.api import QuantumComputer
@@ -82,6 +82,11 @@ class Network:
 
         # TODO: Make sure the predictor function is valid (returns 0 or 1)
         self.predictor = predictor
+
+    @property
+    def data(self):
+        """Returns the LabeledCData object of the network's encoder."""
+        return self._encoder.data
 
     def _build(self, data_ind):
         """Builds the network as a sequence of quantum circuits."""
@@ -170,6 +175,19 @@ class Network:
         # Return the prediction
         return prediction
 
+    def predict_all(self, angles=None, shots=1000):
+        """Returns predictions for all data points.
+
+        Args:
+            angles : Untion[dict, list]
+                Angles for the unitary ansatz.
+
+            shots : int
+                Number of times to execute the circuit for one prediction.
+        """
+        # Propagate the network to get the outcomes
+        return array([self.predict(ii, angles, shots) for ii in range(self.num_data_points)])
+
     def cost_of_point(self, index, angles=None, shots=1000):
         """Returns the cost of a particular data point.
 
@@ -216,7 +234,7 @@ class Network:
         # Return the total normalized cost
         return val / self.num_data_points
 
-    def train(self, initial_angles, trainer="COBYLA", shots=1000, **kwargs):
+    def train(self, initial_angles, trainer="COBYLA", updates=False, shots=1000, **kwargs):
         """Adjusts the parameters in the Network to minimize the cost.
 
         Args:
@@ -226,8 +244,11 @@ class Network:
                 Optimization function used to minimize the cost.
                 Defaults to "COBYLA"
 
-            shots: int, number of times to run the circuit(s).
-                defaults to 1000.
+            updates : bool (default: False)
+                If True, cost value at each iteration is printed to the console.
+
+            shots : int (default: 1000)
+                Number of times to run a single circuit.
 
         kwargs: 
             Keyword arguments sent into the `options` argument in the
@@ -235,11 +256,15 @@ class Network:
                 >>> Network.train(initial_angles, trainer="Powell", maxfev=100)
             will call
                 >>> nisqai.optimize.minimize(cost, initial_angles, 
-                                             method="Powell", options=dict(maxfev=100))
+                >>>                          method="Powell", options=dict(maxfev=100))
             This is consistent with how scipy.optimize.minimize is formatted.
         """
         # Define the objective function
-        obj = lambda angles: self.cost(angles=angles, shots=shots)
+        def obj(angles):
+            val = self.cost(angles=angles, shots=shots)
+            if updates:
+                print("Current cost: %0.2f" % val)
+            return val
 
         # Call the trainer
         res = minimize(obj, initial_angles, method=trainer, options=kwargs)
