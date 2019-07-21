@@ -20,7 +20,8 @@ from pyquil.api import QuantumComputer
 # TODO: This should be updated to something like
 #  from nisqai.trainer import this_optimization_method
 #  for now this is just for simplicity
-from scipy.optimize import minimize
+# from scipy.optimize import minimize
+from nisqai.optimize import minimize
 
 
 class Network:
@@ -215,32 +216,33 @@ class Network:
         # Return the total normalized cost
         return val / self.num_data_points
 
-    def train(self, trainer, initial_angles, shots=1000):
+    def train(self, initial_angles, trainer="COBYLA", shots=1000, **kwargs):
         """Adjusts the parameters in the Network to minimize the cost.
 
         Args:
-            trainer : callable
-                Optimization function used to minimize the cost.
-
             initial_angles : Union[dict, list]
 
-            shots : int
-                Number of times to run the circuit(s).
-        """
-        # Make sure the trainer is valid
-        if type(trainer) != str:
-            raise ValueError(
-                "Invalid trainer. Currently must be a string identifier.\n" +
-                "Options are:\n" +
-                "\t'Powell'\n"
-                "\t'COBYLA'\n"
-            )
+            trainer : callable
+                Optimization function used to minimize the cost.
+                Defaults to "COBYLA"
 
+            shots: int, number of times to run the circuit(s).
+                defaults to 1000.
+
+        kwargs: 
+            Keyword arguments sent into the `options` argument in the
+            nisqai.optimize.minimize method. For example:
+                >>> Network.train(initial_angles, trainer="Powell", maxfev=100)
+            will call
+                >>> nisqai.optimize.minimize(cost, initial_angles, 
+                                             method="Powell", options=dict(maxfev=100))
+            This is consistent with how scipy.optimize.minimize is formatted.
+        """
         # Define the objective function
         obj = lambda angles: self.cost(angles=angles, shots=shots)
 
         # Call the trainer
-        res = minimize(obj, x0=initial_angles, method=trainer)
+        res = minimize(obj, initial_angles, method=trainer, options=kwargs)
 
         # TODO: Define a NISQAI standard output for trainer results
         return res

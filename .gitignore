@@ -6,3 +6,7 @@ __pycache__
 
 # pycharm bs
 .idea
+
+.pytest_cache/
+*.pyc
+venv/
