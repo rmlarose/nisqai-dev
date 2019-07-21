@@ -14,16 +14,8 @@ from math import ceil
 import os
 
 from copy import deepcopy
+import numpy as np
 
-from numpy import (array,
-                   random,
-                   max,
-                   mean,
-                   cov,
-                   delete,
-                   linspace)
-from numpy.linalg import norm as LAnorm
-from numpy.linalg import eig
 import torchvision
 
 from nisqai.data.data_sets import iris
@@ -33,7 +25,7 @@ class CData:
     """Classical data class."""
 
     def __init__(self, data):
-        """Initialize a BaseCData object.
+        """Initialize a CData object.
 
         Args:
             data [type: numpy array]
@@ -68,12 +60,12 @@ class CData:
 
     def mean(self):
         """Returns the mean of the data."""
-        return mean(self.data, axis=0)
+        return np.mean(self.data, axis=0)
 
     def center(self):
         """Modifies data by subtracting the mean."""
         if not self._centered:
-            self.data = self.data - mean(self.data, axis=0)
+            self.data = self.data - np.mean(self.data, axis=0)
             self._centered = True
 
     def is_centered(self, tolerance=1e-3):
@@ -131,7 +123,7 @@ class CData:
 
         # L2 norm
         elif method == 'L2 norm' or method == "l2 norm":
-            norm = LAnorm(self.data, axis=0)
+            norm = np.linalg.norm(self.data, ord=2, axis=0)
             self.data = self.data / norm
 
         # L1 norm
@@ -141,10 +133,10 @@ class CData:
 
         # Infinity norm
         elif method in ("inf norm", "infty norm", "infinity norm", "inf", "infty", "infinity"):
-            self.data /= max(self.data, axis=0)
+            self.data /= np.max(self.data, axis=0)
 
         else:
-            raise ValueError("Unsupported normalization method.")
+            raise ValueError("Unsupported scaling method. See help(scale_features) for supported methods.")
 
     def reduce_features(self, fraction):
         """Performs (classical) principal component analysis
@@ -165,10 +157,10 @@ class CData:
 
         # Calculate the covariance of centered matrix
         # Note: np.cov expects each row to be variable (i.e. feature)
-        covariance = cov(self.data.T)
+        covariance = np.cov(self.data.T)
 
         # Get eigenvectors of covariance matrix
-        _, evecs = eig(covariance)
+        _, evecs = np.linalg.eig(covariance)
 
         # Project data with first column as first principle component
         projected = evecs.T.dot(self.data.T).T
@@ -210,7 +202,7 @@ class LabeledCData(CData):
                 function that returns a zero or one when called
                 on feature vectors
         """
-        return array([func(x) for x in self.data])
+        return np.array([func(x) for x in self.data])
 
     @property
     def num_classes(self):
@@ -251,8 +243,8 @@ class LabeledCData(CData):
                 indices.append(index)
 
         # Remove the (data, label) pairs at these indices
-        self.data = delete(self.data, indices, axis=0)
-        self.labels = delete(self.labels, indices)
+        self.data = np.delete(self.data, indices, axis=0)
+        self.labels = np.delete(self.labels, indices)
 
     def __getitem__(self, item):
         """Override indexing to return data elements."""
@@ -264,10 +256,10 @@ def random_data(num_features, num_samples, labels, seed=None):
     """Returns a CData object with random data."""
     # Seed the random number generator if one is provided
     if seed:
-        random.seed(seed)
+        np.random.seed(seed)
 
     # Get some random data
-    data = random.rand(num_samples, num_features)
+    data = np.random.rand(num_samples, num_features)
 
     # If labels, return a labeled data object
     if labels:
@@ -287,10 +279,10 @@ def random_data_vertical_boundary(num_samples, seed=None):
     """
     # Seed the random number generator if one is provided
     if seed:
-        random.seed(seed)
+        np.random.seed(seed)
 
     # Get some random data
-    data = random.rand(num_samples, 2)
+    data = np.random.rand(num_samples, 2)
 
     # Do the labeling
     labels = []
@@ -318,14 +310,14 @@ def grid_data(xnum, ynum, labeler=None):
     """
     data = []
 
-    for x in linspace(0.0, 1.0, xnum):
-        for y in linspace(0.0, 1.0, ynum):
+    for x in np.linspace(0.0, 1.0, xnum):
+        for y in np.linspace(0.0, 1.0, ynum):
             data.append([x, y])
 
     if labeler is None:
-        return CData(array(data))
+        return CData(np.array(data))
     else:
-        return LabeledCData(array(data), labeler)
+        return LabeledCData(np.array(data), labeler)
 
 
 def get_iris_setosa_data():
@@ -342,8 +334,9 @@ def get_mnist_data():
     pass
     script_dir = os.path.dirname(__file__)
     file_path = os.path.join(script_dir, './data_sets/MNIST/')
-    data = torchvision.datasets.MNIST(file_path, train=True,
-                                      transform=None, target_transform=None, download=False)
+    data = torchvision.datasets.MNIST(
+        file_path, train=True, transform=None, target_transform=None, download=False
+    )
     # TODO: What are the types here:
     #  Data is required to be a two-dimensional numpy.ndarray of the form
     #  [feature vector #1,
