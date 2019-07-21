@@ -11,6 +11,7 @@
 #   limitations under the License.
 
 # Imports
+from numpy import ndarray
 import matplotlib.pyplot as plt
 
 from nisqai.data import CData, LabeledCData
@@ -21,36 +22,16 @@ class DimensionError(Exception):
     pass
 
 
-def scatter(cdata, color="black"):
-    """Shows a scatter plot for a CData (LabeledCData) object with two features."""
-    # Make sure we have the correct input type
-    if not isinstance(cdata, (CData, LabeledCData)):
-        raise ValueError("Input type must be CData or LabeledCData.")
-
-    # Make sure the data dimension is supported
-    if cdata.num_features != 2:
-        raise DimensionError(
-            "Data must be two-dimensional. (Number of features must be two)."
-        )
-
-    # Scatter the data points
-    for x in cdata.data:
-        plt.scatter(x[0], x[1], color=color)
-
-    # Plotting options
-    plt.grid()
-
-    # Show the plot
-    plt.show()
-
-
-def scatter_with_labels(cdata, color1="blue", color2="green"):
-    """Shows a scatter plot for a LabeledCData object with two features,
-    colored according to labels.
+def scatter(data, labels=None, color1="blue", color2="green"):
+    """Shows a scatter plot for two-dimensional data. Points are colored by label if labels are provided.
 
     Args:
-        cdata : nisqai.data.LabeledCData
-            Two-dimensional data to visualize.
+        data : numpy.ndarray
+            Two-dimensional data to visualize. Each row should be a data point, and the number of columns is the
+            total number of data points.
+
+        labels : array-like
+            Array of labels/predictions (nominally valued 0 or 1). Must be of the same linear dimension as data.
 
         color1 : str
             Color to use for first class of data when plotting.
@@ -59,19 +40,40 @@ def scatter_with_labels(cdata, color1="blue", color2="green"):
             Color to use for second class of data when plotting.
     """
     # Make sure we have the correct input type
-    if not isinstance(cdata, LabeledCData):
-        raise ValueError("cdata mst be of type LabeledCData.")
+    if not isinstance(data, ndarray):
+        raise ValueError("data must be of type numpy.ndarray.")
+
+    # Get the shape of the data
+    num_points, num_features = data.shape
 
     # Make sure the data dimension is supported
-    if cdata.num_features != 2:
+    if num_features != 2:
         raise DimensionError(
             "Data must be two-dimensional. (Number of features must be two)."
         )
 
-    # Scatter the data points
-    for point, label in zip(cdata.data, cdata.labels):
-        color = color1 if label == 0 else color2
-        plt.scatter(point[0], point[1], color=color)
+    # If labels are provided
+    if labels is not None:
+        # Get the unique labels
+        if 1 > len(set(labels)) > 2:
+            raise ValueError("Invalid number of labels. There should be one or two unique labels.")
+
+        # Get the unique labels
+        if len(set(labels)) == 1:
+            label1 = set(labels)
+        else:
+            label1, _ = set(labels)
+
+        # Scatter the data points
+        for point, label in zip(data, labels):
+            color = color1 if label == label1 else color2
+            plt.scatter(point[0], point[1], color=color)
+
+    # If labels are not provided
+    else:
+        for point in data:
+            # Scatter the points
+            plt.scatter(point[0], point[1], color=color1)
 
     # Plotting options
     plt.grid()

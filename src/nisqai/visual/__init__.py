@@ -10,4 +10,4 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from nisqai.visual._plots import scatter, scatter_with_labels
+from nisqai.visual._plots import scatter

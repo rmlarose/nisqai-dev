@@ -24,7 +24,7 @@ data = np.array([[0.1, 0.9], [0.3, 0.4], [0.5, 0.5], [0.2, 0.6]])
 cdata = nisqai.data.CData(data)
 
 # Visualize the data
-nisqai.visual.scatter(cdata, color="black")
+nisqai.visual.scatter(cdata.data, labels=None, color1="black")
 
 # Labels for each data point
 labels = np.array([0, 1, 1, 0])
@@ -33,4 +33,4 @@ labels = np.array([0, 1, 1, 0])
 lcdata = nisqai.data.LabeledCData(data, labels)
 
 # Color the data according to label and visualize it
-nisqai.visual.scatter_with_labels(lcdata, color1="blue", color2="green")
+nisqai.visual.scatter(lcdata.data, lcdata.labels, color1="blue", color2="green")
