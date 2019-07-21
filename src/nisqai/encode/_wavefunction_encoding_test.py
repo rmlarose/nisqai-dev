@@ -10,42 +10,70 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from nisqai.encode._wavefunction_encoding import WavefunctionEncoding, make_program
+import unittest
 
-from numpy import array, linalg, matmul, random # functions yousif used
+from nisqai.data import CData
+from nisqai.encode import WaveFunctionEncoding
+
+from numpy import allclose, array, random, zeros
+from numpy.linalg import norm
+
+from pyquil.gates import SWAP
 from pyquil.api import WavefunctionSimulator
 
-def input_output_comparison_test():
-    n = random.randint(4,8)
-    x = random.normal(size=2**n) + 1j*random.normal(size=2**n)
-    x = x / linalg.norm(x)
-    U = WavefunctionEncoding(x)   
-    e_0 = [0]*(2**n)
-    e_0[0] = 1
-    out = matmul(U,array(e_0).T)
-    """
-    print("U",U)
-    print("UU*", matmul(U,U.conj().T))
-    print("U*U", matmul(U.conj().T,U))
-    print("x",x)
-    print("out", out)
-    print(abs(linalg.norm(x - out)))
-    """
-    # Check 2-norm distance between desired state and 
-    # the state that the created unitary maps |00...0> t0.
-    assert linalg.norm(x - out) < 1e-3
 
-def test_program():
-    n = random.randint(4,8)
-    x = random.normal(size=2**n) + 1j*random.normal(size=2**n)
-    x = x / linalg.norm(x)
-    U = WavefunctionEncoding(x) 
-    wf_sim = WavefunctionSimulator()
-    p = make_program(U)
-    wf = wf_sim.wavefunction(p)
-    print(wf)
+class WaveFunctionEncodingTest(unittest.TestCase):
+    """Unit tests for WaveFunctionEncoding."""
+
+    # TODO: Make this unit test pass.
+    def test_input_output_comparison(self):
+        # Number of qubits
+        nqubits = 2
+
+        # Number of data points
+        npoints = 10
+
+        # Wave function simulator for checking the output of the circuit
+        sim = WavefunctionSimulator()
+
+        # Empty list to build data
+        data = []
+
+        # Use ten data points
+        for _ in range(npoints):
+            # Get a random complex feature vector
+            feature_vector = random.normal(size=2**nqubits) + 1j*random.normal(size=2**nqubits)
+
+            # Append this to the data
+            data.append(feature_vector)
+
+        # Get a CData object
+        cdata = CData(array(data))
+
+        # Get the wavefunction encoding for the cdata
+        encoder = WaveFunctionEncoding(cdata)
+
+        # Get the zero vector for help with comparisons
+        zero = zeros(2**nqubits)
+        zero[0] = 1
+
+        # Loop over all encoder circuits
+        for ii in range(npoints):
+            # Grab the current encoder circuit
+            ansatz = encoder[ii]
+
+            # Add a SWAP gate to get the original ordering
+            ansatz.circuit.inst(SWAP(0, 1))
+
+            # Get the wavefunction of the circuit
+            wavefunction = sim.wavefunction(ansatz.circuit)
+
+            actual = cdata.data[ii] / norm(cdata.data[ii], ord=2)
+            computed = wavefunction.amplitudes
+
+            # Make sure it's close to the input feature vector
+            self.assertTrue(allclose(computed, actual))
+
 
 if __name__ == "__main__":
-    input_output_comparison_test()
-    test_program()
-    print("All tests for WavefunctionEncoding passed.")
+    unittest.main()

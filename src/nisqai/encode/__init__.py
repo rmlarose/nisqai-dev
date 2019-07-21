@@ -14,7 +14,7 @@ from nisqai.encode._angle_encoding import AngleEncoding
 from nisqai.encode._dense_angle_encoding import DenseAngleEncoding
 from nisqai.encode._binary_encoding import BinaryEncoding
 from nisqai.encode._plus_minus_encoding import PlusMinusEncoding
-from nisqai.encode._wavefunction_encoding import WavefunctionEncoding
+from nisqai.encode._wavefunction_encoding import WaveFunctionEncoding
 
 from nisqai.encode._feature_maps import direct, nearest_neighbor
 from nisqai.encode._encoders import angle_simple_linear, linear_encoder
