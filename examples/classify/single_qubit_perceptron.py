@@ -53,7 +53,7 @@ print(res)
 predictions = qnn.predict_all(angles=res["x"])
 
 # Visualize the classified data
-nisqai.visual.scatter(cdata.data, predictions)
+nisqai.visual.scatter(cdata.data, labels=cdata.labels, predictions=predictions)
 
 # Stop the Rigetti QVM and Quil compiler
 nisqai.utils.stopQVMandQUILC(qvm_server, quilc_server)
