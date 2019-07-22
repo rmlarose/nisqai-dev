@@ -23,6 +23,7 @@ install:
 
 
 script:
+  - ls -l - a
   - rigetti/qvm -S &
   - rigetti/quilc -S &
   - pytest src/nisqai --cov src/nisqai
