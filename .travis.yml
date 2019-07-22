@@ -2,17 +2,8 @@ sudo: false
 
 language: python
 
-variables:
-  QVM_URL: "http://qvm:5000"
-  QUILC_URL: "tcp://quilc:5555"
-
 services:
-  - name: rigetti/qvm
-    alias: qvm
-    command: ["-S"]
-  - name: rigetti/quilc
-    alias: quilc
-    command: ["-R"]
+  - docker
 
 branches:
   only:
@@ -20,6 +11,8 @@ branches:
 
 before_install:
   - pip3 install --upgrade pip setuptools wheel
+  - docker pull rigetti/qvm
+  - docker pull rigetti/quilc
 
 install:
   - pip3 install pytest
@@ -29,5 +22,7 @@ install:
   - pip3 install -e .
 
 
-script: 
-  pytest src/nisqai --cov src/nisqai
+script:
+  - rigetti/qvm -S &
+  - rigetti/quilc -S &
+  - pytest src/nisqai --cov src/nisqai
