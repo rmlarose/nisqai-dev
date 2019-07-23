@@ -13,6 +13,8 @@ before_install:
   - pip3 install --upgrade pip setuptools wheel
   - docker pull rigetti/qvm
   - docker pull rigetti/quilc
+  - docker run rigetti/qvm
+  - docker run rigetti/qvm
 
 install:
   - pip3 install pytest
@@ -24,6 +26,4 @@ install:
 
 script:
   - ls -l - a
-  - rigetti/qvm -S &
-  - rigetti/quilc -S &
   - pytest src/nisqai --cov src/nisqai
