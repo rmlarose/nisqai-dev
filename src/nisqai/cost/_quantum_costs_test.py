@@ -11,7 +11,7 @@
 #   limitations under the License.
 
 
-# TODO: test classes/methods/functions in _quantum_costs.py!
+from nisqai.utils import startQVMandQUILC, stopQVMandQUILC
 from nisqai.cost._quantum_costs import Observable
 import numpy as np
 import unittest
@@ -99,5 +99,13 @@ class TestObservable(unittest.TestCase):
         sum_observables_2 = observable_2.sum_observables('2q-qvm', 100000, 'Z')
         self.assertAlmostEqual(abs(sum_observables_2), 2, 5)
 
+
 if __name__ == "__main__":
+    # Start the Rigetti QVM and Quil compiler
+    qvm_server, quilc_server, _ = startQVMandQUILC()
+
+    # Do the unit tests
     unittest.main()
+
+    # Stop the Rigetti QVM and Quil compiler
+    stopQVMandQUILC(qvm_server, quilc_server)
