@@ -13,8 +13,8 @@ before_install:
   - pip3 install --upgrade pip setuptools wheel
   - docker pull rigetti/qvm
   - docker pull rigetti/quilc
-  - docker run rigetti/qvm
-  - docker run rigetti/quilc
+  - docker run -p 5000:5000 rigetti/qvm -S
+  - docker run -p 6000:6000 rigetti/quilc -S
 
 install:
   - pip3 install pytest
