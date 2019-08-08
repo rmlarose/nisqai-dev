@@ -61,13 +61,13 @@ def test_depth_empty():
 def test_compile_small():
     """Tests correct compilation for a small circuit."""
     # correct output string
-    correct = ('PRAGMA EXPECTED_REWIRING "#(0 1 2 3 4 5)"'
-               + '\nRX(pi/2) 0'
-               + '\nPRAGMA CURRENT_REWIRING "#(0 1 2 3 4 5)"'
+    correct = ('RX(pi/2) 0'
                + '\nHALT\n')
     ansatz = BaseAnsatz(2)
     ansatz.circuit.inst(gates.RX(pi / 2, 0))
     compiled_circuit = ansatz.compile("6q-qvm")
+    print(compiled_circuit.__str__())
+    print(correct)
     assert compiled_circuit.__str__() == correct
 
 
