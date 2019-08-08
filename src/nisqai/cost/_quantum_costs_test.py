@@ -12,7 +12,7 @@
 
 
 # TODO: test classes/methods/functions in _quantum_costs.py!
-from nisqai.utils import * #engine,
+from nisqai.utils import engine, checkStatusQVM, checkStatusQUILC
 from nisqai.cost._quantum_costs import Observable
 import numpy as np
 import unittest
@@ -99,6 +99,7 @@ class TestObservable(unittest.TestCase):
         observable_2 = Observable(2, [0, 1])
         sum_observables_2 = observable_2.sum_observables('2q-qvm', 100000, 'Z')
         self.assertAlmostEqual(abs(sum_observables_2), 2, 5)
+
 
 if __name__ == "__main__":
     # Initialize engine object
