@@ -12,6 +12,7 @@
 
 
 # TODO: test classes/methods/functions in _quantum_costs.py!
+from nisqai.utils import * #engine,
 from nisqai.cost._quantum_costs import Observable
 import numpy as np
 import unittest
@@ -100,4 +101,15 @@ class TestObservable(unittest.TestCase):
         self.assertAlmostEqual(abs(sum_observables_2), 2, 5)
 
 if __name__ == "__main__":
-    unittest.main()
+    # Initialize engine object
+    en = engine()
+    # Start the servers
+    en.startQVM()
+    en.startQUILC()
+    # Create a forest Object
+    en.forestObject()
+    # Withtout passing exit=False code written below unittest won't get executed
+    unittest.main(exit=False)
+    # Stopping the Servers 
+    en.stopQVM()
+    en.stopQUILC()
