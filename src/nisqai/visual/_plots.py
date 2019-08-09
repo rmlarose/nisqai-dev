@@ -42,11 +42,12 @@ def scatter(data, labels=None, predictions=None, **kwargs):
         color2: str
             Color to use for second class of data when plotting.
     """
-    # Constants
+    # TODO: Allow for these in **kwargs
     COLORS = ["blue", "orange", "green", "salmon", "red", "black", "purple"]
-    ALPHA = 0.6
-    SIZE = 75
+    ALPHA = 0.55
+    SIZE = 100
     LINEWIDTH = 2
+    plt.rcParams.update({"font.size": 16, "font.family": "serif", "font.weight": "bold"})
 
     # Make sure we have the correct input type
     if not isinstance(data, ndarray):
