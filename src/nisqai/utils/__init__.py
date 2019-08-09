@@ -11,4 +11,4 @@
 #   limitations under the License.
 
 from nisqai.utils._program_utils import order, ascii_drawer_simple
-from nisqai.utils._engine import startQVMandQUILC, stopQVMandQUILC
+from nisqai.utils._engine import engine, checkStatusQVM, checkStatusQUILC

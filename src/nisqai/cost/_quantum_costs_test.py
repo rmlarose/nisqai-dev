@@ -11,7 +11,8 @@
 #   limitations under the License.
 
 
-from nisqai.utils import startQVMandQUILC, stopQVMandQUILC
+# TODO: test classes/methods/functions in _quantum_costs.py!
+from nisqai.utils import engine, checkStatusQVM, checkStatusQUILC
 from nisqai.cost._quantum_costs import Observable
 import numpy as np
 import unittest
@@ -101,11 +102,15 @@ class TestObservable(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    # Start the Rigetti QVM and Quil compiler
-    qvm_server, quilc_server, _ = startQVMandQUILC()
-
-    # Do the unit tests
-    unittest.main()
-
-    # Stop the Rigetti QVM and Quil compiler
-    stopQVMandQUILC(qvm_server, quilc_server)
+    # Initialize engine object
+    en = engine()
+    # Start the servers
+    en.startQVM()
+    en.startQUILC()
+    # Create a forest Object
+    en.forestObject()
+    # Withtout passing exit=False code written below unittest won't get executed
+    unittest.main(exit=False)
+    # Stopping the Servers 
+    en.stopQVM()
+    en.stopQUILC()
