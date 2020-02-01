@@ -11,8 +11,7 @@
 #   limitations under the License.
 
 
-# TODO: test classes/methods/functions in _quantum_costs.py!
-from nisqai.utils import engine, checkStatusQVM, checkStatusQUILC
+from nisqai.utils import Engine
 from nisqai.cost._quantum_costs import Observable
 import numpy as np
 import unittest
@@ -20,8 +19,7 @@ import pyquil
 
 
 class TestObservable(unittest.TestCase):
-    '''Testing for ValueError and TypeError exceptions'''
-
+    """Testing for ValueError and TypeError exceptions."""
     def test_invalid_qubit_number(self):
         """Tests if a negative integer is inputted for number of qubits."""
         with self.assertRaises(ValueError):
@@ -36,7 +34,7 @@ class TestObservable(unittest.TestCase):
         with self.assertRaises(ValueError):
             obs.compute_observables_exp('4q-qvm', -20, 'Z')
 
-    def test_observble(self):
+    def test_observable(self):
         observable_1 = Observable(3, [0, 1])
         self.assertEqual(observable_1.num_qubits, 3)
         self.assertEqual(observable_1.measured_qubits, [0, 1])
@@ -103,14 +101,18 @@ class TestObservable(unittest.TestCase):
 
 if __name__ == "__main__":
     # Initialize engine object
-    en = engine()
+    engine = Engine()
+
     # Start the servers
-    en.startQVM()
-    en.startQUILC()
+    engine.startQVM()
+    engine.startQUILC()
+
     # Create a forest Object
-    en.forestObject()
-    # Withtout passing exit=False code written below unittest won't get executed
+    engine.forestObject()
+
+    # Without passing exit=False code written below unittest won't get executed
     unittest.main(exit=False)
+
     # Stopping the Servers 
-    en.stopQVM()
-    en.stopQUILC()
+    engine.stopQVM()
+    engine.stopQUILC()
