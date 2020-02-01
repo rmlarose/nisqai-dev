@@ -18,7 +18,7 @@ import time
 import nisqai
 
 # Start the Rigetti QVM and Quil compiler
-qvm_server, quilc_server, _ = nisqai.utils.startQVMandQUILC()
+engine = nisqai.utils.startQVMandQUILC()
 
 # Get random two dimensional data
 cdata = nisqai.data.random_data_vertical_boundary(50)
@@ -56,4 +56,5 @@ predictions = qnn.predict_all(angles=res["x"])
 nisqai.visual.scatter(cdata.data, labels=cdata.labels, predictions=predictions)
 
 # Stop the Rigetti QVM and Quil compiler
-nisqai.utils.stopQVMandQUILC(qvm_server, quilc_server)
+engine.stopQVM()
+engine.stopQUILC()

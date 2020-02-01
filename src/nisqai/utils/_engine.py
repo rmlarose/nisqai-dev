@@ -21,11 +21,12 @@ from subprocess import Popen, DEVNULL, STDOUT, check_output
 class DeactivateQUILCError(Exception):
     pass
 
+
 class DeactivateQVMError(Exception):
     pass
 
-class engine:
 
+class Engine:
     # Initializing the servers with default: None
     def __init__(self):
         self.local_address = 'https://127.0.0.1:'
@@ -179,6 +180,7 @@ class engine:
         else:
             raise Exception('No QUILC services running!')
 
+
 def checkStatusQVM():
     '''
         Check the status of the QVM server
@@ -211,3 +213,23 @@ def checkStatusQUILC():
     proc_data = ['quilc' == x['name'] for x in proc_list]
     status = True if any(proc_data) else False
     return status
+
+
+def startQVMandQUILC(qvm_executable=None, quilc_executable=None, default_ports=True):
+    """Returns an engine running QVM and Quilc server for compiling and running pyQuil programs.
+    Args:
+        qvm_executable : int
+            Path to the qvm server excecutable.
+        quilc_executable : str
+             Path to the quilc server excecutable.
+        default_ports: bool
+            Flat to use default ports specified in pyquilConfig.
+    Returns:
+        qvm_server : Popen object
+        quilc_server : Popen object
+        forest_connection : ForestConnection object
+    """
+    engine = Engine()
+    engine.startQVM(qvm_executable)
+    engine.startQUILC(quilc_executable)
+    return engine

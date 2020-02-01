@@ -18,7 +18,7 @@ import nisqai
 import numpy as np
 
 # Start the Rigetti QVM and Quil compiler
-qvm_server, quilc_server, _ = nisqai.utils.startQVMandQUILC()
+engine = nisqai.utils.startQVMandQUILC()
 
 # Some artificial data
 mydata = np.array([
@@ -76,4 +76,5 @@ print("Train result:")
 print(res)
 
 # Stop the Rigetti QVM and Quil compiler
-nisqai.utils.stopQVMandQUILC(qvm_server, quilc_server)
+engine.stopQVM()
+engine.stopQUILC()
