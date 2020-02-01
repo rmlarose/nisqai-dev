@@ -35,32 +35,51 @@ def test_add():
     
     print("a + b =\n", a + b)
 
-def test_depth_no_gates():
-    """Checks that depth is being calculated correctly from compiled quil program.
 
-    REQUIRES quil compiler (quilc) to be running.
+def test_depth_no_gates():
+    """Checks that depth is being calculated correctly from compiled Quil program
+    with no gates.
+
+    REQUIRES
+        Quil compiler (quilc) to be running.
     """
     ansatz = BaseAnsatz(num_qubits=10)
     computer = "10q-qvm"
     assert ansatz.depth(computer) == 0
 
 
-def test_depth():
-    """Checks that depth is being calculated correctly from compiled quil program.
+def test_depth_z_rotation():
+    """Checks that depth is being calculated correctly from compiled Quil programs
+    with Z rotations on each qubit.
 
-    REQUIRES quil compiler (quilc) to be running.
+    REQUIRES
+        Quil compiler (quilc) to be running.
     """
-    ansatz = BaseAnsatz(4)
-    ansatz.circuit += [gates.X(0), gates.RZ(pi/4, 3)]
-    computer = "4q-qvm"
-    print(ansatz.compile(computer, shots=1))
-    assert ansatz.depth(computer) == 2
+    for nqubits in range(1, 5):
+        ansatz = BaseAnsatz(num_qubits=nqubits)
+        ansatz.add_layer(gates.Z)
+        computer = f"{nqubits}q-qvm"
+        print(ansatz.compile(computer))
+        assert ansatz.depth(computer) == nqubits * 3  # Quil Compiler does Z = Z P P^\dagger where P = Rx(pi / 2)
 
 
-def test_depth_empty():
+def test_depth():
+    """Checks that depth is being calculated correctly from compiled Quil program.
+
+    REQUIRES
+        Quil compiler (quilc) to be running.
+    """
+    ansatz = BaseAnsatz(2)
+    ansatz.circuit += [gates.X(0), gates.RZ(pi/4, 1)]
+    computer = "2q-qvm"
+    assert ansatz.depth(computer) == 7
+
+
+def test_depth_identity():
     """Checks that depth is being calculated correctly for hardware gates.
 
-    REQUIRES quil compiler (quilc) to be running.
+    REQUIRES
+        Quil compiler (quilc) to be running.
     """
     ansatz = BaseAnsatz(1)
     ansatz.circuit.inst(gates.RZ(0, 0))
