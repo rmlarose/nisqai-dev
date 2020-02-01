@@ -74,7 +74,7 @@ class BaseAnsatz:
         Returns:
             Number of gates after compilation to the computer.
         """
-        return len([obj for obj in self.compile(computer, 1) if type(obj) == Gate])
+        return len([obj for obj in self.compile(computer, shots=1) if type(obj) == Gate])
 
     def num_ops(self, qubits):
         """Returns the total number of operations over a subset of qubits

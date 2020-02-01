@@ -35,16 +35,25 @@ def test_add():
     
     print("a + b =\n", a + b)
 
+def test_depth_no_gates():
+    """Checks that depth is being calculated correctly from compiled quil program.
+
+    REQUIRES quil compiler (quilc) to be running.
+    """
+    ansatz = BaseAnsatz(num_qubits=10)
+    computer = "10q-qvm"
+    assert ansatz.depth(computer) == 0
+
 
 def test_depth():
     """Checks that depth is being calculated correctly from compiled quil program.
 
     REQUIRES quil compiler (quilc) to be running.
     """
-    ansatz = BaseAnsatz(6)
+    ansatz = BaseAnsatz(4)
     ansatz.circuit += [gates.X(0), gates.RZ(pi/4, 3)]
-
     computer = "4q-qvm"
+    print(ansatz.compile(computer, shots=1))
     assert ansatz.depth(computer) == 2
 
 
